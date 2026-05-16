@@ -4,6 +4,7 @@ import {
   absoluteUrl,
   defaultDescription,
   defaultOgImage,
+  defaultLogo,
   siteName,
   siteUrl,
 } from '../../config/seo'
@@ -18,7 +19,8 @@ export default function SeoHead({
   const { pathname } = useLocation()
   const pageTitle = title ? `${title} | ${siteName}` : siteName
   const canonical = siteUrl ? `${siteUrl}${pathname}` : undefined
-  const resolvedImage = absoluteUrl(image) ?? defaultOgImage
+  const resolvedImage = absoluteUrl(image || defaultOgImage)
+  const logoUrl = absoluteUrl(defaultLogo) ?? defaultLogo
   const twitterCard = resolvedImage ? 'summary_large_image' : 'summary'
 
   return (
@@ -31,6 +33,8 @@ export default function SeoHead({
         <meta name="robots" content="index,follow" />
       )}
       {canonical ? <link rel="canonical" href={canonical} /> : null}
+      <link rel="icon" href={logoUrl} />
+      <link rel="apple-touch-icon" href={logoUrl} />
 
       <meta property="og:title" content={pageTitle} />
       <meta property="og:description" content={description} />
