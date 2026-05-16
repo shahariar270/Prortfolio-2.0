@@ -1,0 +1,199 @@
+.st-portfolio--home {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(24px, 5vw, 64px);
+    min-height: calc(100vh - 93px);
+    overflow: hidden;
+    background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(37, 99, 235, 0.08)),
+        var(--surface);
+
+    &__content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: clamp(24px, 5vw, 56px);
+        width: 100%;
+        max-width: 1200px;
+        z-index: 2;
+        color: var(--text-primary);
+
+        .hero-text {
+            max-width: 600px;
+            text-align: left;
+            animation: slideUp 0.7s ease-out forwards;
+
+            h1 {
+                font-size: clamp(34px, 5vw, 64px);
+                line-height: 1.05;
+                margin-bottom: 1rem;
+
+                .highlight {
+                    color: var(--color-primary);
+                }
+            }
+
+            p {
+                max-width: 560px;
+                color: var(--text-secondary);
+                font-size: clamp(16px, 2vw, 20px);
+                line-height: 1.7;
+                margin-bottom: 2rem;
+            }
+
+            .hero-buttons {
+                display: flex;
+                gap: 1rem;
+                margin: 8px 0;
+                flex-wrap: wrap;
+
+                .btn {
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 8px;
+                    font-weight: 700;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+
+                    &.btn-primary {
+                        background-color: var(--color-primary);
+                        color: var(--text-white);
+                        box-shadow: 0 10px 20px rgba(15, 118, 110, 0.22);
+
+                        &:hover {
+                            background-color: var(--color-primary-hover);
+                        }
+                    }
+
+                    &.btn-secondary {
+                        background-color: var(--surface);
+                        color: var(--text-primary);
+                        border: 1px solid var(--border-color);
+
+                        &:hover {
+                            background-color: var(--surface-muted);
+                        }
+                    }
+                }
+            }
+        }
+
+        .hero-image {
+            flex: 0 1 380px;
+            img {
+                width: min(100%, 380px);
+                aspect-ratio: 4 / 5;
+                height: auto;
+                // border-radius: 50%;
+                object-fit: cover;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-soft);
+                animation: slideUp 0.7s ease-out forwards;
+                animation-delay: 0.15s;
+            }
+        }
+    }
+
+    .background-shapes {
+        display: none;
+    }
+}
+
+.highlight {
+    display: inline-block;
+    transition:
+        transform 0.3s,
+        opacity 0.3s;
+}
+
+.slide-up {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.slide-down {
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+.hero-text {
+    animation: slideUp 1s ease-out forwards;
+}
+
+@keyframes slideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    animation: scroll 4s linear infinite;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-2.5rem);
+    }
+    50% {
+        transform: translateY(-5rem);
+    }
+    75% {
+        transform: translateY(-7.5rem);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+// responsive start here
+@media (max-width: 768px) {
+    .st-portfolio {
+        &--home__content {
+            flex-direction: column;
+            align-items: flex-start;
+
+            .hero-text {
+                width: 100%;
+            }
+
+            .hero-text p {
+                margin: 0;
+            }
+
+            .hero-buttons {
+                width: 100%;
+
+                .btn {
+                    flex: 1 1 180px;
+                    text-align: center;
+                }
+            }
+
+            .hero-image {
+                width: 100%;
+
+                img {
+                    width: 100%;
+                    max-height: 420px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .st-portfolio--home {
+        padding: 22px 16px;
+    }
+}

@@ -1,0 +1,52 @@
+.st-portfolio {
+    &--layout {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        background:
+            linear-gradient(135deg, rgba(15, 118, 110, 0.14), rgba(37, 99, 235, 0.08)),
+            var(--layout-bg);
+    }
+}
+
+.cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    transition: transform 0.15s ease-out;
+    z-index: 9999;
+}
+
+@media (max-width: 768px) {
+    .st-portfolio {
+        &--layout {
+            min-height: 100vh;
+            flex-direction: column;
+            gap: 14px;
+            padding: 14px;
+        }
+    }
+
+    .cursor {
+        display: none;
+    }
+}
+
+@media (max-width: 475px) {
+    .st-portfolio {
+        &--layout {
+            padding: 10px;
+        }
+        &--logo{
+            img{
+                height: 72px;
+                width: 72px;
+            }
+        }
+    }
+}

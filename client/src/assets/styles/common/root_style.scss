@@ -1,0 +1,102 @@
+:root {
+    --color-primary: #{$color-primary};
+    --color-primary-hover: #{$color-primary-hover};
+
+    --color-secondary: #{$color-secondary};
+    --color-secondary-hover: #{$color-secondary-hover};
+
+    --color-neutral-light: #{$color-neutral-light};
+    --color-neutral-light-hover: #{$color-neutral-light-hover};
+
+    --color-neutral-dark: #{$color-neutral-dark};
+    --color-neutral-dark-hover: #{$color-neutral-dark-hover};
+
+    --color-bg-light: #{$color-bg-light};
+    --color-bg-light-hover: #{$color-bg-light-hover};
+
+    --text-primary: #{$color-text-primary};
+    --text-primary-hover: #{$color-text-primary-hover};
+
+    --text-secondary: #{$color-text-secondary};
+    --text-secondary-hover: #{$color-text-secondary-hover};
+
+    --text-white: #{$text-white};
+    --text-white-hover: #{$text-white-hover};
+    --surface: #ffffff;
+    --surface-muted: #f8fafc;
+    --surface-strong: #edf4f7;
+    --border-color: #d8e2eb;
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+    --shadow-card: 0 12px 26px rgba(15, 23, 42, 0.08);
+    --layout-bg: #e8f1f3;
+    --panel-bg: rgba(255, 255, 255, 0.94);
+    --accent-warm: #f59e0b;
+}
+
+[data-theme="dark"] {
+    --color-primary: #{$dark-color-primary};
+    --color-primary-hover: #{$dark-color-primary-hover};
+
+    --color-secondary: #{$dark-color-secondary};
+    --color-secondary-hover: #{$dark-color-secondary-hover};
+
+    --color-neutral-light: #{$dark-color-neutral-light};
+    --color-neutral-light-hover: #{$dark-color-neutral-light-hover};
+
+    --color-neutral-dark: #{$dark-color-neutral-dark};
+    --color-neutral-dark-hover: #{$dark-color-neutral-dark-hover};
+
+    --color-bg-light: #{$dark-color-bg-light};
+    --color-bg-light-hover: #{$dark-color-bg-light-hover};
+
+    --text-primary: #{$dark-color-text-primary};
+    --text-primary-hover: #{$dark-color-text-primary-hover};
+
+    --text-secondary: #{$dark-color-text-secondary};
+    --text-secondary-hover: #{$dark-color-text-secondary-hover};
+
+    --text-white: #{$dark-text-white};
+    --text-white-hover: #{$dark-text-white-hover};
+    --surface: #111c31;
+    --surface-muted: #0f172a;
+    --surface-strong: #1e293b;
+    --border-color: #334155;
+    --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.32);
+    --shadow-card: 0 12px 26px rgba(0, 0, 0, 0.24);
+    --layout-bg: #0b1220;
+    --panel-bg: rgba(15, 23, 42, 0.94);
+    --accent-warm: #fbbf24;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    background: var(--layout-bg);
+    color: var(--text-primary);
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    color: inherit;
+}
