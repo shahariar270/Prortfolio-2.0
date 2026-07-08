@@ -47,7 +47,7 @@ export const projectArray = [
         type: 'MERN Desktop App',
         description: 'A streamlined MERN expense tracker, packaged as an Electron desktop app, for monitoring financial health by tracking earnings and expenses with precise balance calculations and graceful async state handling to keep the UI snappy while syncing data.',
         technologies: ['MERN', 'Electron', 'REST API'],
-        liveDemo: '',
+        liveDemo: 'https://expense-tracker-le1b.vercel.app/',
         link: 'https://github.com/shahariar270/expense-tracker',
         image: expenseTracker,
     },
