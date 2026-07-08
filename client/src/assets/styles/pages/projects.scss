@@ -45,8 +45,9 @@
     &__card {
         display: flex;
         flex-direction: column;
-        flex: 1 1 280px;
+        flex: 1 1 300px;
         min-width: min(100%, 280px);
+        max-width: 380px;
         overflow: hidden;
         border-radius: 8px;
         background: var(--surface);

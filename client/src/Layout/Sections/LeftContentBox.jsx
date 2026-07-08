@@ -33,21 +33,46 @@ export const LeftContentBox = () => {
     setFactsExpanded(!isMobile)
   }, [isMobile])
 
-  const [isDark] = useState(() => {
+  const [isDark, setIsDark] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       return savedTheme === "dark";
     }
 
-    return window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return (
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
   });
 
+  // Apply the active theme to <html> whenever it changes.
   useEffect(() => {
-    const themeName = isDark ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", themeName);
-    localStorage.setItem("theme", themeName);
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDark ? "dark" : "light"
+    );
   }, [isDark]);
+
+  // Follow the device system scheme until the user picks a theme explicitly.
+  useEffect(() => {
+    if (localStorage.getItem("theme")) return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const sync = (e) => {
+      if (localStorage.getItem("theme")) return;
+      setIsDark(e.matches);
+    };
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const toggleTheme = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      localStorage.setItem("theme", next ? "dark" : "light");
+      return next;
+    });
+  };
 
   return (
     <div className='st-portfolio--left-content'>
@@ -58,6 +83,25 @@ export const LeftContentBox = () => {
           <p>React Developer | MERN Stack Enthusiast | CMS & Framework Expert</p>
         </div>
       </div>
+
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isDark}
+        aria-label="Toggle dark mode"
+        className="st-portfolio--theme-toggle"
+        onClick={toggleTheme}
+      >
+        <span className="st-portfolio--theme-toggle__icon" aria-hidden>
+          ☀️
+        </span>
+        <span className="st-portfolio--theme-toggle__track" aria-hidden>
+          <span className="st-portfolio--theme-toggle__thumb" />
+        </span>
+        <span className="st-portfolio--theme-toggle__icon" aria-hidden>
+          🌙
+        </span>
+      </button>
 
       <div
         className={
