@@ -1,5 +1,9 @@
 import thumbCode from '../../assets/images/home.jpg'
 import thumbUi from '../../assets/images/profile.jpg'
+import vireoKit from '../../assets/images/Project/vireo-kit.jpg'
+import ecom from '../../assets/images/Project/ecom.jpg'
+import expenseTracker from '../../assets/images/Project/expense.jpg'
+import WillTube from '../../assets/images/Project/willtube.png'
 
 export const menuArray = [
     {
@@ -25,7 +29,7 @@ export const projectArray = [
         technologies: ['React', 'SCSS', 'Design Tokens'],
         liveDemo: 'https://vireo-kit.vercel.app/',
         link: 'https://github.com/shahariar270/VireoKit',
-        image: thumbUi,
+        image: vireoKit,
     },
     {
         label: 'E-Commerce',
@@ -35,7 +39,17 @@ export const projectArray = [
         technologies: ['MERN', 'Redux Toolkit', 'MongoDB'],
         liveDemo: 'https://e-commerce-rho-three-41.vercel.app/',
         link: 'https://github.com/shahariar270/E-Commerce',
-        image: thumbCode,
+        image: ecom,
+    },
+    {
+        label: 'Expense Tracker',
+        category: 'development',
+        type: 'MERN Desktop App',
+        description: 'A streamlined MERN expense tracker, packaged as an Electron desktop app, for monitoring financial health by tracking earnings and expenses with precise balance calculations and graceful async state handling to keep the UI snappy while syncing data.',
+        technologies: ['MERN', 'Electron', 'REST API'],
+        liveDemo: '',
+        link: 'https://github.com/shahariar270/expense-tracker',
+        image: expenseTracker,
     },
     {
         label: 'WillTube',
@@ -45,16 +59,16 @@ export const projectArray = [
         technologies: ['React', 'API', 'Node'],
         liveDemo: '',
         link: '',
-        image: thumbUi,
+        image: WillTube,
     },
-    {
-        label: 'Todo',
-        category: 'development',
-        type: 'Productivity App',
-        description: 'A simple and efficient todo application with task creation, editing, filtering, and persistent local storage support.',
-        technologies: ['React', 'Local Storage', 'UX'],
-        liveDemo: '',
-        link: '',
-        image: thumbCode,
-    },
+    // {
+    //     label: 'Todo',
+    //     category: 'development',
+    //     type: 'Productivity App',
+    //     description: 'A simple and efficient todo application with task creation, editing, filtering, and persistent local storage support.',
+    //     technologies: ['React', 'Local Storage', 'UX'],
+    //     liveDemo: '',
+    //     link: '',
+    //     image: thumbCode,
+    // },
 ];
