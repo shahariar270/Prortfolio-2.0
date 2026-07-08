@@ -100,20 +100,12 @@ export const Project = () => {
                     Case Study
                   </span>
                 )}
-                {project.link ? (
-                  <a
-                    className="st-portfolio--project__card-link"
-                    href={project.link}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Source Code
-                  </a>
-                ) : (
-                  <span className="st-portfolio--project__card-link st-portfolio--project__card-link--muted">
-                    Private Repo
-                  </span>
-                )}
+                <span
+                  className="st-portfolio--project__card-link st-portfolio--project__card-link--disabled"
+                  aria-disabled="true"
+                >
+                  Source Code 🔒
+                </span>
               </div>
             </div>
           </article>
