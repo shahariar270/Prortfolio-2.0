@@ -4,17 +4,18 @@ const cors = require('cors')
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 
+dotenv.config();
+
 const PORT = process.env.PORT ?? 3000;
 
-dotenv.config();
 app.use(express.json());
 app.use(cors())
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'shahariardorjoy52@gmail.com',
-        pass: 'spbv blin hbfu giit'
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS
     }
 })
 
@@ -22,8 +23,9 @@ app.post("/contact", async (req, res) => {
     const { name, email, content } = req.body;
 
     const mailOptions = {
-        from: email,
-        to: "shahariardorjoy52@gmail.com",
+        from: `"${name} (${email})" <${process.env.MAIL_USER}>`,
+        to: process.env.MAIL_TO ?? process.env.MAIL_USER,
+        replyTo: `"${name}" <${email}>`,
         subject: "New Contact Form Message",
         text: `
 নতুন একটি মেসেজ পেয়েছেন!
