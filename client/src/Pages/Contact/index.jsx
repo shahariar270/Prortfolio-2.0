@@ -2,6 +2,7 @@ import Button from '@Component/Button'
 import SeoHead from '@Component/SeoHead'
 import { Field, Form, Formik } from 'formik'
 import React from 'react'
+import API_BASE_URL from '../../config/api'
 
 const contactInfo = [
   {
@@ -48,7 +49,7 @@ const socialLinks = [
 export const Contact = () => {
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      const response = await fetch("http://localhost:3000/contact", {
+      const response = await fetch(`${API_BASE_URL}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
