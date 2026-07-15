@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
-import './assets/styles/main.scss';
+import './assets/styles/editorial.scss';
 import { router } from './route';
 import './assets/icons/style.css'
 
