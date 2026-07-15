@@ -982,7 +982,8 @@ a {
             height: 68px;
             flex-direction: row;
             justify-content: space-between;
-            padding: 0 12px;
+            gap: 6px;
+            padding: 0 10px;
             border-right: none;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
@@ -994,19 +995,26 @@ a {
         &__rail-items {
             flex-direction: row;
             flex: 1;
+            min-width: 0;
             justify-content: space-evenly;
             gap: 0;
         }
 
         &__rail-item {
-            width: 48px;
+            width: auto;
+            flex: 1 1 0;
+            min-width: 0;
+            max-width: 60px;
 
             span {
                 font-size: 8px;
+                max-width: 100%;
+                overflow: hidden;
             }
         }
 
         &__rail-theme {
+            flex-shrink: 0;
             width: 36px;
             height: 36px;
         }
