@@ -1,11 +1,12 @@
 import React from 'react'
 import { Field, Form, Formik } from 'formik'
+import { API_URL } from '../../../config/api'
 import { socialLinks } from '../helper'
 
 export const Contact = () => {
     const handleSubmit = async (values, { resetForm }) => {
         try {
-            const response = await fetch('http://localhost:3000/contact', {
+            const response = await fetch(`${API_URL}/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values),

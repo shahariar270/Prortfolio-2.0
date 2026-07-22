@@ -24,10 +24,20 @@ export default defineConfig({
             viewport: { width, height },
         },
     })),
-    webServer: {
-        command: 'npm run dev',
-        url: 'http://localhost:5173',
-        reuseExistingServer: true,
-        timeout: 60_000,
-    },
+    webServer: [
+        {
+            command: 'npm run dev',
+            url: 'http://localhost:5173',
+            reuseExistingServer: true,
+            timeout: 60_000,
+        },
+        {
+            // admin specs talk to the real API (needs local MongoDB running)
+            command: 'node app.js',
+            cwd: '../server',
+            url: 'http://localhost:3000',
+            reuseExistingServer: true,
+            timeout: 60_000,
+        },
+    ],
 })

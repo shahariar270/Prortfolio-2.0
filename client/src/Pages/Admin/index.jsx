@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import '../../assets/styles/admin.scss'
+import { api, getToken, clearToken } from './api'
+import { Login } from './Login'
 import { AdminIcon } from './AdminIcon'
 import {
     navItems,
@@ -37,6 +39,7 @@ const getInitialTheme = () => {
 // (e.g. JWT session against the Express server) before real data hooks up.
 
 export const Admin = () => {
+    const [token, setTokenState] = useState(getToken)
     const [tab, setTab] = useState('analytics')
     const [isDark, setIsDark] = useState(getInitialTheme)
     const [posts, setPosts] = useState(initialPosts)
@@ -59,6 +62,17 @@ export const Admin = () => {
         setToast(msg)
         toastTimer.current = setTimeout(() => setToast(null), 2600)
     }
+
+    const logout = () => {
+        clearToken()
+        setTokenState(null)
+    }
+
+    // reject a stale token early instead of failing on the first action
+    useEffect(() => {
+        if (!token) return
+        api.profile().catch(() => logout())
+    }, [token])
 
     const toggleTheme = () => {
         setIsDark((prev) => {
@@ -157,6 +171,15 @@ export const Admin = () => {
 
     const [title, subtitle] = pageTitles[tab]
 
+    if (!token) {
+        return (
+            <div className="st-admin">
+                <SeoHead title="Admin" description="Portfolio admin panel" noIndex />
+                <Login onLogin={() => setTokenState(getToken())} />
+            </div>
+        )
+    }
+
     return (
         <div className="st-admin">
             <SeoHead title="Admin" description="Portfolio admin panel" noIndex />
@@ -182,6 +205,9 @@ export const Admin = () => {
                         </button>
                     ))}
                 </nav>
+                <button type="button" className="st-admin__logout" onClick={logout}>
+                    ⎋ <span>Log out</span>
+                </button>
                 <Link className="st-admin__back-link" to="/">
                     ← <span>View live site</span>
                 </Link>

@@ -1,9 +1,35 @@
 import { test, expect } from '@playwright/test'
 
-test.beforeEach(async ({ page }) => {
+// dev credentials from server/.env.local (seeded via npm run seed:admin)
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'dev.shahariar.official@gmail.com'
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
+
+test.beforeEach(async ({ page, request }) => {
+    const res = await request.post('http://localhost:3000/auth/login', {
+        data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
+    })
+    const { data } = await res.json()
+    await page.addInitScript((token) => {
+        window.localStorage.setItem('st-admin-token', token)
+    }, data.token)
+
     await page.goto('/st-admin')
     await page.waitForSelector('.st-admin__kpi')
     await page.evaluate(() => document.fonts.ready)
+})
+
+test('login screen appears without a token and rejects bad credentials', async ({ page }) => {
+    await page.evaluate(() => window.localStorage.removeItem('st-admin-token'))
+    await page.goto('/st-admin')
+    await expect(page.locator('.st-admin__login-card')).toBeVisible()
+    await page.fill('.st-admin__login-card input[type="email"]', ADMIN_EMAIL)
+    await page.fill('.st-admin__login-card input[type="password"]', 'wrong-password')
+    await page.locator('.st-admin__login-card button[type="submit"]').click()
+    await expect(page.locator('.st-admin__login-error')).toBeVisible()
+    // then a real login works
+    await page.fill('.st-admin__login-card input[type="password"]', ADMIN_PASSWORD)
+    await page.locator('.st-admin__login-card button[type="submit"]').click()
+    await expect(page.locator('.st-admin__kpi').first()).toBeVisible()
 })
 
 test('admin page has no horizontal overflow', async ({ page }) => {
