@@ -1,5 +1,9 @@
 const Post = require('../../model/post/index');
+const { uploadImage } = require('../../utils/cloudniry');
 const ApiResponse = require('../../utils/api_response');
+
+// multipart form fields arrive as strings — treat 'true'/true as true
+const to_bool = (value) => value === true || value === 'true';
 
 const make_slug = (title) =>
     title
@@ -65,6 +69,11 @@ class post_controller {
                 return ApiResponse.error(res, "Title and category are required", 400);
             }
 
+            let image_url = image;
+            if (req.file) {
+                image_url = await uploadImage(req.file.path);
+            }
+
             const slug = await unique_slug(title);
             const new_post = await Post.create({
                 title,
@@ -72,9 +81,9 @@ class post_controller {
                 category,
                 excerpt,
                 content,
-                image,
+                image: image_url,
                 read_time,
-                published: !!published,
+                published: to_bool(published),
                 user_id,
             });
 
@@ -101,9 +110,13 @@ class post_controller {
             if (category !== undefined) post.category = category;
             if (excerpt !== undefined) post.excerpt = excerpt;
             if (content !== undefined) post.content = content;
-            if (image !== undefined) post.image = image;
+            if (req.file) {
+                post.image = await uploadImage(req.file.path);
+            } else if (image !== undefined) {
+                post.image = image;
+            }
             if (read_time !== undefined) post.read_time = read_time;
-            if (published !== undefined) post.published = !!published;
+            if (published !== undefined) post.published = to_bool(published);
 
             await post.save();
             return ApiResponse.success(res, 'Post updated successfully', post);
