@@ -72,7 +72,6 @@ export const topPages = [
 ]
 
 const skillIcon = (id) => `https://skillicons.dev/icons?i=${id}`
-const brandIcon = (id) => `https://cdn.simpleicons.org/${id}`
 
 export const skillLogoFor = (name) =>
     skillIcon(name.toLowerCase().replace(/[^a-z0-9]/g, ''))
@@ -81,12 +80,3 @@ export const initialPostCats = ['Career', 'Projects', 'React', 'Frontend', 'MERN
 
 export const initialSkillCats = ['Frontend', 'Backend & Database', 'Tools & AI']
 
-export const initialSkills = [
-    { group: 'Frontend', name: 'React', logo: skillIcon('react'), level: 92 },
-    { group: 'Frontend', name: 'Next.js', logo: skillIcon('nextjs'), level: 84 },
-    { group: 'Frontend', name: 'Tailwind', logo: skillIcon('tailwind'), level: 88 },
-    { group: 'Backend & Database', name: 'Node.js', logo: skillIcon('nodejs'), level: 85 },
-    { group: 'Backend & Database', name: 'MongoDB', logo: skillIcon('mongodb'), level: 80 },
-    { group: 'Tools & AI', name: 'Claude', logo: brandIcon('claude'), level: 90 },
-    { group: 'Tools & AI', name: 'Cursor AI', logo: brandIcon('cursor'), level: 86 },
-]

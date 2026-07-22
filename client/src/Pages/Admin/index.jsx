@@ -9,7 +9,6 @@ import {
     navItems,
     pageTitles,
     adminProfile,
-    initialSkills,
     initialPostCats,
     initialSkillCats,
     skillLogoFor,
@@ -42,7 +41,7 @@ export const Admin = () => {
     const [tab, setTab] = useState('analytics')
     const [isDark, setIsDark] = useState(getInitialTheme)
     const [posts, setPosts] = useState([])
-    const [skills, setSkills] = useState(initialSkills)
+    const [skills, setSkills] = useState([])
     const [postCats, setPostCats] = useState(initialPostCats)
     const [skillCats, setSkillCats] = useState(initialSkillCats)
     const [editor, setEditor] = useState(null)
@@ -82,6 +81,7 @@ export const Admin = () => {
         if (!token) return
         api.profile().catch(() => logout())
         api.allPosts().then(setPosts).catch(handleApiError)
+        api.skills().then(setSkills).catch(handleApiError)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token])
 
@@ -148,24 +148,30 @@ export const Admin = () => {
         }
     }
 
-    const adjustSkillLevel = (index, delta) => {
-        setSkills((prev) =>
-            prev.map((skill, i) =>
-                i === index
-                    ? { ...skill, level: Math.max(0, Math.min(100, skill.level + delta)) }
-                    : skill
-            )
-        )
+    const adjustSkillLevel = async (index, delta) => {
+        try {
+            const updated = await api.adjustSkillLevel(skills[index]._id, delta)
+            setSkills((prev) => prev.map((skill, i) => (i === index ? updated : skill)))
+        } catch (err) {
+            handleApiError(err)
+        }
     }
 
-    const saveSkill = (draft) => {
+    const saveSkill = async (draft) => {
         const name = (draft.name || '').trim() || 'New skill'
-        setSkills((prev) => [
-            ...prev,
-            { group: draft.group, name, logo: skillLogoFor(name), level: draft.level },
-        ])
-        setSkillEditorOpen(false)
-        showToast('Skill added')
+        try {
+            const created = await api.createSkill({
+                name,
+                group: draft.group,
+                logo: skillLogoFor(name),
+                level: draft.level,
+            })
+            setSkills((prev) => [...prev, created])
+            setSkillEditorOpen(false)
+            showToast('Skill added')
+        } catch (err) {
+            handleApiError(err)
+        }
     }
 
     const addCat = (list, setList, value, kind) => {

@@ -1,9 +1,5 @@
 import React from 'react'
 
-// BACKEND: level changes and new skills live only in memory. Needs a skills
-// CRUD API; the public Skills section should read from it so admin edits
-// show up on the live site.
-
 export const Skills = ({ skills, onAdjustLevel, onAdd }) => {
     const groupsOrder = []
     const grouped = {}
@@ -26,6 +22,9 @@ export const Skills = ({ skills, onAdjustLevel, onAdd }) => {
                 </button>
             </div>
             <div className="st-admin__skill-groups">
+                {skills.length === 0 && (
+                    <p className="st-admin__empty">No skills yet — add your first one.</p>
+                )}
                 {groupsOrder.map((group) => (
                     <div className="st-admin__card" key={group}>
                         <div className="st-admin__card-head">
@@ -36,7 +35,7 @@ export const Skills = ({ skills, onAdjustLevel, onAdd }) => {
                             {grouped[group].map((skill) => {
                                 const index = skills.indexOf(skill)
                                 return (
-                                    <div className="st-admin__skill-row" key={skill.name}>
+                                    <div className="st-admin__skill-row" key={skill._id ?? skill.name}>
                                         <img src={skill.logo} alt="" loading="lazy" />
                                         <span className="st-admin__skill-name">{skill.name}</span>
                                         <div className="st-admin__skill-level">
