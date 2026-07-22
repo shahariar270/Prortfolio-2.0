@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const ContactMessage = require('../../model/contact_message');
 const ApiResponse = require('../../utils/api_response');
 
 const transporter = nodemailer.createTransport({
@@ -17,6 +18,10 @@ class contact_controller {
             if (!name || !email || !content) {
                 return ApiResponse.error(res, 'Name, email and message are required', 400);
             }
+
+            // stored first so the message (and the Contacts KPI) survives a
+            // mail outage
+            await ContactMessage.create({ name, email, content });
 
             const mailOptions = {
                 from: process.env.MAIL_USER,
