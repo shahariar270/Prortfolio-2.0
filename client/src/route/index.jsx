@@ -1,3 +1,4 @@
+import { Admin } from "@Pages/Admin";
 import { Editorial } from "@Pages/Editorial";
 import { NotFound } from "@Pages/NotFound";
 import { createBrowserRouter } from "react-router-dom";
@@ -31,6 +32,12 @@ export const router = createBrowserRouter([
     {
         path: '/contact',
         element: <Editorial section="sec-contact" />
+    },
+    {
+        // BACKEND: needs auth — this route is publicly reachable until a
+        // login + protected API exist on the server
+        path: '/st-admin',
+        element: <Admin />
     },
     {
         path: '*',
