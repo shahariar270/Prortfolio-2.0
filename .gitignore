@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# env files (secrets) — .env.example stays tracked
+.env
+.env.production
+server/public/tem
+
 # Playwright
 test-results/
 playwright-report/

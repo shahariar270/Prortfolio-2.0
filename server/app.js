@@ -1,57 +1,73 @@
-const express = require('express')
+require('./config/env');
+const express = require('express');
 const app = express();
-const cors = require('cors')
-const dotenv = require('dotenv');
-const nodemailer = require('nodemailer');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('./middlewares/sanitize');
+const { default: mongoose } = require('mongoose');
+const router = require('./router');
+const ApiResponse = require('./utils/api_response');
 
-const PORT = process.env.PORT ?? 3000;
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
+    'http://localhost:4173',
+].filter(Boolean);
 
-dotenv.config();
-app.use(express.json());
-app.use(cors())
+app.use(helmet());
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'shahariardorjoy52@gmail.com',
-        pass: 'spbv blin hbfu giit'
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 200,
+    vary: 'Origin'
+}));
+
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+
+app.use(mongoSanitize({
+    replaceWith: '_',
+    onSanitize: ({ req, key }) => {
+        console.warn(`Sanitized key "${key}" in request from ${req.ip}`);
     }
-})
+}));
 
-app.post("/contact", async (req, res) => {
-    const { name, email, content } = req.body;
-
-    const mailOptions = {
-        from: email,
-        to: "shahariardorjoy52@gmail.com",
-        subject: "New Contact Form Message",
-        text: `
-নতুন একটি মেসেজ পেয়েছেন!
-
-Name: ${name}
-Email: ${email}
-Message: ${content}
-    `,
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        res.json({ success: true, message: "Email sent!" });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false, message: "Email failed" });
-    }
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: { success: false, message: 'Too many attempts, please try again later' },
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
+app.use('/auth', authLimiter);
 
+app.use(router);
 
-//home route
 app.get('/', (req, res) => {
-    res.send('request send successfully')
-})
+    return ApiResponse.success(res, 'request send successfully');
+});
 
-app.listen(PORT, () => {
-    console.log(`server is ruing port ${PORT}`);
-})
+const port = process.env.PORT || 3000;
+const db_url = process.env.DB_URL || 'mongodb://127.0.0.1:27017/portfolio';
 
-
+mongoose.connect(db_url)
+    .then(() => {
+        console.log('Database connected successfully');
+        app.listen(port, () => {
+            console.log('Server is running on', port);
+        });
+    })
+    .catch((err) => {
+        console.error('MongoDB connection failed:', err);
+    });
