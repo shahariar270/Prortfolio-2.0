@@ -81,37 +81,6 @@ export const initialPostCats = ['Career', 'Projects', 'React', 'Frontend', 'MERN
 
 export const initialSkillCats = ['Frontend', 'Backend & Database', 'Tools & AI']
 
-// Blog images live in client/public, served from the site root
-export const initialPosts = [
-    {
-        category: 'Career',
-        title: 'Navigating Tech Layoffs and the AI Revolution',
-        excerpt: 'Why mass layoffs are happening and how developers stay relevant by embracing AI.',
-        date: 'Jan 12, 2026',
-        views: '1,205',
-        image: '/leyoff.png',
-        published: true,
-    },
-    {
-        category: 'Projects',
-        title: 'Building a Minimalist Expense Tracker with MERN Stack',
-        excerpt: 'Applying MongoDB, Express, React, and Node.js to personal finance tracking.',
-        date: 'Jan 20, 2026',
-        views: '640',
-        image: '/expense.png',
-        published: true,
-    },
-    {
-        category: 'React',
-        title: 'Understanding React Reconciliation: The Performance Boss',
-        excerpt: 'A deep dive into the Virtual DOM and the diffing algorithm.',
-        date: 'Feb 02, 2026',
-        views: '812',
-        image: '/react.png',
-        published: false,
-    },
-]
-
 export const initialSkills = [
     { group: 'Frontend', name: 'React', logo: skillIcon('react'), level: 92 },
     { group: 'Frontend', name: 'Next.js', logo: skillIcon('nextjs'), level: 84 },

@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 
-// BACKEND: saving only updates local state; the featured image is kept as a
-// base64 data URL from FileReader. Real persistence needs a POST/PATCH posts
-// endpoint plus an image upload target (e.g. Cloudinary, like the e-commerce
-// project) that returns a hosted URL.
+// The preview stays a FileReader data URL, but the picked File itself is kept
+// on the draft (imageFile) so saving can upload it as multipart form data.
 
 export const PostEditorModal = ({ editor, categories, onSave, onClose }) => {
     const [draft, setDraft] = useState(editor)
@@ -16,7 +14,7 @@ export const PostEditorModal = ({ editor, categories, onSave, onClose }) => {
         e.target.value = ''
         if (!file) return
         const reader = new FileReader()
-        reader.onload = () => patch({ image: reader.result })
+        reader.onload = () => patch({ image: reader.result, imageFile: file })
         reader.readAsDataURL(file)
     }
 
@@ -78,7 +76,7 @@ export const PostEditorModal = ({ editor, categories, onSave, onClose }) => {
                                         Replace
                                         <input type="file" accept="image/*" onChange={pickImage} />
                                     </label>
-                                    <button type="button" onClick={() => patch({ image: '' })}>
+                                    <button type="button" onClick={() => patch({ image: '', imageFile: null })}>
                                         Remove
                                     </button>
                                 </div>

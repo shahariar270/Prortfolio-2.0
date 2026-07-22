@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import '../../assets/styles/admin.scss'
-import { api, getToken, clearToken } from './api'
+import { api, getToken, clearToken, AuthError } from './api'
 import { Login } from './Login'
 import { AdminIcon } from './AdminIcon'
 import {
     navItems,
     pageTitles,
     adminProfile,
-    initialPosts,
     initialSkills,
     initialPostCats,
     initialSkillCats,
@@ -42,7 +41,7 @@ export const Admin = () => {
     const [token, setTokenState] = useState(getToken)
     const [tab, setTab] = useState('analytics')
     const [isDark, setIsDark] = useState(getInitialTheme)
-    const [posts, setPosts] = useState(initialPosts)
+    const [posts, setPosts] = useState([])
     const [skills, setSkills] = useState(initialSkills)
     const [postCats, setPostCats] = useState(initialPostCats)
     const [skillCats, setSkillCats] = useState(initialSkillCats)
@@ -68,10 +67,22 @@ export const Admin = () => {
         setTokenState(null)
     }
 
-    // reject a stale token early instead of failing on the first action
+    // shared handler: expired/invalid sessions drop back to the login screen
+    const handleApiError = (err) => {
+        if (err instanceof AuthError) {
+            clearToken()
+            setTokenState(null)
+        }
+        showToast(err.message)
+    }
+
+    // reject a stale token early instead of failing on the first action,
+    // then load the panel's data
     useEffect(() => {
         if (!token) return
         api.profile().catch(() => logout())
+        api.allPosts().then(setPosts).catch(handleApiError)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token])
 
     const toggleTheme = () => {
@@ -86,53 +97,55 @@ export const Admin = () => {
         })
     }
 
-    const togglePublish = (index) => {
-        const wasPublished = posts[index].published
-        setPosts((prev) =>
-            prev.map((post, i) => (i === index ? { ...post, published: !post.published } : post))
-        )
-        showToast(wasPublished ? 'Post moved to drafts' : 'Post published')
+    const togglePublish = async (index) => {
+        try {
+            const updated = await api.togglePublish(posts[index]._id)
+            setPosts((prev) => prev.map((post, i) => (i === index ? updated : post)))
+            showToast(updated.published ? 'Post published' : 'Post moved to drafts')
+        } catch (err) {
+            handleApiError(err)
+        }
     }
 
-    const savePost = (draft) => {
+    const savePost = async (draft) => {
         const title = (draft.title || '').trim() || 'Untitled post'
-        if (draft.index === null) {
-            const now = new Date().toLocaleDateString('en-US', {
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric',
-            })
-            setPosts((prev) => [
-                {
-                    category: draft.category,
+        try {
+            let body
+            if (draft.imageFile) {
+                body = new FormData()
+                body.append('title', title)
+                body.append('category', draft.category)
+                body.append('excerpt', draft.excerpt)
+                body.append('published', String(draft.published))
+                body.append('image', draft.imageFile)
+            } else {
+                body = {
                     title,
+                    category: draft.category,
                     excerpt: draft.excerpt,
-                    date: now,
-                    views: '0',
-                    image: draft.image || '/react.png',
                     published: draft.published,
-                },
-                ...prev,
-            ])
-            showToast('Post created')
-        } else {
+                }
+                // send the image only when it's a real URL or an explicit
+                // clear — never a stale FileReader data: preview
+                if (!draft.image || !draft.image.startsWith('data:')) {
+                    body.image = draft.image
+                }
+            }
+
+            const saved = draft.index === null
+                ? await api.createPost(body)
+                : await api.updatePost(posts[draft.index]._id, body)
+
             setPosts((prev) =>
-                prev.map((post, i) =>
-                    i === draft.index
-                        ? {
-                              ...post,
-                              category: draft.category,
-                              title,
-                              excerpt: draft.excerpt,
-                              published: draft.published,
-                              image: draft.image || post.image,
-                          }
-                        : post
-                )
+                draft.index === null
+                    ? [saved, ...prev]
+                    : prev.map((post, i) => (i === draft.index ? saved : post))
             )
-            showToast('Post saved')
+            showToast(draft.index === null ? 'Post created' : 'Post saved')
+            setEditor(null)
+        } catch (err) {
+            handleApiError(err)
         }
-        setEditor(null)
     }
 
     const adjustSkillLevel = (index, delta) => {

@@ -1,8 +1,9 @@
 import React from 'react'
 
-// BACKEND: publish/unpublish and edit only mutate local state. Needs
-// POST/PATCH endpoints for posts and persistence to MongoDB; the public
-// blog section must then read from the same API instead of its static helper.
+const formatDate = (iso) =>
+    iso
+        ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+        : ''
 
 export const Posts = ({ posts, onTogglePublish, onEdit, onAdd }) => {
     const publishedCount = posts.filter((post) => post.published).length
@@ -16,8 +17,11 @@ export const Posts = ({ posts, onTogglePublish, onEdit, onAdd }) => {
                 </button>
             </div>
             <div className="st-admin__post-list">
+                {posts.length === 0 && (
+                    <p className="st-admin__empty">No posts yet — create your first one.</p>
+                )}
                 {posts.map((post, index) => (
-                    <div className="st-admin__card st-admin__post" key={`${post.title}-${index}`}>
+                    <div className="st-admin__card st-admin__post" key={post._id ?? `${post.title}-${index}`}>
                         <img src={post.image} alt={post.title} />
                         <div className="st-admin__post-body">
                             <div className="st-admin__post-tags">
@@ -31,7 +35,7 @@ export const Posts = ({ posts, onTogglePublish, onEdit, onAdd }) => {
                             </div>
                             <strong>{post.title}</strong>
                             <span className="st-admin__post-meta">
-                                {post.date} · {post.views} views
+                                {formatDate(post.createdAt)} · {Number(post.views ?? 0).toLocaleString()} views
                             </span>
                         </div>
                         <div className="st-admin__post-actions">
