@@ -5,14 +5,7 @@ import '../../assets/styles/admin.scss'
 import { api, getToken, clearToken, AuthError } from './api'
 import { Login } from './Login'
 import { AdminIcon } from './AdminIcon'
-import {
-    navItems,
-    pageTitles,
-    adminProfile,
-    initialPostCats,
-    initialSkillCats,
-    skillLogoFor,
-} from './helper'
+import { navItems, pageTitles, adminProfile, skillLogoFor } from './helper'
 import { Analytics } from './Views/Analytics'
 import { Posts } from './Views/Posts'
 import { Skills } from './Views/Skills'
@@ -42,8 +35,7 @@ export const Admin = () => {
     const [isDark, setIsDark] = useState(getInitialTheme)
     const [posts, setPosts] = useState([])
     const [skills, setSkills] = useState([])
-    const [postCats, setPostCats] = useState(initialPostCats)
-    const [skillCats, setSkillCats] = useState(initialSkillCats)
+    const [taxonomies, setTaxonomies] = useState([])
     const [editor, setEditor] = useState(null)
     const [skillEditorOpen, setSkillEditorOpen] = useState(false)
     const [toast, setToast] = useState(null)
@@ -82,6 +74,7 @@ export const Admin = () => {
         api.profile().catch(() => logout())
         api.allPosts().then(setPosts).catch(handleApiError)
         api.skills().then(setSkills).catch(handleApiError)
+        api.taxonomies().then(setTaxonomies).catch(handleApiError)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token])
 
@@ -174,18 +167,36 @@ export const Admin = () => {
         }
     }
 
-    const addCat = (list, setList, value, kind) => {
-        if (list.includes(value)) {
-            showToast(`${kind} already exists`)
+    const postCats = taxonomies
+        .filter((tax) => tax.kind === 'post_category')
+        .map((tax) => tax.label)
+    const skillCats = taxonomies
+        .filter((tax) => tax.kind === 'skill_group')
+        .map((tax) => tax.label)
+
+    const addTaxonomy = async (label, kind, kindName) => {
+        if (taxonomies.some((tax) => tax.kind === kind && tax.label === label)) {
+            showToast(`${kindName} already exists`)
             return
         }
-        setList((prev) => [...prev, value])
-        showToast(`${kind} "${value}" added`)
+        try {
+            const created = await api.createTaxonomy(label, kind)
+            setTaxonomies((prev) => [...prev, created])
+            showToast(`${kindName} "${label}" added`)
+        } catch (err) {
+            handleApiError(err)
+        }
     }
 
-    const removeCat = (setList, value, kind) => {
-        setList((prev) => prev.filter((item) => item !== value))
-        showToast(`${kind} "${value}" removed`)
+    const removeTaxonomy = async (tax, kindName) => {
+        try {
+            await api.deleteTaxonomy(tax._id)
+            setTaxonomies((prev) => prev.filter((item) => item._id !== tax._id))
+            showToast(`${kindName} "${tax.label}" removed`)
+        } catch (err) {
+            // an in-use label comes back as 409 with a descriptive message
+            handleApiError(err)
+        }
     }
 
     const [title, subtitle] = pageTitles[tab]
@@ -287,14 +298,13 @@ export const Admin = () => {
                 )}
                 {tab === 'taxonomy' && (
                     <Taxonomy
-                        postCats={postCats}
-                        skillCats={skillCats}
+                        taxonomies={taxonomies}
                         posts={posts}
                         skills={skills}
-                        onAddPostCat={(v) => addCat(postCats, setPostCats, v, 'Category')}
-                        onRemovePostCat={(v) => removeCat(setPostCats, v, 'Category')}
-                        onAddSkillCat={(v) => addCat(skillCats, setSkillCats, v, 'Group')}
-                        onRemoveSkillCat={(v) => removeCat(setSkillCats, v, 'Group')}
+                        onAddPostCat={(v) => addTaxonomy(v, 'post_category', 'Category')}
+                        onRemovePostCat={(tax) => removeTaxonomy(tax, 'Category')}
+                        onAddSkillCat={(v) => addTaxonomy(v, 'skill_group', 'Group')}
+                        onRemoveSkillCat={(tax) => removeTaxonomy(tax, 'Group')}
                     />
                 )}
             </div>

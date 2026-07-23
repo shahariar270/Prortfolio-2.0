@@ -1,7 +1,7 @@
 import profileImg from '../../assets/images/profile.jpg'
 
-// BACKEND: every dataset in this file is mock data. Analytics needs a real
-// tracking source; posts/skills/taxonomy need CRUD APIs backed by MongoDB.
+// Analytics KPIs/chart/sources/pages below are still mock data — the Site
+// Analytics view isn't wired to /api/analytics/summary yet.
 
 export const navItems = [
     { key: 'analytics', label: 'Site Analytics', icon: 'analytics' },
@@ -75,8 +75,4 @@ const skillIcon = (id) => `https://skillicons.dev/icons?i=${id}`
 
 export const skillLogoFor = (name) =>
     skillIcon(name.toLowerCase().replace(/[^a-z0-9]/g, ''))
-
-export const initialPostCats = ['Career', 'Projects', 'React', 'Frontend', 'MERN']
-
-export const initialSkillCats = ['Frontend', 'Backend & Database', 'Tools & AI']
 
