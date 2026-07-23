@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { adjustSkillLevel as adjustSkillLevelThunk, createSkill, fetchSkills } from '../../../store/slices/skillsSlice'
-import { fetchTaxonomies } from '../../../store/slices/taxonomiesSlice'
+import { fetchTaxonomies, selectSkillGroupLabels } from '../../../store/slices/taxonomiesSlice'
 import { skillLogoFor } from '../helper'
 import { SkillEditorModal } from '../SkillEditorModal'
 
@@ -10,9 +10,7 @@ import { SkillEditorModal } from '../SkillEditorModal'
 export const Skills = ({ onError, onNotify }) => {
     const dispatch = useDispatch()
     const skills = useSelector((state) => state.skills.items)
-    const skillCats = useSelector((state) =>
-        state.taxonomies.items.filter((tax) => tax.kind === 'skill_group').map((tax) => tax.label)
-    )
+    const skillCats = useSelector(selectSkillGroupLabels)
     const [editorOpen, setEditorOpen] = useState(false)
 
     useEffect(() => {

@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import { api, AuthError } from '../../Pages/Admin/api'
 
 const toErrorPayload = (err) => ({ message: err.message, isAuthError: err instanceof AuthError })
@@ -39,6 +39,19 @@ export const deleteTaxonomy = createAsyncThunk(
             return rejectWithValue(toErrorPayload(err))
         }
     }
+)
+
+const selectTaxonomyItems = (state) => state.taxonomies.items
+
+// Memoized: only recomputes when `items` itself changes reference, so
+// consumers get the same array back across renders instead of a fresh one
+// on every call (avoids react-redux's "returned a different result" warning).
+export const selectPostCategoryLabels = createSelector(selectTaxonomyItems, (items) =>
+    items.filter((tax) => tax.kind === 'post_category').map((tax) => tax.label)
+)
+
+export const selectSkillGroupLabels = createSelector(selectTaxonomyItems, (items) =>
+    items.filter((tax) => tax.kind === 'skill_group').map((tax) => tax.label)
 )
 
 const taxonomiesSlice = createSlice({

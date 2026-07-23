@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchPosts, savePost as savePostThunk, togglePostPublish } from '../../../store/slices/postsSlice'
-import { fetchTaxonomies } from '../../../store/slices/taxonomiesSlice'
+import { fetchTaxonomies, selectPostCategoryLabels } from '../../../store/slices/taxonomiesSlice'
 import { PostEditorModal } from '../PostEditorModal'
 
 const formatDate = (iso) =>
@@ -14,9 +14,7 @@ const formatDate = (iso) =>
 export const Posts = ({ onError, onNotify }) => {
     const dispatch = useDispatch()
     const posts = useSelector((state) => state.posts.items)
-    const postCats = useSelector((state) =>
-        state.taxonomies.items.filter((tax) => tax.kind === 'post_category').map((tax) => tax.label)
-    )
+    const postCats = useSelector(selectPostCategoryLabels)
     const [editor, setEditor] = useState(null)
 
     useEffect(() => {
