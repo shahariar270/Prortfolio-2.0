@@ -261,7 +261,7 @@ export const Admin = () => {
                     </button>
                 </header>
 
-                {tab === 'analytics' && <Analytics />}
+                {tab === 'analytics' && <Analytics onError={handleApiError} />}
                 {tab === 'posts' && (
                     <Posts
                         posts={posts}

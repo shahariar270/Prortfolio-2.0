@@ -14,6 +14,7 @@ export default defineConfig({
     timeout: 30_000,
     retries: 0,
     reporter: [['list']],
+    globalSetup: './tests/global-setup.js',
     use: {
         baseURL: 'http://localhost:5173',
     },

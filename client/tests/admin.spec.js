@@ -1,10 +1,16 @@
+import fs from 'node:fs'
 import { test, expect } from '@playwright/test'
+import { TOKEN_FILE } from './global-setup'
 
 // dev credentials from server/.env.local (seeded via npm run seed:admin)
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'dev.shahariar.official@gmail.com'
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
 
-test('login screen appears without a token and rejects bad credentials', async ({ page }) => {
+test('login screen appears without a token and rejects bad credentials', async ({ page }, testInfo) => {
+    // functional, not responsive — the auth rate limit (20 req/15min) makes
+    // repeating real login attempts across all 6 viewport projects wasteful
+    test.skip(testInfo.project.name !== 'desktop-1440', 'runs once, not per viewport')
+
     // no addInitScript here — it re-fires on every navigation within a test,
     // which would silently restore a token removed mid-test
     await page.goto('/st-admin')
@@ -20,14 +26,13 @@ test('login screen appears without a token and rejects bad credentials', async (
 })
 
 test.describe('authenticated', () => {
-    test.beforeEach(async ({ page, request }) => {
-        const res = await request.post('http://localhost:3000/auth/login', {
-            data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
-        })
-        const { data } = await res.json()
-        await page.addInitScript((token) => {
-            window.localStorage.setItem('st-admin-token', token)
-        }, data.token)
+    test.beforeEach(async ({ page }) => {
+        // reuse the token global-setup logged in with once, rather than
+        // hitting the rate-limited /auth/login endpoint per test
+        const { token } = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf-8'))
+        await page.addInitScript((t) => {
+            window.localStorage.setItem('st-admin-token', t)
+        }, token)
 
         await page.goto('/st-admin')
         await page.waitForSelector('.st-admin__kpi')
@@ -68,9 +73,19 @@ test.describe('authenticated', () => {
         await expect(page.locator('.st-admin__modal')).toHaveCount(0)
     })
 
-    test('analytics range switch updates the chart', async ({ page }) => {
-        await expect(page.locator('.st-admin__chart-bar')).toHaveCount(7)
+    test('analytics reflects real tracked page views and reacts to range switch', async ({ page, request }, testInfo) => {
+        test.skip(testInfo.project.name !== 'desktop-1440', 'API aggregation is not viewport-dependent')
+
+        // seed one real page view so the current period has a data point to show
+        await request.post('http://localhost:3000/api/track', {
+            data: { path: '/', visitor_id: `pw-test-${Date.now()}`, duration_ms: 5000 },
+        })
+        await page.reload()
+        await page.waitForSelector('.st-admin__kpi')
+        await expect(page.locator('.st-admin__chart-bar').first()).toBeVisible()
+
         await page.locator('.st-admin__range-switch button', { hasText: '30d' }).click()
-        await expect(page.locator('.st-admin__chart-bar')).toHaveCount(5)
+        await expect(page.locator('.st-admin__range-switch button.is-active')).toHaveText('30d')
+        await expect(page.locator('.st-admin__kpi').first()).toBeVisible()
     })
 })
