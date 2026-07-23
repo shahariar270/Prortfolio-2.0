@@ -34,8 +34,6 @@ export const router = createBrowserRouter([
         element: <Editorial section="sec-contact" />
     },
     {
-        // BACKEND: needs auth — this route is publicly reachable until a
-        // login + protected API exist on the server
         path: '/st-admin',
         element: <Admin />
     },
