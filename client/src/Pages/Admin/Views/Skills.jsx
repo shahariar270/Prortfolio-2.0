@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from 'react'
-import { api } from '../api'
+import { useDispatch, useSelector } from 'react-redux'
+import { adjustSkillLevel as adjustSkillLevelThunk, createSkill, fetchSkills } from '../../../store/slices/skillsSlice'
+import { fetchTaxonomies } from '../../../store/slices/taxonomiesSlice'
 import { skillLogoFor } from '../helper'
 import { SkillEditorModal } from '../SkillEditorModal'
 
-// Self-contained page: fetches its own skills + skill groups on mount
-// rather than relying on data preloaded by a parent route.
+// Reads from the Redux cache when available — fetchSkills/fetchTaxonomies
+// are condition-gated and skip the network call entirely if already loaded.
 export const Skills = ({ onError, onNotify }) => {
-    const [skills, setSkills] = useState([])
-    const [skillCats, setSkillCats] = useState([])
+    const dispatch = useDispatch()
+    const skills = useSelector((state) => state.skills.items)
+    const skillCats = useSelector((state) =>
+        state.taxonomies.items.filter((tax) => tax.kind === 'skill_group').map((tax) => tax.label)
+    )
     const [editorOpen, setEditorOpen] = useState(false)
 
     useEffect(() => {
-        api.skills().then(setSkills).catch(onError)
-        api.taxonomies('skill_group').then((cats) => setSkillCats(cats.map((c) => c.label))).catch(onError)
+        dispatch(fetchSkills()).then((action) => {
+            if (fetchSkills.rejected.match(action) && !action.meta.condition) onError(action.payload)
+        })
+        dispatch(fetchTaxonomies()).then((action) => {
+            if (fetchTaxonomies.rejected.match(action) && !action.meta.condition) onError(action.payload)
+        })
+        // onError intentionally omitted — it's a fresh function every render
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [dispatch])
 
     const groupsOrder = []
     const grouped = {}
@@ -28,8 +38,7 @@ export const Skills = ({ onError, onNotify }) => {
 
     const adjustLevel = async (index, delta) => {
         try {
-            const updated = await api.adjustSkillLevel(skills[index]._id, delta)
-            setSkills((prev) => prev.map((skill, i) => (i === index ? updated : skill)))
+            await dispatch(adjustSkillLevelThunk({ id: skills[index]._id, delta })).unwrap()
         } catch (err) {
             onError(err)
         }
@@ -38,13 +47,12 @@ export const Skills = ({ onError, onNotify }) => {
     const saveSkill = async (draft) => {
         const name = (draft.name || '').trim() || 'New skill'
         try {
-            const created = await api.createSkill({
+            await dispatch(createSkill({
                 name,
                 group: draft.group,
                 logo: skillLogoFor(name),
                 level: draft.level,
-            })
-            setSkills((prev) => [...prev, created])
+            })).unwrap()
             setEditorOpen(false)
             onNotify('Skill added')
         } catch (err) {

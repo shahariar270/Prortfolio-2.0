@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { api } from '../api'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchPosts, savePost as savePostThunk, togglePostPublish } from '../../../store/slices/postsSlice'
+import { fetchTaxonomies } from '../../../store/slices/taxonomiesSlice'
 import { PostEditorModal } from '../PostEditorModal'
 
 const formatDate = (iso) =>
@@ -7,25 +9,32 @@ const formatDate = (iso) =>
         ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
         : ''
 
-// Self-contained page: fetches its own posts + post categories on mount
-// rather than relying on data preloaded by a parent route.
+// Reads from the Redux cache when available — fetchPosts/fetchTaxonomies are
+// condition-gated and skip the network call entirely if already loaded.
 export const Posts = ({ onError, onNotify }) => {
-    const [posts, setPosts] = useState([])
-    const [postCats, setPostCats] = useState([])
+    const dispatch = useDispatch()
+    const posts = useSelector((state) => state.posts.items)
+    const postCats = useSelector((state) =>
+        state.taxonomies.items.filter((tax) => tax.kind === 'post_category').map((tax) => tax.label)
+    )
     const [editor, setEditor] = useState(null)
 
     useEffect(() => {
-        api.allPosts().then(setPosts).catch(onError)
-        api.taxonomies('post_category').then((cats) => setPostCats(cats.map((c) => c.label))).catch(onError)
+        dispatch(fetchPosts()).then((action) => {
+            if (fetchPosts.rejected.match(action) && !action.meta.condition) onError(action.payload)
+        })
+        dispatch(fetchTaxonomies()).then((action) => {
+            if (fetchTaxonomies.rejected.match(action) && !action.meta.condition) onError(action.payload)
+        })
+        // onError intentionally omitted — it's a fresh function every render
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [dispatch])
 
     const publishedCount = posts.filter((post) => post.published).length
 
     const togglePublish = async (index) => {
         try {
-            const updated = await api.togglePublish(posts[index]._id)
-            setPosts((prev) => prev.map((post, i) => (i === index ? updated : post)))
+            const updated = await dispatch(togglePostPublish(posts[index]._id)).unwrap()
             onNotify(updated.published ? 'Post published' : 'Post moved to drafts')
         } catch (err) {
             onError(err)
@@ -80,15 +89,8 @@ export const Posts = ({ onError, onNotify }) => {
                 }
             }
 
-            const saved = draft.index === null
-                ? await api.createPost(body)
-                : await api.updatePost(posts[draft.index]._id, body)
-
-            setPosts((prev) =>
-                draft.index === null
-                    ? [saved, ...prev]
-                    : prev.map((post, i) => (i === draft.index ? saved : post))
-            )
+            const id = draft.index === null ? undefined : posts[draft.index]._id
+            await dispatch(savePostThunk({ id, body })).unwrap()
             onNotify(draft.index === null ? 'Post created' : 'Post saved')
             setEditor(null)
         } catch (err) {

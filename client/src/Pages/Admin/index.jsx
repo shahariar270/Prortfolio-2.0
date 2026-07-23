@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useOutletContext } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import '../../assets/styles/admin.scss'
-import { api, getToken, clearToken, AuthError } from './api'
+import { api, getToken, clearToken } from './api'
 import { Login } from './Login'
 import { AdminIcon } from './AdminIcon'
 import { navItems, pageTitles, adminProfile } from './helper'
@@ -50,13 +50,15 @@ export const Admin = () => {
         setTokenState(null)
     }
 
-    // shared handler: expired/invalid sessions drop back to the login screen
+    // shared handler: Views dispatch Redux thunks whose rejection payload is
+    // { message, isAuthError } (see toErrorPayload in the slices) — expired/
+    // invalid sessions drop back to the login screen
     const handleApiError = (err) => {
-        if (err instanceof AuthError) {
+        if (err?.isAuthError) {
             clearToken()
             setTokenState(null)
         }
-        showToast(err.message)
+        showToast(err?.message ?? String(err))
     }
 
     // reject a stale token early so an expired session bounces to login

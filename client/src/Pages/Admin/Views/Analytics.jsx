@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { AdminIcon } from '../AdminIcon'
 import { ranges } from '../helper'
-import { api } from '../api'
+import { fetchAnalytics } from '../../../store/slices/analyticsSlice'
 
 const KPI_META = {
     visitors: { label: 'Visitors', icon: 'visitors' },
@@ -26,24 +27,19 @@ const formatKpiValue = (key, value) =>
     key === 'avg_session_ms' ? formatDuration(value) : value.toLocaleString()
 
 export const Analytics = ({ onError }) => {
+    const dispatch = useDispatch()
     const [range, setRange] = useState('7d')
-    const [summary, setSummary] = useState(null)
+    // condition-gated: switching back to an already-viewed range reuses the
+    // cached summary instead of refetching
+    const summary = useSelector((state) => state.analytics.byRange[range]?.data) ?? null
 
     useEffect(() => {
-        let cancelled = false
-        api.analyticsSummary(range)
-            .then((data) => {
-                if (!cancelled) setSummary(data)
-            })
-            .catch((err) => {
-                if (!cancelled) onError(err)
-            })
-        return () => {
-            cancelled = true
-        }
-        // onError is a fresh function each render — only re-fetch on range change
+        dispatch(fetchAnalytics(range)).then((action) => {
+            if (fetchAnalytics.rejected.match(action) && !action.meta.condition) onError(action.payload)
+        })
+        // onError intentionally omitted — it's a fresh function every render
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [range])
+    }, [dispatch, range])
 
     const kpis = summary?.kpis ?? {}
     const chart = summary?.chart ?? []

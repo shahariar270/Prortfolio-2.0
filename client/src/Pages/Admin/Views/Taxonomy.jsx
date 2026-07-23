@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { api } from '../api'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchPosts } from '../../../store/slices/postsSlice'
+import { fetchSkills } from '../../../store/slices/skillsSlice'
+import { createTaxonomy, deleteTaxonomy, fetchTaxonomies } from '../../../store/slices/taxonomiesSlice'
 
 const TaxonomyCard = ({ title, subtitle, dotClass, items, unit, placeholder, onAdd, onRemove }) => {
     const handleSubmit = (e) => {
@@ -47,19 +50,25 @@ const TaxonomyCard = ({ title, subtitle, dotClass, items, unit, placeholder, onA
     )
 }
 
-// Self-contained page: fetches its own taxonomies, posts, and skills on
-// mount (posts/skills are needed only to compute per-category counts).
+// Reads from the Redux cache when available — fetchTaxonomies/fetchPosts/
+// fetchSkills are condition-gated and skip the network call entirely if
+// already loaded (posts/skills are only needed here to compute counts).
 export const Taxonomy = ({ onError, onNotify }) => {
-    const [taxonomies, setTaxonomies] = useState([])
-    const [posts, setPosts] = useState([])
-    const [skills, setSkills] = useState([])
+    const dispatch = useDispatch()
+    const taxonomies = useSelector((state) => state.taxonomies.items)
+    const posts = useSelector((state) => state.posts.items)
+    const skills = useSelector((state) => state.skills.items)
 
     useEffect(() => {
-        api.taxonomies().then(setTaxonomies).catch(onError)
-        api.allPosts().then(setPosts).catch(onError)
-        api.skills().then(setSkills).catch(onError)
+        const guard = (thunk) => (action) => {
+            if (thunk.rejected.match(action) && !action.meta.condition) onError(action.payload)
+        }
+        dispatch(fetchTaxonomies()).then(guard(fetchTaxonomies))
+        dispatch(fetchPosts()).then(guard(fetchPosts))
+        dispatch(fetchSkills()).then(guard(fetchSkills))
+        // onError intentionally omitted — it's a fresh function every render
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [dispatch])
 
     const addTaxonomy = async (label, kind, kindName) => {
         if (taxonomies.some((tax) => tax.kind === kind && tax.label === label)) {
@@ -67,8 +76,7 @@ export const Taxonomy = ({ onError, onNotify }) => {
             return
         }
         try {
-            const created = await api.createTaxonomy(label, kind)
-            setTaxonomies((prev) => [...prev, created])
+            await dispatch(createTaxonomy({ label, kind })).unwrap()
             onNotify(`${kindName} "${label}" added`)
         } catch (err) {
             onError(err)
@@ -77,8 +85,7 @@ export const Taxonomy = ({ onError, onNotify }) => {
 
     const removeTaxonomy = async (tax, kindName) => {
         try {
-            await api.deleteTaxonomy(tax._id)
-            setTaxonomies((prev) => prev.filter((item) => item._id !== tax._id))
+            await dispatch(deleteTaxonomy(tax._id)).unwrap()
             onNotify(`${kindName} "${tax.label}" removed`)
         } catch (err) {
             // an in-use label comes back as 409 with a descriptive message
