@@ -50,7 +50,9 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-app.use('/auth', authLimiter);
+// scoped to the login route only — /auth/profile is called on every admin
+// page load and must not be throttled by brute-force login protection
+app.use('/auth/login', authLimiter);
 
 app.use(router);
 
