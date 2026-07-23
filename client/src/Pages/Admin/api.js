@@ -77,7 +77,7 @@ export const api = {
     adjustSkillLevel: (id, delta) =>
         request(`/api/skill/${id}/level`, { method: 'PATCH', body: { delta }, auth: true }),
 
-    taxonomies: () => request('/api/taxonomies'),
+    taxonomies: (kind) => request(`/api/taxonomies${kind ? `?kind=${encodeURIComponent(kind)}` : ''}`),
     createTaxonomy: (label, kind) =>
         request('/api/taxonomy', { method: 'POST', body: { label, kind }, auth: true }),
     deleteTaxonomy: (id) => request(`/api/taxonomy/${id}`, { method: 'DELETE', auth: true }),

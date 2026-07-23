@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { api } from '../api'
 
 const TaxonomyCard = ({ title, subtitle, dotClass, items, unit, placeholder, onAdd, onRemove }) => {
     const handleSubmit = (e) => {
@@ -46,15 +47,45 @@ const TaxonomyCard = ({ title, subtitle, dotClass, items, unit, placeholder, onA
     )
 }
 
-export const Taxonomy = ({
-    taxonomies,
-    posts,
-    skills,
-    onAddPostCat,
-    onRemovePostCat,
-    onAddSkillCat,
-    onRemoveSkillCat,
-}) => {
+// Self-contained page: fetches its own taxonomies, posts, and skills on
+// mount (posts/skills are needed only to compute per-category counts).
+export const Taxonomy = ({ onError, onNotify }) => {
+    const [taxonomies, setTaxonomies] = useState([])
+    const [posts, setPosts] = useState([])
+    const [skills, setSkills] = useState([])
+
+    useEffect(() => {
+        api.taxonomies().then(setTaxonomies).catch(onError)
+        api.allPosts().then(setPosts).catch(onError)
+        api.skills().then(setSkills).catch(onError)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const addTaxonomy = async (label, kind, kindName) => {
+        if (taxonomies.some((tax) => tax.kind === kind && tax.label === label)) {
+            onNotify(`${kindName} already exists`)
+            return
+        }
+        try {
+            const created = await api.createTaxonomy(label, kind)
+            setTaxonomies((prev) => [...prev, created])
+            onNotify(`${kindName} "${label}" added`)
+        } catch (err) {
+            onError(err)
+        }
+    }
+
+    const removeTaxonomy = async (tax, kindName) => {
+        try {
+            await api.deleteTaxonomy(tax._id)
+            setTaxonomies((prev) => prev.filter((item) => item._id !== tax._id))
+            onNotify(`${kindName} "${tax.label}" removed`)
+        } catch (err) {
+            // an in-use label comes back as 409 with a descriptive message
+            onError(err)
+        }
+    }
+
     return (
         <main className="st-admin__view st-admin__view--taxonomy">
             <TaxonomyCard
@@ -69,8 +100,8 @@ export const Taxonomy = ({
                         ...tax,
                         count: posts.filter((post) => post.category === tax.label).length,
                     }))}
-                onAdd={onAddPostCat}
-                onRemove={onRemovePostCat}
+                onAdd={(v) => addTaxonomy(v, 'post_category', 'Category')}
+                onRemove={(tax) => removeTaxonomy(tax, 'Category')}
             />
             <TaxonomyCard
                 title="Skill groups"
@@ -84,8 +115,8 @@ export const Taxonomy = ({
                         ...tax,
                         count: skills.filter((skill) => skill.group === tax.label).length,
                     }))}
-                onAdd={onAddSkillCat}
-                onRemove={onRemoveSkillCat}
+                onAdd={(v) => addTaxonomy(v, 'skill_group', 'Group')}
+                onRemove={(tax) => removeTaxonomy(tax, 'Group')}
             />
         </main>
     )

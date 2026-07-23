@@ -1,18 +1,106 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { api } from '../api'
+import { PostEditorModal } from '../PostEditorModal'
 
 const formatDate = (iso) =>
     iso
         ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
         : ''
 
-export const Posts = ({ posts, onTogglePublish, onEdit, onAdd }) => {
+// Self-contained page: fetches its own posts + post categories on mount
+// rather than relying on data preloaded by a parent route.
+export const Posts = ({ onError, onNotify }) => {
+    const [posts, setPosts] = useState([])
+    const [postCats, setPostCats] = useState([])
+    const [editor, setEditor] = useState(null)
+
+    useEffect(() => {
+        api.allPosts().then(setPosts).catch(onError)
+        api.taxonomies('post_category').then((cats) => setPostCats(cats.map((c) => c.label))).catch(onError)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     const publishedCount = posts.filter((post) => post.published).length
+
+    const togglePublish = async (index) => {
+        try {
+            const updated = await api.togglePublish(posts[index]._id)
+            setPosts((prev) => prev.map((post, i) => (i === index ? updated : post)))
+            onNotify(updated.published ? 'Post published' : 'Post moved to drafts')
+        } catch (err) {
+            onError(err)
+        }
+    }
+
+    const openNewPostEditor = () => {
+        setEditor({
+            index: null,
+            category: postCats[0] || 'React',
+            title: '',
+            excerpt: '',
+            published: false,
+            image: '',
+        })
+    }
+
+    const openEditPostEditor = (index) => {
+        const post = posts[index]
+        setEditor({
+            index,
+            category: post.category,
+            title: post.title,
+            excerpt: post.excerpt || '',
+            published: post.published,
+            image: post.image || '',
+        })
+    }
+
+    const savePost = async (draft) => {
+        const title = (draft.title || '').trim() || 'Untitled post'
+        try {
+            let body
+            if (draft.imageFile) {
+                body = new FormData()
+                body.append('title', title)
+                body.append('category', draft.category)
+                body.append('excerpt', draft.excerpt)
+                body.append('published', String(draft.published))
+                body.append('image', draft.imageFile)
+            } else {
+                body = {
+                    title,
+                    category: draft.category,
+                    excerpt: draft.excerpt,
+                    published: draft.published,
+                }
+                // send the image only when it's a real URL or an explicit
+                // clear — never a stale FileReader data: preview
+                if (!draft.image || !draft.image.startsWith('data:')) {
+                    body.image = draft.image
+                }
+            }
+
+            const saved = draft.index === null
+                ? await api.createPost(body)
+                : await api.updatePost(posts[draft.index]._id, body)
+
+            setPosts((prev) =>
+                draft.index === null
+                    ? [saved, ...prev]
+                    : prev.map((post, i) => (i === draft.index ? saved : post))
+            )
+            onNotify(draft.index === null ? 'Post created' : 'Post saved')
+            setEditor(null)
+        } catch (err) {
+            onError(err)
+        }
+    }
 
     return (
         <main className="st-admin__view">
             <div className="st-admin__view-bar">
                 <span>{publishedCount} published posts</span>
-                <button type="button" className="st-admin__btn-primary" onClick={onAdd}>
+                <button type="button" className="st-admin__btn-primary" onClick={openNewPostEditor}>
                     ＋ New post
                 </button>
             </div>
@@ -42,14 +130,14 @@ export const Posts = ({ posts, onTogglePublish, onEdit, onAdd }) => {
                             <button
                                 type="button"
                                 className="st-admin__btn-ghost"
-                                onClick={() => onTogglePublish(index)}
+                                onClick={() => togglePublish(index)}
                             >
                                 {post.published ? 'Unpublish' : 'Publish'}
                             </button>
                             <button
                                 type="button"
                                 className="st-admin__btn-primary"
-                                onClick={() => onEdit(index)}
+                                onClick={() => openEditPostEditor(index)}
                             >
                                 Edit
                             </button>
@@ -57,6 +145,15 @@ export const Posts = ({ posts, onTogglePublish, onEdit, onAdd }) => {
                     </div>
                 ))}
             </div>
+
+            {editor && (
+                <PostEditorModal
+                    editor={editor}
+                    categories={postCats}
+                    onSave={savePost}
+                    onClose={() => setEditor(null)}
+                />
+            )}
         </main>
     )
 }
