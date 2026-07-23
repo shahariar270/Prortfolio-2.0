@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import { createBlogSlug, featuredPosts } from '@Pages/Blog/helper'
+import { trackPageView } from '../../config/tracking'
 import { sections, sectionSeo } from './helper'
 import { RailNav } from './RailNav'
 import { Hero } from './Sections/Hero'
@@ -32,6 +33,7 @@ export const Editorial = ({ section = 'sec-home' }) => {
     const [activeSection, setActiveSection] = useState(section)
     const [isDark, setIsDark] = useState(getInitialTheme)
     const { title } = useParams()
+    const location = useLocation()
 
     const expandedPostIndex = title
         ? featuredPosts.findIndex((post) => createBlogSlug(post.title) === title)
@@ -48,6 +50,34 @@ export const Editorial = ({ section = 'sec-home' }) => {
             scrollToSection(section, 'auto')
         }
     }, [section])
+
+    // page-view beacon: fires once per mounted path, flushed with a duration
+    // on tab-hide or page unload (whichever comes first)
+    useEffect(() => {
+        const path = location.pathname
+        const referrer = document.referrer
+        const startedAt = Date.now()
+        let sent = false
+
+        const flush = () => {
+            if (sent) return
+            sent = true
+            trackPageView({ path, referrer, durationMs: Date.now() - startedAt })
+        }
+
+        const onVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') flush()
+        }
+
+        document.addEventListener('visibilitychange', onVisibilityChange)
+        window.addEventListener('pagehide', flush)
+
+        return () => {
+            document.removeEventListener('visibilitychange', onVisibilityChange)
+            window.removeEventListener('pagehide', flush)
+            flush()
+        }
+    }, [location.pathname])
 
     useEffect(() => {
         const onScroll = () => {
