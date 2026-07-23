@@ -55,7 +55,7 @@ test.describe('authenticated', () => {
             ['Site Analytics', '.st-admin__kpi'],
         ]
         for (const [label, marker] of views) {
-            await page.locator('.st-admin__nav button', { hasText: label }).click()
+            await page.locator('.st-admin__nav a', { hasText: label }).click()
             await expect(page.locator(marker).first()).toBeVisible()
             const { scrollWidth, clientWidth } = await page.evaluate(() => ({
                 scrollWidth: document.documentElement.scrollWidth,
@@ -66,11 +66,30 @@ test.describe('authenticated', () => {
     })
 
     test('post editor modal opens and closes', async ({ page }) => {
-        await page.locator('.st-admin__nav button', { hasText: 'Posts' }).click()
+        await page.locator('.st-admin__nav a', { hasText: 'Posts' }).click()
         await page.locator('.st-admin__btn-primary', { hasText: 'New post' }).click()
         await expect(page.locator('.st-admin__modal')).toBeVisible()
         await page.locator('.st-admin__modal-foot .st-admin__btn-ghost').click()
         await expect(page.locator('.st-admin__modal')).toHaveCount(0)
+    })
+
+    test('sidebar navigation updates the URL and stays active on reload', async ({ page }) => {
+        await expect(page).toHaveURL(/\/st-admin\/analytics$/)
+        await expect(page.locator('.st-admin__nav a', { hasText: 'Site Analytics' })).toHaveClass(/is-active/)
+
+        await page.locator('.st-admin__nav a', { hasText: 'Posts' }).click()
+        await expect(page).toHaveURL(/\/st-admin\/posts$/)
+        await expect(page.locator('.st-admin__nav a', { hasText: 'Posts' })).toHaveClass(/is-active/)
+        await expect(page.locator('.st-admin__topbar h1')).toHaveText('Posts')
+
+        // deep link: a fresh load of /st-admin/skills lands directly on Skills
+        await page.goto('/st-admin/skills')
+        await expect(page.locator('.st-admin__topbar h1')).toHaveText('Skills')
+        await expect(page.locator('.st-admin__skill-row').first()).toBeVisible()
+
+        // bare /st-admin redirects to the analytics tab
+        await page.goto('/st-admin')
+        await expect(page).toHaveURL(/\/st-admin\/analytics$/)
     })
 
     test('analytics reflects real tracked page views and reacts to range switch', async ({ page, request }, testInfo) => {

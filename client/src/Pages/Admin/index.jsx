@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useOutletContext } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import '../../assets/styles/admin.scss'
 import { api, getToken, clearToken, AuthError } from './api'
@@ -25,13 +25,8 @@ const getInitialTheme = () => {
     return true
 }
 
-// BACKEND: this whole panel is frontend-only. It has no authentication —
-// /st-admin is publicly reachable and must get a login + protected API
-// (e.g. JWT session against the Express server) before real data hooks up.
-
 export const Admin = () => {
     const [token, setTokenState] = useState(getToken)
-    const [tab, setTab] = useState('analytics')
     const [isDark, setIsDark] = useState(getInitialTheme)
     const [posts, setPosts] = useState([])
     const [skills, setSkills] = useState([])
@@ -40,6 +35,7 @@ export const Admin = () => {
     const [skillEditorOpen, setSkillEditorOpen] = useState(false)
     const [toast, setToast] = useState(null)
     const toastTimer = useRef(null)
+    const location = useLocation()
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
@@ -141,6 +137,29 @@ export const Admin = () => {
         }
     }
 
+    const openNewPostEditor = () => {
+        setEditor({
+            index: null,
+            category: postCats[0] || 'React',
+            title: '',
+            excerpt: '',
+            published: false,
+            image: '',
+        })
+    }
+
+    const openEditPostEditor = (index) => {
+        const post = posts[index]
+        setEditor({
+            index,
+            category: post.category,
+            title: post.title,
+            excerpt: post.excerpt || '',
+            published: post.published,
+            image: post.image || '',
+        })
+    }
+
     const adjustSkillLevel = async (index, delta) => {
         try {
             const updated = await api.adjustSkillLevel(skills[index]._id, delta)
@@ -199,8 +218,6 @@ export const Admin = () => {
         }
     }
 
-    const [title, subtitle] = pageTitles[tab]
-
     if (!token) {
         return (
             <div className="st-admin">
@@ -208,6 +225,25 @@ export const Admin = () => {
                 <Login onLogin={() => setTokenState(getToken())} />
             </div>
         )
+    }
+
+    const activeKey = navItems.find((item) => location.pathname.endsWith(`/${item.key}`))?.key ?? 'analytics'
+    const [title, subtitle] = pageTitles[activeKey]
+
+    const outletContext = {
+        handleApiError,
+        posts,
+        skills,
+        taxonomies,
+        postCats,
+        skillCats,
+        togglePublish,
+        openNewPostEditor,
+        openEditPostEditor,
+        adjustSkillLevel,
+        openSkillEditor: () => setSkillEditorOpen(true),
+        addTaxonomy,
+        removeTaxonomy,
     }
 
     return (
@@ -224,15 +260,14 @@ export const Admin = () => {
                 </div>
                 <nav className="st-admin__nav">
                     {navItems.map((item) => (
-                        <button
+                        <NavLink
                             key={item.key}
-                            type="button"
-                            className={tab === item.key ? 'is-active' : ''}
-                            onClick={() => setTab(item.key)}
+                            to={`/st-admin/${item.key}`}
+                            className={({ isActive }) => (isActive ? 'is-active' : '')}
                         >
                             <AdminIcon name={item.icon} />
                             <span>{item.label}</span>
-                        </button>
+                        </NavLink>
                     ))}
                 </nav>
                 <button type="button" className="st-admin__logout" onClick={logout}>
@@ -261,52 +296,7 @@ export const Admin = () => {
                     </button>
                 </header>
 
-                {tab === 'analytics' && <Analytics onError={handleApiError} />}
-                {tab === 'posts' && (
-                    <Posts
-                        posts={posts}
-                        onTogglePublish={togglePublish}
-                        onEdit={(index) => {
-                            const post = posts[index]
-                            setEditor({
-                                index,
-                                category: post.category,
-                                title: post.title,
-                                excerpt: post.excerpt || '',
-                                published: post.published,
-                                image: post.image || '',
-                            })
-                        }}
-                        onAdd={() =>
-                            setEditor({
-                                index: null,
-                                category: postCats[0] || 'React',
-                                title: '',
-                                excerpt: '',
-                                published: false,
-                                image: '',
-                            })
-                        }
-                    />
-                )}
-                {tab === 'skills' && (
-                    <Skills
-                        skills={skills}
-                        onAdjustLevel={adjustSkillLevel}
-                        onAdd={() => setSkillEditorOpen(true)}
-                    />
-                )}
-                {tab === 'taxonomy' && (
-                    <Taxonomy
-                        taxonomies={taxonomies}
-                        posts={posts}
-                        skills={skills}
-                        onAddPostCat={(v) => addTaxonomy(v, 'post_category', 'Category')}
-                        onRemovePostCat={(tax) => removeTaxonomy(tax, 'Category')}
-                        onAddSkillCat={(v) => addTaxonomy(v, 'skill_group', 'Group')}
-                        onRemoveSkillCat={(tax) => removeTaxonomy(tax, 'Group')}
-                    />
-                )}
+                <Outlet context={outletContext} />
             </div>
 
             {toast && (
@@ -333,5 +323,42 @@ export const Admin = () => {
                 />
             )}
         </div>
+    )
+}
+
+export const AdminAnalytics = () => {
+    const { handleApiError } = useOutletContext()
+    return <Analytics onError={handleApiError} />
+}
+
+export const AdminPosts = () => {
+    const { posts, togglePublish, openEditPostEditor, openNewPostEditor } = useOutletContext()
+    return (
+        <Posts
+            posts={posts}
+            onTogglePublish={togglePublish}
+            onEdit={openEditPostEditor}
+            onAdd={openNewPostEditor}
+        />
+    )
+}
+
+export const AdminSkills = () => {
+    const { skills, adjustSkillLevel, openSkillEditor } = useOutletContext()
+    return <Skills skills={skills} onAdjustLevel={adjustSkillLevel} onAdd={openSkillEditor} />
+}
+
+export const AdminTaxonomy = () => {
+    const { taxonomies, posts, skills, addTaxonomy, removeTaxonomy } = useOutletContext()
+    return (
+        <Taxonomy
+            taxonomies={taxonomies}
+            posts={posts}
+            skills={skills}
+            onAddPostCat={(v) => addTaxonomy(v, 'post_category', 'Category')}
+            onRemovePostCat={(tax) => removeTaxonomy(tax, 'Category')}
+            onAddSkillCat={(v) => addTaxonomy(v, 'skill_group', 'Group')}
+            onRemoveSkillCat={(tax) => removeTaxonomy(tax, 'Group')}
+        />
     )
 }
