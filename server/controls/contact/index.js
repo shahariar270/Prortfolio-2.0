@@ -24,9 +24,9 @@ class contact_controller {
             await ContactMessage.create({ name, email, content });
 
             const mailOptions = {
-                from: process.env.MAIL_USER,
-                replyTo: email,
-                to: process.env.CONTACT_TO || process.env.MAIL_USER,
+                from: `"${name} (${email})" <${process.env.MAIL_USER}>`,
+                replyTo: `"${name}" <${email}>`,
+                to: process.env.MAIL_TO || process.env.MAIL_USER,
                 subject: 'New Contact Form Message',
                 text: `
 নতুন একটি মেসেজ পেয়েছেন!

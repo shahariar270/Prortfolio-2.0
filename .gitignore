@@ -12,9 +12,10 @@ dist
 dist-ssr
 *.local
 
-# env files (secrets) — .env.example stays tracked
+# Environment variables (never commit secrets) — .env.example stays tracked
 .env
-.env.production
+.env.*
+!.env.example
 server/public/tem
 
 # Playwright

@@ -57,7 +57,7 @@ export const Project = () => {
 
       <div className="st-portfolio--project__grid">
         {filteredProjects.map((project, index) => (
-          <article key={index} className="st-portfolio--project__card">
+          <div key={index} className="st-portfolio--project__card">
             <div className="st-portfolio--project__card-media">
               <img
                 className="st-portfolio--project__card-img"
@@ -77,8 +77,13 @@ export const Project = () => {
                   {project.label}
                 </h3>
               </div>
-              <p className="st-portfolio--project__card-text">{project.description}</p>
-              <ul className="st-portfolio--project__tech-list" aria-label={`${project.label} technologies`}>
+              <p className="st-portfolio--project__card-text">
+                {project.description}
+              </p>
+              <ul
+                className="st-portfolio--project__tech-list"
+                aria-label={`${project.label} technologies`}
+              >
                 {project.technologies.map((tech) => (
                   <li key={tech} className="st-portfolio--project__tech-item">
                     {tech}
@@ -100,23 +105,15 @@ export const Project = () => {
                     Case Study
                   </span>
                 )}
-                {project.link ? (
-                  <a
-                    className="st-portfolio--project__card-link"
-                    href={project.link}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Source Code
-                  </a>
-                ) : (
-                  <span className="st-portfolio--project__card-link st-portfolio--project__card-link--muted">
-                    Private Repo
-                  </span>
-                )}
+                <span
+                  className="st-portfolio--project__card-link st-portfolio--project__card-link--disabled"
+                  aria-disabled="true"
+                >
+                  Source Code 🔒
+                </span>
               </div>
             </div>
-          </article>
+          </div>
         ))}
       </div>
     </div>

@@ -1,5 +1,7 @@
-import thumbCode from '../../assets/images/home.jpg'
-import thumbUi from '../../assets/images/profile.jpg'
+import vireoKit from '../../assets/images/project/vireo-kit.jpg'
+import ecom from '../../assets/images/project/ecom.jpg'
+import expenseTracker from '../../assets/images/project/expense.jpg'
+import WillTube from '../../assets/images/project/willtube.png'
 
 export const menuArray = [
     {
@@ -18,24 +20,34 @@ export const menuArray = [
 
 export const projectArray = [
     {
-        label: 'Dashboard System',
-        category: 'development',
-        type: 'Analytics Platform',
-        description: 'A fully functional admin dashboard with analytics, data visualization, user management, and responsive UI components.',
-        technologies: ['React', 'Charts', 'Sass'],
-        liveDemo: '',
-        link: '',
-        image: thumbCode,
+        label: 'VireoKit',
+        category: 'design',
+        type: 'Component Library',
+        description: 'A themeable React + SCSS component library published on npm — 17 components across primitives, overlays, data, and layout, all driven by CSS-variable design tokens with built-in light/dark theming.',
+        technologies: ['React', 'SCSS', 'Design Tokens'],
+        liveDemo: 'https://vireo-kit.vercel.app/',
+        link: 'https://github.com/shahariar270/VireoKit',
+        image: vireoKit,
     },
     {
-        label: 'Design System',
-        category: 'design',
-        type: 'UI Foundation',
-        description: 'A scalable design system containing typography, colors, spacing, reusable UI components, and guidelines to maintain consistent branding.',
-        technologies: ['Tokens', 'Components', 'Guidelines'],
-        liveDemo: '',
-        link: '',
-        image: thumbUi,
+        label: 'E-Commerce',
+        category: 'development',
+        type: 'MERN Platform',
+        description: 'A full-stack MERN e-commerce platform with a customer shopping flow and admin dashboard — product CRUD, cart, checkout, order lifecycle, JWT role-based auth, Cloudinary image uploads, and per-product SEO with JSON-LD structured data.',
+        technologies: ['MERN', 'Redux Toolkit', 'MongoDB'],
+        liveDemo: 'https://e-commerce-rho-three-41.vercel.app/',
+        link: 'https://github.com/shahariar270/E-Commerce',
+        image: ecom,
+    },
+    {
+        label: 'Expense Tracker',
+        category: 'development',
+        type: 'MERN Desktop App',
+        description: 'A streamlined MERN expense tracker, packaged as an Electron desktop app, for monitoring financial health by tracking earnings and expenses with precise balance calculations and graceful async state handling to keep the UI snappy while syncing data.',
+        technologies: ['MERN', 'Electron', 'REST API'],
+        liveDemo: 'https://expense-tracker-le1b.vercel.app/',
+        link: 'https://github.com/shahariar270/expense-tracker',
+        image: expenseTracker,
     },
     {
         label: 'WillTube',
@@ -45,16 +57,16 @@ export const projectArray = [
         technologies: ['React', 'API', 'Node'],
         liveDemo: '',
         link: '',
-        image: thumbCode,
+        image: WillTube,
     },
-    {
-        label: 'Todo',
-        category: 'development',
-        type: 'Productivity App',
-        description: 'A simple and efficient todo application with task creation, editing, filtering, and persistent local storage support.',
-        technologies: ['React', 'Local Storage', 'UX'],
-        liveDemo: '',
-        link: '',
-        image: thumbUi,
-    },
+    // {
+    //     label: 'Todo',
+    //     category: 'development',
+    //     type: 'Productivity App',
+    //     description: 'A simple and efficient todo application with task creation, editing, filtering, and persistent local storage support.',
+    //     technologies: ['React', 'Local Storage', 'UX'],
+    //     liveDemo: '',
+    //     link: '',
+    //     image: thumbCode,
+    // },
 ];

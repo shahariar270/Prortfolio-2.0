@@ -2,9 +2,13 @@ import { Helmet } from 'react-helmet-async'
 import { useLocation } from 'react-router-dom'
 import {
   absoluteUrl,
+  buildKeywords,
   defaultDescription,
   defaultOgImage,
   defaultLogo,
+  siteAlternateName,
+  siteAuthor,
+  siteBrand,
   siteName,
   siteUrl,
 } from '../../config/seo'
@@ -14,6 +18,7 @@ export default function SeoHead({
   description = defaultDescription,
   image,
   type = 'website',
+  keywords = [],
   noIndex = false,
 }) {
   const { pathname } = useLocation()
@@ -22,11 +27,30 @@ export default function SeoHead({
   const resolvedImage = absoluteUrl(image || defaultOgImage)
   const logoUrl = absoluteUrl(defaultLogo) ?? defaultLogo
   const twitterCard = resolvedImage ? 'summary_large_image' : 'summary'
+  const keywordsContent = buildKeywords(keywords)
+
+  const personLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: siteAuthor,
+    alternateName: siteAlternateName,
+    jobTitle: 'React & MERN Developer',
+    description: defaultDescription,
+    ...(siteUrl ? { url: siteUrl } : {}),
+    image: resolvedImage || logoUrl,
+    worksFor: {
+      '@type': 'Organization',
+      name: siteBrand,
+      ...(siteUrl ? { url: siteUrl } : {}),
+    },
+  }
 
   return (
     <Helmet prioritizeSeoTags>
       <title>{pageTitle}</title>
       <meta name="description" content={description} />
+      <meta name="keywords" content={keywordsContent} />
+      <meta name="author" content={siteAuthor} />
       {noIndex ? (
         <meta name="robots" content="noindex,nofollow" />
       ) : (
@@ -47,6 +71,8 @@ export default function SeoHead({
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={description} />
       {resolvedImage ? <meta name="twitter:image" content={resolvedImage} /> : null}
+
+      <script type="application/ld+json">{JSON.stringify(personLd)}</script>
     </Helmet>
   )
 }
