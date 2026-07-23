@@ -63,13 +63,21 @@ app.get('/', (req, res) => {
 const port = process.env.PORT || 3000;
 const db_url = process.env.DB_URL || 'mongodb://127.0.0.1:27017/portfolio';
 
-mongoose.connect(db_url)
-    .then(() => {
-        console.log('Database connected successfully');
-        app.listen(port, () => {
-            console.log('Server is running on', port);
-        });
-    })
+// Bind the port immediately — hosts like Render only care that *something*
+// is listening, and gate deploys on it. Gating app.listen() behind Mongo's
+// connect promise meant a slow/misconfigured DB (or a missing DB_URL, which
+// silently falls back to a local Mongo that doesn't exist on the host) hung
+// forever and never opened the port, so deploys always timed out.
+app.listen(port, () => {
+    console.log('Server is running on', port);
+});
+
+mongoose.connect(db_url, { serverSelectionTimeoutMS: 10_000 })
+    .then(() => console.log('Database connected successfully'))
     .catch((err) => {
-        console.error('MongoDB connection failed:', err);
+        console.error('MongoDB connection failed:', err.message);
     });
+
+mongoose.connection.on('error', (err) => {
+    console.error('MongoDB connection error:', err.message);
+});
