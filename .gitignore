@@ -12,10 +12,18 @@ dist
 dist-ssr
 *.local
 
-# Environment variables (never commit secrets)
+# Environment variables (never commit secrets) — .env.example stays tracked
 .env
 .env.*
 !.env.example
+server/public/tem
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+client/tests/.admin-token.json
 
 # Editor directories and files
 .vscode/*

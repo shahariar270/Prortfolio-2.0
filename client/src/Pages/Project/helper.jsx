@@ -1,9 +1,7 @@
-import thumbCode from '../../assets/images/home.jpg'
-import thumbUi from '../../assets/images/profile.jpg'
-import vireoKit from '../../assets/images/Project/vireo-kit.jpg'
-import ecom from '../../assets/images/Project/ecom.jpg'
-import expenseTracker from '../../assets/images/Project/expense.jpg'
-import WillTube from '../../assets/images/Project/willtube.png'
+import vireoKit from '../../assets/images/project/vireo-kit.jpg'
+import ecom from '../../assets/images/project/ecom.jpg'
+import expenseTracker from '../../assets/images/project/expense.jpg'
+import WillTube from '../../assets/images/project/willtube.png'
 
 export const menuArray = [
     {

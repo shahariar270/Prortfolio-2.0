@@ -2,7 +2,7 @@ import Button from '@Component/Button'
 import SeoHead from '@Component/SeoHead'
 import { Field, Form, Formik } from 'formik'
 import React from 'react'
-import API_BASE_URL from '../../config/api'
+import { API_URL as API_BASE_URL } from '../../config/api'
 
 const contactInfo = [
   {
