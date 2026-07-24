@@ -100,6 +100,16 @@ export const PostEditorModal = ({ editor, categories, onSave, onClose }) => {
                         ></textarea>
                     </label>
 
+                    <label className="st-admin__field">
+                        <span>Content</span>
+                        <textarea
+                            value={draft.content}
+                            onChange={(e) => patch({ content: e.target.value })}
+                            placeholder="Write the article body… separate paragraphs with a blank line"
+                            rows={10}
+                        ></textarea>
+                    </label>
+
                     <div className="st-admin__publish-row">
                         <div>
                             <strong>Publish immediately</strong>

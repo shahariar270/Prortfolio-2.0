@@ -45,6 +45,7 @@ export const Posts = ({ onError, onNotify }) => {
             category: postCats[0] || 'React',
             title: '',
             excerpt: '',
+            content: '',
             published: false,
             image: '',
         })
@@ -57,13 +58,23 @@ export const Posts = ({ onError, onNotify }) => {
             category: post.category,
             title: post.title,
             excerpt: post.excerpt || '',
+            // paragraphs join back into blank-line-separated text for editing
+            content: (post.content || []).join('\n\n'),
             published: post.published,
             image: post.image || '',
         })
     }
 
+    // blank line(s) between lines mark a new paragraph
+    const splitContent = (text) =>
+        (text || '')
+            .split(/\n\s*\n/)
+            .map((paragraph) => paragraph.trim())
+            .filter(Boolean)
+
     const savePost = async (draft) => {
         const title = (draft.title || '').trim() || 'Untitled post'
+        const contentParagraphs = splitContent(draft.content)
         try {
             let body
             if (draft.imageFile) {
@@ -71,6 +82,7 @@ export const Posts = ({ onError, onNotify }) => {
                 body.append('title', title)
                 body.append('category', draft.category)
                 body.append('excerpt', draft.excerpt)
+                contentParagraphs.forEach((paragraph) => body.append('content', paragraph))
                 body.append('published', String(draft.published))
                 body.append('image', draft.imageFile)
             } else {
@@ -78,6 +90,7 @@ export const Posts = ({ onError, onNotify }) => {
                     title,
                     category: draft.category,
                     excerpt: draft.excerpt,
+                    content: contentParagraphs,
                     published: draft.published,
                 }
                 // send the image only when it's a real URL or an explicit
