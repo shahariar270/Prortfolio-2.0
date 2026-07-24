@@ -1268,6 +1268,15 @@
         font-weight: 800;
     }
 
+    &__dropzone-auto-preview {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        background: var(--accent-soft);
+        object-fit: contain;
+        padding: 6px;
+    }
+
     &__publish-row {
         display: flex;
         align-items: center;

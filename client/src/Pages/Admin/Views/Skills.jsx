@@ -45,12 +45,22 @@ export const Skills = ({ onError, onNotify }) => {
     const saveSkill = async (draft) => {
         const name = (draft.name || '').trim() || 'New skill'
         try {
-            await dispatch(createSkill({
-                name,
-                group: draft.group,
-                logo: skillLogoFor(name),
-                level: draft.level,
-            })).unwrap()
+            let body
+            if (draft.imageFile) {
+                body = new FormData()
+                body.append('name', name)
+                body.append('group', draft.group)
+                body.append('level', String(draft.level))
+                body.append('image', draft.imageFile)
+            } else {
+                body = {
+                    name,
+                    group: draft.group,
+                    logo: skillLogoFor(name),
+                    level: draft.level,
+                }
+            }
+            await dispatch(createSkill(body)).unwrap()
             setEditorOpen(false)
             onNotify('Skill added')
         } catch (err) {
