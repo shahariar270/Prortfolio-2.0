@@ -3,6 +3,7 @@ const { default: mongoose } = require('mongoose');
 const User = require('../model/auth');
 const Post = require('../model/post');
 const Skill = require('../model/skill');
+const Project = require('../model/project');
 const Taxonomy = require('../model/taxonomy');
 
 // Seeds the portfolio's current static content into MongoDB so the admin
@@ -23,6 +24,49 @@ const SKILLS = [
     { group: 'Backend & Database', name: 'MongoDB', logo: skillIcon('mongodb'), level: 80 },
     { group: 'Tools & AI', name: 'Claude', logo: brandIcon('claude'), level: 90 },
     { group: 'Tools & AI', name: 'Cursor AI', logo: brandIcon('cursor'), level: 86 },
+];
+
+const PROJECTS = [
+    {
+        label: 'VireoKit',
+        category: 'design',
+        type: 'Component Library',
+        description:
+            'A themeable React + SCSS component library published on npm — 17 components across primitives, overlays, data, and layout, all driven by CSS-variable design tokens with built-in light/dark theming.',
+        technologies: ['React', 'SCSS', 'Design Tokens'],
+        liveDemo: 'https://vireo-kit.vercel.app/',
+        image: '/projects/vireo-kit.jpg',
+    },
+    {
+        label: 'E-Commerce',
+        category: 'development',
+        type: 'MERN Platform',
+        description:
+            'A full-stack MERN e-commerce platform with a customer shopping flow and admin dashboard — product CRUD, cart, checkout, order lifecycle, JWT role-based auth, Cloudinary image uploads, and per-product SEO with JSON-LD structured data.',
+        technologies: ['MERN', 'Redux Toolkit', 'MongoDB'],
+        liveDemo: 'https://e-commerce-rho-three-41.vercel.app/',
+        image: '/projects/ecom.jpg',
+    },
+    {
+        label: 'Expense Tracker',
+        category: 'development',
+        type: 'MERN Desktop App',
+        description:
+            'A streamlined MERN expense tracker, packaged as an Electron desktop app, for monitoring financial health with precise balance calculations and graceful async state handling.',
+        technologies: ['MERN', 'Electron', 'REST API'],
+        liveDemo: 'https://expense-tracker-le1b.vercel.app/',
+        image: '/projects/expense.jpg',
+    },
+    {
+        label: 'WillTube',
+        category: 'development',
+        type: 'Media Tool',
+        description:
+            'A YouTube video downloader app that allows users to fetch and download videos in multiple formats with a clean and intuitive interface.',
+        technologies: ['React', 'API', 'Node'],
+        liveDemo: '',
+        image: '/projects/willtube.png',
+    },
 ];
 
 const POSTS = [
@@ -103,6 +147,13 @@ const seed = async () => {
         console.log(`Seeded ${POSTS.length} posts`);
     } else {
         console.log('Posts already present — skipped');
+    }
+
+    if (await Project.countDocuments() === 0) {
+        await Project.insertMany(PROJECTS.map((project) => ({ ...project, user_id })));
+        console.log(`Seeded ${PROJECTS.length} projects`);
+    } else {
+        console.log('Projects already present — skipped');
     }
 
     await mongoose.disconnect();

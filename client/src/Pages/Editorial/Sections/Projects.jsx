@@ -1,11 +1,30 @@
-import React, { useState } from 'react'
-import { projectTabs, projectArray } from '../helper'
+import React, { useEffect, useState } from 'react'
+import { api } from '@Pages/Admin/api'
+import { projectTabs } from '../helper'
 
 export const Projects = () => {
     const [tab, setTab] = useState('all')
+    const [projects, setProjects] = useState([])
+    const [status, setStatus] = useState('loading')
+
+    useEffect(() => {
+        let cancelled = false
+        api.projects()
+            .then((data) => {
+                if (cancelled) return
+                setProjects(data)
+                setStatus('ready')
+            })
+            .catch(() => {
+                if (!cancelled) setStatus('error')
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [])
 
     const filteredProjects =
-        tab === 'all' ? projectArray : projectArray.filter((project) => project.category === tab)
+        tab === 'all' ? projects : projects.filter((project) => project.category === tab)
 
     return (
         <section id="sec-project" className="st-editorial__section st-editorial__projects">
@@ -24,9 +43,15 @@ export const Projects = () => {
                     ))}
                 </div>
             </div>
+
+            {status === 'error' && <p className="st-editorial__projects-status">Couldn't load projects — try again shortly.</p>}
+            {status === 'ready' && filteredProjects.length === 0 && (
+                <p className="st-editorial__projects-status">No projects to show yet.</p>
+            )}
+
             <div className="st-editorial__projects-list">
                 {filteredProjects.map((project) => (
-                    <div className="st-editorial__project-card" key={project.label}>
+                    <div className="st-editorial__project-card" key={project._id}>
                         <div className="st-editorial__project-media">
                             <img src={project.image} alt={`${project.label} preview`} loading="lazy" />
                         </div>

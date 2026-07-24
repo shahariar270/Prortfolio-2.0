@@ -24,6 +24,13 @@ const paths = {
             <rect x="13" y="13" width="7" height="7" rx="1.4" />
         </>
     ),
+    projects: (
+        <>
+            <rect x="3.5" y="7" width="17" height="12" rx="1.6" />
+            <path d="M8.5 7V5.6a1.6 1.6 0 0 1 1.6-1.6h3.8a1.6 1.6 0 0 1 1.6 1.6V7" />
+            <path d="M3.5 12h17" />
+        </>
+    ),
     taxonomy: (
         <>
             <path d="M4 6.5h9M4 12h13M4 17.5h7" />

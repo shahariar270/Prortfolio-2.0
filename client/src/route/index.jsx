@@ -1,4 +1,4 @@
-import { Admin, AdminAnalytics, AdminPosts, AdminSkills, AdminTaxonomy } from "@Pages/Admin";
+import { Admin, AdminAnalytics, AdminPosts, AdminSkills, AdminProjects, AdminTaxonomy } from "@Pages/Admin";
 import { Editorial } from "@Pages/Editorial";
 import { NotFound } from "@Pages/NotFound";
 import { createBrowserRouter, Navigate } from "react-router-dom";
@@ -41,6 +41,7 @@ export const router = createBrowserRouter([
             { path: 'analytics', element: <AdminAnalytics /> },
             { path: 'posts', element: <AdminPosts /> },
             { path: 'skills', element: <AdminSkills /> },
+            { path: 'projects', element: <AdminProjects /> },
             { path: 'taxonomy', element: <AdminTaxonomy /> },
         ]
     },
