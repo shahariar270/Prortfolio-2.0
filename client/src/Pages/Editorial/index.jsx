@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
-import { createBlogSlug, featuredPosts } from '@Pages/Blog/helper'
 import { trackPageView } from '../../config/tracking'
 import { sections, sectionSeo } from './helper'
 import { RailNav } from './RailNav'
@@ -34,10 +33,6 @@ export const Editorial = ({ section = 'sec-home' }) => {
     const [isDark, setIsDark] = useState(getInitialTheme)
     const { title } = useParams()
     const location = useLocation()
-
-    const expandedPostIndex = title
-        ? featuredPosts.findIndex((post) => createBlogSlug(post.title) === title)
-        : -1
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
@@ -122,7 +117,7 @@ export const Editorial = ({ section = 'sec-home' }) => {
                 <About />
                 <Skills />
                 <Projects />
-                <Blog initialExpanded={expandedPostIndex >= 0 ? expandedPostIndex : null} />
+                <Blog initialExpandedSlug={title ?? null} />
                 <Contact />
             </main>
         </div>

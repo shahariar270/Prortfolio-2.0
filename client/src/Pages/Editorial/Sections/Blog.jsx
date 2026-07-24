@@ -1,27 +1,49 @@
-import React, { useState } from 'react'
-import { featuredPosts } from '@Pages/Blog/helper'
+import React, { useEffect, useState } from 'react'
+import { api } from '@Pages/Admin/api'
 
-export const Blog = ({ initialExpanded = null }) => {
-    const [expandedPost, setExpandedPost] = useState(initialExpanded)
+const formatDate = (iso) =>
+    iso
+        ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+        : ''
+
+export const Blog = ({ initialExpandedSlug = null }) => {
+    const [posts, setPosts] = useState([])
+    const [expandedSlug, setExpandedSlug] = useState(initialExpandedSlug)
+
+    useEffect(() => {
+        let cancelled = false
+        api.posts()
+            .then((data) => {
+                if (!cancelled) setPosts(data)
+            })
+            .catch(() => {})
+        return () => {
+            cancelled = true
+        }
+    }, [])
+
+    useEffect(() => {
+        setExpandedSlug(initialExpandedSlug)
+    }, [initialExpandedSlug])
 
     return (
         <section id="sec-blog" className="st-editorial__section st-editorial__blog">
             <h2 className="st-editorial__heading">Notes</h2>
             <div className="st-editorial__blog-list">
-                {featuredPosts.map((post, index) => {
-                    const expanded = expandedPost === index
+                {posts.map((post) => {
+                    const expanded = expandedSlug === post.slug
                     return (
-                        <article className="st-editorial__blog-item" key={post.title}>
+                        <article className="st-editorial__blog-item" key={post._id}>
                             <div
                                 className="st-editorial__blog-row"
                                 role="button"
                                 tabIndex={0}
                                 aria-expanded={expanded}
-                                onClick={() => setExpandedPost(expanded ? null : index)}
+                                onClick={() => setExpandedSlug(expanded ? null : post.slug)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
                                         e.preventDefault()
-                                        setExpandedPost(expanded ? null : index)
+                                        setExpandedSlug(expanded ? null : post.slug)
                                     }
                                 }}
                             >
@@ -30,11 +52,11 @@ export const Blog = ({ initialExpanded = null }) => {
                                     <div className="st-editorial__blog-tags">
                                         <span>{post.category}</span>
                                         <small>
-                                            {post.date} · {post.readTime}
+                                            {formatDate(post.createdAt)} · {post.read_time}
                                         </small>
                                     </div>
                                     <h3>{post.title}</h3>
-                                    <p>{post.excerpt}</p>
+                                    {/* <p>{post.excerpt}</p> */}
                                 </div>
                                 <span
                                     className={`st-editorial__blog-chevron ${expanded ? 'is-open' : ''}`}
@@ -45,8 +67,8 @@ export const Blog = ({ initialExpanded = null }) => {
                             </div>
                             {expanded && (
                                 <div className="st-editorial__blog-content">
-                                    {post.content.map((paragraph) => (
-                                        <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+                                    {post.content.map((paragraph, index) => (
+                                        <p key={index}>{paragraph}</p>
                                     ))}
                                 </div>
                             )}

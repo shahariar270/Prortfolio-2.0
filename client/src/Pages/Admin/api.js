@@ -67,6 +67,9 @@ export const api = {
         request('/auth/login', { method: 'POST', body: { email, password } }),
     profile: () => request('/auth/profile', { auth: true }),
 
+    posts: () => request('/api/posts'),
+    postBySlug: (slug) => request(`/api/posts/${slug}`),
+    addPostView: (slug) => request(`/api/posts/${slug}/view`, { method: 'POST' }),
     allPosts: () => request('/api/posts/all', { auth: true }),
     createPost: (body) => request('/api/post', { method: 'POST', body, auth: true }),
     updatePost: (id, body) => request(`/api/post/${id}`, { method: 'PUT', body, auth: true }),
