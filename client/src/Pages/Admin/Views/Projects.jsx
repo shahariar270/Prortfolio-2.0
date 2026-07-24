@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
 import { fetchProjects, saveProject as saveProjectThunk, deleteProject as deleteProjectThunk } from '../../../store/slices/projectsSlice'
-import { ProjectEditorModal } from '../ProjectEditorModal'
+import { ProjectEditor } from './ProjectEditor'
 
 const CATEGORY_LABELS = {
     design: 'Web Design',
@@ -10,10 +11,14 @@ const CATEGORY_LABELS = {
 
 // Reads from the Redux cache when available — fetchProjects is
 // condition-gated and skips the network call entirely if already loaded.
+// The create/edit form lives at this same route as ?action=new or
+// ?action=edit&id=<projectId> instead of a modal, so it's a real,
+// shareable, back-button-friendly URL.
 export const Projects = ({ onError, onNotify }) => {
     const dispatch = useDispatch()
     const projects = useSelector((state) => state.projects.items)
-    const [editor, setEditor] = useState(null)
+    const projectsLoaded = useSelector((state) => state.projects.loaded)
+    const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect(() => {
         dispatch(fetchProjects()).then((action) => {
@@ -23,33 +28,12 @@ export const Projects = ({ onError, onNotify }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch])
 
-    const openNewProjectEditor = () => {
-        setEditor({
-            index: null,
-            category: 'development',
-            label: '',
-            type: '',
-            description: '',
-            technologies: '',
-            liveDemo: '',
-            image: '',
-        })
-    }
+    const action = searchParams.get('action')
+    const editId = searchParams.get('id')
 
-    const openEditProjectEditor = (index) => {
-        const project = projects[index]
-        setEditor({
-            index,
-            category: project.category,
-            label: project.label,
-            type: project.type || '',
-            description: project.description || '',
-            // stored as an array — comma-joined for editing
-            technologies: (project.technologies || []).join(', '),
-            liveDemo: project.liveDemo || '',
-            image: project.image || '',
-        })
-    }
+    const openNewProjectEditor = () => setSearchParams({ action: 'new' })
+    const openEditProjectEditor = (id) => setSearchParams({ action: 'edit', id })
+    const closeEditor = () => setSearchParams({})
 
     const splitTechnologies = (text) =>
         (text || '')
@@ -57,7 +41,7 @@ export const Projects = ({ onError, onNotify }) => {
             .map((tech) => tech.trim())
             .filter(Boolean)
 
-    const saveProject = async (draft) => {
+    const saveProject = async (draft, id) => {
         const label = (draft.label || '').trim() || 'Untitled project'
         const technologies = splitTechnologies(draft.technologies)
         try {
@@ -87,22 +71,64 @@ export const Projects = ({ onError, onNotify }) => {
                 }
             }
 
-            const id = draft.index === null ? undefined : projects[draft.index]._id
             await dispatch(saveProjectThunk({ id, body })).unwrap()
-            onNotify(draft.index === null ? 'Project created' : 'Project saved')
-            setEditor(null)
+            onNotify(id ? 'Project saved' : 'Project created')
+            closeEditor()
         } catch (err) {
             onError(err)
         }
     }
 
-    const removeProject = async (index) => {
+    const removeProject = async (id) => {
         try {
-            await dispatch(deleteProjectThunk(projects[index]._id)).unwrap()
+            await dispatch(deleteProjectThunk(id)).unwrap()
             onNotify('Project deleted')
         } catch (err) {
             onError(err)
         }
+    }
+
+    if (action === 'new') {
+        return (
+            <ProjectEditor
+                key="new"
+                mode="new"
+                onSave={saveProject}
+                onCancel={closeEditor}
+            />
+        )
+    }
+
+    if (action === 'edit') {
+        if (!projectsLoaded) {
+            return (
+                <main className="st-admin__view">
+                    <p className="st-admin__empty">Loading…</p>
+                </main>
+            )
+        }
+
+        const editingProject = projects.find((project) => project._id === editId)
+        if (!editingProject) {
+            return (
+                <main className="st-admin__view">
+                    <p className="st-admin__empty">Project not found.</p>
+                    <button type="button" className="st-admin__editor-back" onClick={closeEditor}>
+                        ← Back to projects
+                    </button>
+                </main>
+            )
+        }
+
+        return (
+            <ProjectEditor
+                key={editingProject._id}
+                mode="edit"
+                project={editingProject}
+                onSave={saveProject}
+                onCancel={closeEditor}
+            />
+        )
     }
 
     return (
@@ -117,8 +143,8 @@ export const Projects = ({ onError, onNotify }) => {
                 {projects.length === 0 && (
                     <p className="st-admin__empty">No projects yet — add your first one.</p>
                 )}
-                {projects.map((project, index) => (
-                    <div className="st-admin__card st-admin__post" key={project._id ?? `${project.label}-${index}`}>
+                {projects.map((project) => (
+                    <div className="st-admin__card st-admin__post" key={project._id}>
                         <img src={project.image} alt={project.label} />
                         <div className="st-admin__post-body">
                             <div className="st-admin__post-tags">
@@ -131,14 +157,14 @@ export const Projects = ({ onError, onNotify }) => {
                             <button
                                 type="button"
                                 className="st-admin__btn-ghost"
-                                onClick={() => removeProject(index)}
+                                onClick={() => removeProject(project._id)}
                             >
                                 Delete
                             </button>
                             <button
                                 type="button"
                                 className="st-admin__btn-primary"
-                                onClick={() => openEditProjectEditor(index)}
+                                onClick={() => openEditProjectEditor(project._id)}
                             >
                                 Edit
                             </button>
@@ -146,14 +172,6 @@ export const Projects = ({ onError, onNotify }) => {
                     </div>
                 ))}
             </div>
-
-            {editor && (
-                <ProjectEditorModal
-                    editor={editor}
-                    onSave={saveProject}
-                    onClose={() => setEditor(null)}
-                />
-            )}
         </main>
     )
 }
