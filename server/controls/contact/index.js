@@ -3,10 +3,14 @@ const ContactMessage = require('../../model/contact_message');
 const ApiResponse = require('../../utils/api_response');
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT) || 587,
+    // 465 is implicit TLS; every other port (587, 2525, ...) starts plain
+    // and upgrades via STARTTLS
+    secure: Number(process.env.SMTP_PORT) === 465,
     auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
     },
 });
 
@@ -24,9 +28,9 @@ class contact_controller {
             await ContactMessage.create({ name, email, content });
 
             const mailOptions = {
-                from: `"${name} (${email})" <${process.env.MAIL_USER}>`,
+                from: `"${name} (${email})" <${process.env.EMAIL_ADDRESS}>`,
                 replyTo: `"${name}" <${email}>`,
-                to: process.env.MAIL_TO || process.env.MAIL_USER,
+                to: process.env.EMAIL_ADDRESS,
                 subject: 'New Contact Form Message',
                 text: `
 নতুন একটি মেসেজ পেয়েছেন!

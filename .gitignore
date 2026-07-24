@@ -16,6 +16,9 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# client/.env.production only holds the public API host, not a secret —
+# Vite's own convention is to commit non-local .env files
+!client/.env.production
 server/public/tem
 
 # Playwright
