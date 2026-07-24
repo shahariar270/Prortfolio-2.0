@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import { trackPageView } from '../../config/tracking'
-import { THEME_STORAGE_KEY, getInitialTheme, applyTheme } from '../../config/theme'
+import { useTheme } from '../../config/theme'
 import { sections, sectionSeo } from './helper'
 import { RailNav } from './RailNav'
 import { Hero } from './Sections/Hero'
@@ -26,11 +26,7 @@ export const Editorial = ({ section = 'sec-home' }) => {
     const initialSection = sections.some((s) => s.id === hashId) ? hashId : section
 
     const [activeSection, setActiveSection] = useState(initialSection)
-    const [isDark, setIsDark] = useState(getInitialTheme)
-
-    useEffect(() => {
-        applyTheme(isDark)
-    }, [isDark])
+    const [isDark, toggleTheme] = useTheme()
 
     useEffect(() => {
         if (initialSection === 'sec-home') {
@@ -96,18 +92,6 @@ export const Editorial = ({ section = 'sec-home' }) => {
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
-
-    const toggleTheme = () => {
-        setIsDark((prev) => {
-            const next = !prev
-            try {
-                localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light')
-            } catch {
-                // localStorage unavailable — theme just won't persist
-            }
-            return next
-        })
-    }
 
     const seo = sectionSeo[section] ?? sectionSeo['sec-home']
 

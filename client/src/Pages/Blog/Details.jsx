@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
-import { getInitialTheme, applyTheme } from '../../config/theme'
+import { RailNav } from '@Pages/Editorial/RailNav'
+import { useTheme } from '../../config/theme'
 import { sanitizeHtml } from '../../utils/sanitizeHtml'
 
 const formatDate = (iso) =>
@@ -12,13 +13,10 @@ const formatDate = (iso) =>
 
 export const BlogDetails = () => {
     const { slug } = useParams()
+    const [isDark, toggleTheme] = useTheme()
     // keyed by slug so a param change is recognized as "loading" again
     // without setting state synchronously in the effect body
     const [result, setResult] = useState({ slug: null, status: 'loading', post: null })
-
-    useEffect(() => {
-        applyTheme(getInitialTheme())
-    }, [])
 
     useEffect(() => {
         let cancelled = false
@@ -43,6 +41,8 @@ export const BlogDetails = () => {
         return (
             <div className="st-editorial-read">
                 <SeoHead title="Loading…" description="Loading this note." noIndex />
+                <RailNav isDark={isDark} onToggleTheme={toggleTheme} />
+                <main className="st-editorial-read__main" />
             </div>
         )
     }
@@ -51,40 +51,46 @@ export const BlogDetails = () => {
         return (
             <div className="st-editorial-read">
                 <SeoHead title="Post not found" description="This note is not available." noIndex />
-                <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
-                <h1 className="st-editorial-read__title">This note isn't available</h1>
+                <RailNav isDark={isDark} onToggleTheme={toggleTheme} />
+                <main className="st-editorial-read__main">
+                    <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
+                    <h1 className="st-editorial-read__title">This note isn't available</h1>
+                </main>
             </div>
         )
     }
 
     return (
-        <article className="st-editorial-read">
+        <div className="st-editorial-read">
             <SeoHead
                 title={`${post.category}: ${post.title}`}
                 description={post.excerpt}
                 image={post.image}
                 type="article"
             />
-            <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
+            <RailNav activeSection="sec-blog" isDark={isDark} onToggleTheme={toggleTheme} />
+            <article className="st-editorial-read__main">
+                <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
 
-            {post.image && (
-                <div className="st-editorial-read__hero">
-                    <img src={post.image} alt={post.title} />
+                {post.image && (
+                    <div className="st-editorial-read__hero">
+                        <img src={post.image} alt={post.title} />
+                    </div>
+                )}
+
+                <div className="st-editorial-read__meta">
+                    <span>{post.category}</span>
+                    <small>
+                        {formatDate(post.createdAt)} · {post.read_time}
+                    </small>
                 </div>
-            )}
+                <h1 className="st-editorial-read__title">{post.title}</h1>
 
-            <div className="st-editorial-read__meta">
-                <span>{post.category}</span>
-                <small>
-                    {formatDate(post.createdAt)} · {post.read_time}
-                </small>
-            </div>
-            <h1 className="st-editorial-read__title">{post.title}</h1>
-
-            <div
-                className="st-editorial-read__body"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
-            />
-        </article>
+                <div
+                    className="st-editorial-read__body"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+                />
+            </article>
+        </div>
     )
 }
