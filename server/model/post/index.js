@@ -28,9 +28,10 @@ const post_schema = new mongoose.Schema(
             trim: true,
             maxlength: 500,
         },
+        // rich-text HTML from the admin's editor, sanitized before render
         content: {
-            type: [String],
-            default: [],
+            type: String,
+            default: '',
         },
         image: {
             type: String,
