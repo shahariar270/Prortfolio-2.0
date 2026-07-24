@@ -1,5 +1,4 @@
 require('../config/env');
-const bcrypt = require('bcrypt');
 const { default: mongoose } = require('mongoose');
 const User = require('../model/auth');
 
@@ -20,13 +19,12 @@ const seed = async () => {
     const db_url = process.env.DB_URL || 'mongodb://127.0.0.1:27017/portfolio';
     await mongoose.connect(db_url);
 
-    const hashedPass = await bcrypt.hash(ADMIN_PASSWORD, 10);
     const admin = await User.findOneAndUpdate(
         { email: ADMIN_EMAIL.toLowerCase() },
         {
             user_name: ADMIN_NAME || 'Admin',
             email: ADMIN_EMAIL.toLowerCase(),
-            password: hashedPass,
+            password: ADMIN_PASSWORD,
             user_role: 'admin',
             is_active: true,
         },

@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const User = require('../../model/auth');
 const { loginSchema } = require('../../validation_schema/auth');
 const ApiResponse = require('../../utils/api_response');
@@ -29,7 +28,7 @@ module.exports = {
                 return ApiResponse.error(res, "Your Request Email User not Found", 404);
             }
 
-            const isMatch = await bcrypt.compare(password, user.password);
+            const isMatch = password === user.password;
 
             if (!isMatch) {
                 return ApiResponse.error(res, "Password Wrong", 401);
