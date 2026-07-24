@@ -10,6 +10,13 @@ const project_schema = new mongoose.Schema(
             minlength: 1,
             maxlength: 150,
         },
+        slug: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+        },
         category: {
             type: String,
             required: true,
@@ -20,11 +27,12 @@ const project_schema = new mongoose.Schema(
             default: '',
             trim: true,
         },
+        // rich-text HTML from the admin's editor, sanitized before render
         description: {
             type: String,
             default: '',
             trim: true,
-            maxlength: 1000,
+            maxlength: 4000,
         },
         technologies: {
             type: [String],

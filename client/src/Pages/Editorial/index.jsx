@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import { trackPageView } from '../../config/tracking'
+import { THEME_STORAGE_KEY, getInitialTheme, applyTheme } from '../../config/theme'
 import { sections, sectionSeo } from './helper'
 import { RailNav } from './RailNav'
 import { Hero } from './Sections/Hero'
@@ -11,25 +12,12 @@ import { Projects } from './Sections/Projects'
 import { Blog } from './Sections/Blog'
 import { Contact } from './Sections/Contact'
 
-const THEME_STORAGE_KEY = 'portfolio-redesign-b-theme'
-
-const getInitialTheme = () => {
-    try {
-        const saved = localStorage.getItem(THEME_STORAGE_KEY)
-        if (saved) return saved === 'dark'
-    } catch {
-        // localStorage unavailable — fall back to default
-    }
-    return true
-}
-
 const scrollToSection = (id, behavior = 'smooth') => {
     const el = document.getElementById(id)
     if (el) window.scrollTo({ top: el.offsetTop, behavior })
 }
 
 export const Editorial = ({ section = 'sec-home' }) => {
-    const { title } = useParams()
     const location = useLocation()
     const hashId = location.hash.slice(1)
     // a URL hash (deep link, refresh, shared link) should win over the
@@ -41,7 +29,7 @@ export const Editorial = ({ section = 'sec-home' }) => {
     const [isDark, setIsDark] = useState(getInitialTheme)
 
     useEffect(() => {
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
+        applyTheme(isDark)
     }, [isDark])
 
     useEffect(() => {
@@ -136,7 +124,7 @@ export const Editorial = ({ section = 'sec-home' }) => {
                 <About />
                 <Skills />
                 <Projects />
-                <Blog initialExpandedSlug={title ?? null} />
+                <Blog />
                 <Contact />
             </main>
         </div>

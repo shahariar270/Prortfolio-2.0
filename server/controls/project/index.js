@@ -8,6 +8,27 @@ const to_array = (value) => {
     return Array.isArray(value) ? value : [value];
 };
 
+const make_slug = (label) =>
+    label
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+// slugs are unique — append -2, -3, … when the label collides
+const unique_slug = async (label, ignoreId = null) => {
+    const base = make_slug(label) || 'project';
+    let slug = base;
+    let n = 2;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const query = ignoreId ? { slug, _id: { $ne: ignoreId } } : { slug };
+        const exists = await Project.findOne(query).select('_id');
+        if (!exists) return slug;
+        slug = `${base}-${n++}`;
+    }
+};
+
 class project_controller {
     // public: powers both the live Projects section and the admin list
     async get_projects(req, res) {
@@ -16,6 +37,20 @@ class project_controller {
             return ApiResponse.success(res, 'Projects retrieved successfully', projects);
         } catch (error) {
             return ApiResponse.error(res, 'Error retrieving projects', 500, error.message);
+        };
+    }
+
+    // public: the "case study" detail page
+    async get_project_by_slug(req, res) {
+        try {
+            const { slug } = req.params;
+            const project = await Project.findOne({ slug });
+            if (!project) {
+                return ApiResponse.error(res, 'Project not found', 404);
+            }
+            return ApiResponse.success(res, 'Project retrieved successfully', project);
+        } catch (error) {
+            return ApiResponse.error(res, 'Error retrieving project', 500, error.message);
         };
     }
 
@@ -33,8 +68,10 @@ class project_controller {
                 image_url = await uploadImage(req.file.path, 'portfolio_projects');
             }
 
+            const slug = await unique_slug(label);
             const new_project = await Project.create({
                 label,
+                slug,
                 category,
                 type,
                 description,
@@ -60,7 +97,10 @@ class project_controller {
                 return ApiResponse.error(res, 'Project not found', 404);
             }
 
-            if (label !== undefined) project.label = label;
+            if (label !== undefined && label !== project.label) {
+                project.label = label;
+                project.slug = await unique_slug(label, project._id);
+            }
             if (category !== undefined) project.category = category;
             if (type !== undefined) project.type = type;
             if (description !== undefined) project.description = description;

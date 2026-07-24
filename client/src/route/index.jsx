@@ -1,8 +1,16 @@
-import { Admin, AdminAnalytics, AdminPosts, AdminSkills, AdminProjects, AdminTaxonomy } from "@Pages/Admin";
 import { Editorial } from "@Pages/Editorial";
 import { NotFound } from "@Pages/NotFound";
+import { BlogDetails } from "@Pages/Blog/Details";
+import { ProjectDetails } from "@Pages/Project/Details";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
+// The admin panel (and its rich-text editor dependency) is only ever used
+// by the site owner — lazy-load it via route.lazy so public visitors never
+// pull its bundle weight into the portfolio pages.
+const adminExport = (name) => async () => {
+    const admin = await import("@Pages/Admin");
+    return { Component: admin[name] };
+};
 
 export const router = createBrowserRouter([
     {
@@ -22,12 +30,16 @@ export const router = createBrowserRouter([
         element: <Editorial section="sec-project" />
     },
     {
+        path: '/project/:slug',
+        element: <ProjectDetails />
+    },
+    {
         path: '/blog',
         element: <Editorial section="sec-blog" />
     },
     {
-        path: '/blog/:title',
-        element: <Editorial section="sec-blog" />
+        path: '/blog/:slug',
+        element: <BlogDetails />
     },
     {
         path: '/contact',
@@ -35,14 +47,14 @@ export const router = createBrowserRouter([
     },
     {
         path: '/st-admin',
-        element: <Admin />,
+        lazy: adminExport('Admin'),
         children: [
             { index: true, element: <Navigate to="/st-admin/analytics" replace /> },
-            { path: 'analytics', element: <AdminAnalytics /> },
-            { path: 'posts', element: <AdminPosts /> },
-            { path: 'skills', element: <AdminSkills /> },
-            { path: 'projects', element: <AdminProjects /> },
-            { path: 'taxonomy', element: <AdminTaxonomy /> },
+            { path: 'analytics', lazy: adminExport('AdminAnalytics') },
+            { path: 'posts', lazy: adminExport('AdminPosts') },
+            { path: 'skills', lazy: adminExport('AdminSkills') },
+            { path: 'projects', lazy: adminExport('AdminProjects') },
+            { path: 'taxonomy', lazy: adminExport('AdminTaxonomy') },
         ]
     },
     {

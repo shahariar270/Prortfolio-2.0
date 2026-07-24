@@ -81,6 +81,7 @@ export const api = {
         request(`/api/skill/${id}/level`, { method: 'PATCH', body: { delta }, auth: true }),
 
     projects: () => request('/api/projects'),
+    projectBySlug: (slug) => request(`/api/projects/${slug}`),
     createProject: (body) => request('/api/project', { method: 'POST', body, auth: true }),
     updateProject: (id, body) => request(`/api/project/${id}`, { method: 'PUT', body, auth: true }),
     deleteProject: (id) => request(`/api/project/${id}`, { method: 'DELETE', auth: true }),

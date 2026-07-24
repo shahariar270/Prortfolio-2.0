@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '@Pages/Admin/api'
 import { projectTabs } from '../helper'
+import { sanitizeHtml } from '../../../utils/sanitizeHtml'
 
 export const Projects = () => {
     const [tab, setTab] = useState('all')
@@ -58,7 +60,13 @@ export const Projects = () => {
                         <div className="st-editorial__project-body">
                             <span className="st-editorial__project-type">{project.type}</span>
                             <h3>{project.label}</h3>
-                            <p>{project.description}</p>
+                            <div
+                                className="st-editorial__project-desc"
+                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.description) }}
+                            />
+                            <Link to={`/project/${project.slug}`} className="st-editorial__see-more">
+                                See more →
+                            </Link>
                             <div className="st-editorial__project-tech">
                                 {project.technologies.map((tech) => (
                                     <span key={tech}>{tech}</span>
@@ -75,7 +83,9 @@ export const Projects = () => {
                                         Live Demo →
                                     </a>
                                 ) : (
-                                    <span className="st-editorial__project-locked">Case Study</span>
+                                    <Link to={`/project/${project.slug}`} className="st-editorial__project-locked">
+                                        Case Study
+                                    </Link>
                                 )}
                                 <span className="st-editorial__project-locked">Source 🔒</span>
                             </div>
