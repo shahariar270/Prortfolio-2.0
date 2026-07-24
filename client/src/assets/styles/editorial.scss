@@ -282,6 +282,36 @@ a {
         }
     }
 
+    &__hero-top {
+        display: flex;
+        align-items: center;
+        gap: clamp(32px, 5vw, 64px);
+        flex-wrap: wrap;
+    }
+
+    &__hero-intro {
+        flex: 1 1 480px;
+        min-width: 0;
+    }
+
+    &__hero-media {
+        flex: 1 1 320px;
+        max-width: 480px;
+        aspect-ratio: 4 / 3;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-soft);
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 50% 42%;
+        }
+    }
+
     &__hero-status {
         display: inline-flex;
         align-items: center;
