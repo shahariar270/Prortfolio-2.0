@@ -60,6 +60,20 @@ app.get('/', (req, res) => {
     return ApiResponse.success(res, 'request send successfully');
 });
 
+// Centralized error handler — must be last. Without this, an uncaught error
+// (e.g. the CORS origin callback rejecting a disallowed origin) falls
+// through to Express's default handler, which returns a bare 500 HTML page
+// with no CORS headers at all — the browser then reports a confusing
+// "CORS Missing Allow Origin" on top of the 500, even though the real cause
+// is simply that the request's Origin isn't in allowedOrigins.
+app.use((err, req, res, next) => {
+    if (err.message === 'Not allowed by CORS') {
+        return ApiResponse.error(res, 'This origin is not allowed to access the API', 403);
+    }
+    console.error('Unhandled error:', err);
+    return ApiResponse.error(res, 'Internal server error', 500, err.message);
+});
+
 const port = process.env.PORT || 3000;
 const db_url = process.env.DB_URL || 'mongodb://127.0.0.1:27017/portfolio';
 
