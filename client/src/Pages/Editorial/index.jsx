@@ -29,23 +29,39 @@ const scrollToSection = (id, behavior = 'smooth') => {
 }
 
 export const Editorial = ({ section = 'sec-home' }) => {
-    const [activeSection, setActiveSection] = useState(section)
-    const [isDark, setIsDark] = useState(getInitialTheme)
     const { title } = useParams()
     const location = useLocation()
+    const hashId = location.hash.slice(1)
+    // a URL hash (deep link, refresh, shared link) should win over the
+    // route's default section so both the scroll target and the highlighted
+    // rail item are correct on the very first render, not just after a click
+    const initialSection = sections.some((s) => s.id === hashId) ? hashId : section
+
+    const [activeSection, setActiveSection] = useState(initialSection)
+    const [isDark, setIsDark] = useState(getInitialTheme)
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
     }, [isDark])
 
     useEffect(() => {
-        // a URL hash (from RailNav's HashLink) already drives its own scroll —
-        // don't fight it with the route-based scroll below
-        if (location.hash) return
-        if (section === 'sec-home') {
+        if (initialSection === 'sec-home') {
             window.scrollTo({ top: 0, behavior: 'auto' })
-        } else {
-            scrollToSection(section, 'auto')
+            return
+        }
+
+        scrollToSection(initialSection, 'auto')
+
+        // Skills/Projects/Blog fetch their data on mount and can grow the
+        // page after this jump, leaving the scroll position stale — keep
+        // correcting while the page is still settling from those fetches
+        const observer = new ResizeObserver(() => scrollToSection(initialSection, 'auto'))
+        observer.observe(document.body)
+        const settleTimer = setTimeout(() => observer.disconnect(), 2000)
+
+        return () => {
+            observer.disconnect()
+            clearTimeout(settleTimer)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section])
