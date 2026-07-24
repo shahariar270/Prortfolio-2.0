@@ -18,7 +18,8 @@
     "react-dom": "^19.2.0",
     "react-helmet-async": "^3.0.0",
     "react-redux": "^9.3.0",
-    "react-router-dom": "^7.9.6"
+    "react-router-dom": "^7.9.6",
+    "react-router-hash-link": "^2.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

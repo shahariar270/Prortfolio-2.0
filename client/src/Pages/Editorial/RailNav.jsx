@@ -1,32 +1,33 @@
 import React from 'react'
+import { HashLink } from 'react-router-hash-link'
 import profileImg from '../../assets/images/profile.jpg'
 import { sections } from './helper'
 import { RailIcon } from './RailIcon'
 
-export const RailNav = ({ activeSection, onNavigate, isDark, onToggleTheme }) => {
+export const RailNav = ({ activeSection, isDark, onToggleTheme }) => {
     return (
         <nav className="st-editorial__rail" aria-label="Section navigation">
-            <button
-                type="button"
+            <HashLink
+                smooth
+                to="/#sec-home"
                 className="st-editorial__rail-avatar"
-                onClick={() => onNavigate('sec-home')}
                 aria-label="Back to top"
             >
                 <img src={profileImg} alt="Shahariar" />
-            </button>
+            </HashLink>
 
             <div className="st-editorial__rail-items">
                 {sections.map((section) => (
-                    <button
+                    <HashLink
                         key={section.id}
-                        type="button"
+                        smooth
                         title={section.label}
+                        to={`/#${section.id}`}
                         className={`st-editorial__rail-item ${activeSection === section.id ? 'is-active' : ''}`}
-                        onClick={() => onNavigate(section.id)}
                     >
                         <RailIcon name={section.icon} />
                         <span>{section.label}</span>
-                    </button>
+                    </HashLink>
                 ))}
             </div>
 

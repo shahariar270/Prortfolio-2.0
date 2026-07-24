@@ -39,11 +39,15 @@ export const Editorial = ({ section = 'sec-home' }) => {
     }, [isDark])
 
     useEffect(() => {
+        // a URL hash (from RailNav's HashLink) already drives its own scroll —
+        // don't fight it with the route-based scroll below
+        if (location.hash) return
         if (section === 'sec-home') {
             window.scrollTo({ top: 0, behavior: 'auto' })
         } else {
             scrollToSection(section, 'auto')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section])
 
     // page-view beacon: fires once per mounted path, flushed with a duration
@@ -108,7 +112,6 @@ export const Editorial = ({ section = 'sec-home' }) => {
             <SeoHead title={seo.title} description={seo.description} />
             <RailNav
                 activeSection={activeSection}
-                onNavigate={(id) => scrollToSection(id)}
                 isDark={isDark}
                 onToggleTheme={toggleTheme}
             />

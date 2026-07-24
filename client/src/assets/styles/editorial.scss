@@ -113,6 +113,7 @@ a {
         background: none;
         cursor: pointer;
         border-radius: 50%;
+        text-decoration: none;
 
         img {
             width: 44px;
@@ -144,6 +145,7 @@ a {
         cursor: pointer;
         background: transparent;
         font-family: inherit;
+        text-decoration: none;
         transition: background 0.2s ease;
 
         svg {
