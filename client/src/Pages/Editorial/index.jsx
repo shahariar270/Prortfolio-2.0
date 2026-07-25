@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import { trackPageView } from '../../config/tracking'
@@ -27,6 +27,9 @@ export const Editorial = ({ section = 'sec-home' }) => {
 
     const [activeSection, setActiveSection] = useState(initialSection)
     const [isDark, toggleTheme] = useTheme()
+    // tracks what the URL currently reflects, so we only touch history when
+    // the scrolled-to section actually changes, not on every scroll tick
+    const lastSyncedSection = useRef(initialSection)
 
     useEffect(() => {
         if (initialSection === 'sec-home') {
@@ -87,6 +90,17 @@ export const Editorial = ({ section = 'sec-home' }) => {
                 if (el && el.offsetTop <= y) active = s.id
             }
             setActiveSection(active)
+
+            // keep the address bar honest as you scroll — it otherwise stays
+            // stuck on whatever path/hash you arrived with (e.g. /project)
+            // even once you've scrolled well past that section. Plain
+            // history.replaceState, not react-router's navigate: this must
+            // never trigger a route match/remount, just update the URL text.
+            if (active !== lastSyncedSection.current) {
+                lastSyncedSection.current = active
+                const url = active === 'sec-home' ? '/' : `/#${active}`
+                window.history.replaceState(null, '', url)
+            }
         }
         onScroll()
         window.addEventListener('scroll', onScroll, { passive: true })
