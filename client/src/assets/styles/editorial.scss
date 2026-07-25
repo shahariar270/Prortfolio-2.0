@@ -626,7 +626,8 @@ a {
         border-radius: 4px;
         border: 1px solid var(--border-color);
 
-        img {
+        img,
+        .st-editorial__img-fallback {
             width: 100%;
             aspect-ratio: 16 / 10;
             object-fit: cover;
@@ -763,7 +764,8 @@ a {
         cursor: pointer;
         text-decoration: none;
 
-        > img {
+        > img,
+        > .st-editorial__img-fallback {
             width: 100%;
             aspect-ratio: 16 / 9;
             object-fit: cover;
@@ -835,6 +837,22 @@ a {
         }
     }
 
+    // shown in place of a post/project's image when none is set — blog rows,
+    // project cards, and both detail-page hero blocks
+    &__img-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--accent-soft), var(--surface-muted));
+        color: var(--color-primary);
+
+        svg {
+            width: 26%;
+            height: 26%;
+            opacity: 0.55;
+        }
+    }
+
     /* ---------- 05b Read template (post / project detail pages) ---------- */
 
     &-read {
@@ -844,8 +862,57 @@ a {
 
     &-read__main {
         margin-left: 84px;
-        max-width: 1040px;
+        max-width: 1440px;
         padding: clamp(28px, 5vw, 64px) clamp(20px, 6vw, 96px) 96px;
+    }
+
+    &-read__layout {
+        display: flex;
+        align-items: flex-start;
+        gap: clamp(32px, 4vw, 64px);
+    }
+
+    &-read__sidebar {
+        flex: 0 0 240px;
+        position: sticky;
+        top: clamp(28px, 5vw, 64px);
+
+        h2 {
+            margin: 0 0 14px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        nav {
+            display: grid;
+            gap: 2px;
+        }
+    }
+
+    &-read__sidebar-link {
+        display: block;
+        padding: 9px 11px;
+        border-radius: 8px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.4;
+        transition: background 0.2s ease, color 0.2s ease;
+
+        &:hover {
+            background: var(--accent-soft);
+            color: var(--color-primary);
+        }
+    }
+
+    &-read__content {
+        flex: 1;
+        min-width: 0;
+        max-width: 900px;
     }
 
     &-read__back {
@@ -876,6 +943,11 @@ a {
             width: 100%;
             max-height: 460px;
             object-fit: cover;
+        }
+
+        .st-editorial__img-fallback {
+            width: 100%;
+            height: 280px;
         }
     }
 
@@ -1152,13 +1224,41 @@ a {
         &__contact-grid {
             grid-template-columns: 1fr;
         }
+
+        &-read__layout {
+            flex-direction: column;
+        }
+
+        &-read__sidebar {
+            flex: none;
+            width: 100%;
+            position: static;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 4px;
+
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+        }
+
+        &-read__sidebar-link {
+            border: 1px solid var(--border-color);
+        }
+
+        &-read__content {
+            max-width: none;
+        }
     }
 
     @media (max-width: 760px) {
         &__blog-row {
             grid-template-columns: 1fr auto;
 
-            > img {
+            > img,
+            > .st-editorial__img-fallback {
                 grid-column: 1 / -1;
                 max-width: 320px;
             }

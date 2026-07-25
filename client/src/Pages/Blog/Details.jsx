@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
 import { RailNav } from '@Pages/Editorial/RailNav'
+import ImageFallback from '@Component/ImageFallback'
 import { useTheme } from '../../config/theme'
 import { sanitizeHtml } from '../../utils/sanitizeHtml'
 
@@ -17,6 +18,21 @@ export const BlogDetails = () => {
     // keyed by slug so a param change is recognized as "loading" again
     // without setting state synchronously in the effect body
     const [result, setResult] = useState({ slug: null, status: 'loading', post: null })
+    // sidebar list of other notes — fetched once, independent of which post
+    // is currently open
+    const [otherPosts, setOtherPosts] = useState([])
+
+    useEffect(() => {
+        let cancelled = false
+        api.posts()
+            .then((data) => {
+                if (!cancelled) setOtherPosts(data)
+            })
+            .catch(() => {})
+        return () => {
+            cancelled = true
+        }
+    }, [])
 
     useEffect(() => {
         let cancelled = false
@@ -36,6 +52,20 @@ export const BlogDetails = () => {
 
     const status = result.slug === slug ? result.status : 'loading'
     const post = result.slug === slug ? result.post : null
+    const sidebarPosts = otherPosts.filter((p) => p.slug !== slug)
+
+    const sidebar = sidebarPosts.length > 0 && (
+        <aside className="st-editorial-read__sidebar">
+            <h2>Other notes</h2>
+            <nav>
+                {sidebarPosts.map((p) => (
+                    <Link key={p._id} to={`/blog/${p.slug}`} className="st-editorial-read__sidebar-link">
+                        {p.title}
+                    </Link>
+                ))}
+            </nav>
+        </aside>
+    )
 
     if (status === 'loading') {
         return (
@@ -69,28 +99,35 @@ export const BlogDetails = () => {
                 type="article"
             />
             <RailNav activeSection="sec-blog" isDark={isDark} onToggleTheme={toggleTheme} />
-            <article className="st-editorial-read__main">
-                <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
+            <main className="st-editorial-read__main">
+                <div className="st-editorial-read__layout">
+                    {sidebar}
+                    <article className="st-editorial-read__content">
+                        <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
 
-                {post.image && (
-                    <div className="st-editorial-read__hero">
-                        <img src={post.image} alt={post.title} />
-                    </div>
-                )}
+                        <div className="st-editorial-read__hero">
+                            {post.image ? (
+                                <img src={post.image} alt={post.title} />
+                            ) : (
+                                <ImageFallback />
+                            )}
+                        </div>
 
-                <div className="st-editorial-read__meta">
-                    <span>{post.category}</span>
-                    <small>
-                        {formatDate(post.createdAt)} · {post.read_time}
-                    </small>
+                        <div className="st-editorial-read__meta">
+                            <span>{post.category}</span>
+                            <small>
+                                {formatDate(post.createdAt)} · {post.read_time}
+                            </small>
+                        </div>
+                        <h1 className="st-editorial-read__title">{post.title}</h1>
+
+                        <div
+                            className="st-editorial-read__body"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+                        />
+                    </article>
                 </div>
-                <h1 className="st-editorial-read__title">{post.title}</h1>
-
-                <div
-                    className="st-editorial-read__body"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
-                />
-            </article>
+            </main>
         </div>
     )
 }
