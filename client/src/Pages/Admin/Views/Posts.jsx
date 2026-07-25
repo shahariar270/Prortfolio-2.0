@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
 import { fetchPosts, savePost as savePostThunk, togglePostPublish } from '../../../store/slices/postsSlice'
 import { fetchTaxonomies, selectPostCategoryLabels } from '../../../store/slices/taxonomiesSlice'
-import { PostEditorModal } from '../PostEditorModal'
+import { PostEditor } from './PostEditor'
 
 const formatDate = (iso) =>
     iso
@@ -11,11 +12,15 @@ const formatDate = (iso) =>
 
 // Reads from the Redux cache when available — fetchPosts/fetchTaxonomies are
 // condition-gated and skip the network call entirely if already loaded.
+// The create/edit form lives at this same route as ?action=new or
+// ?action=edit&id=<postId> instead of a modal, so it's a real, shareable,
+// back-button-friendly URL.
 export const Posts = ({ onError, onNotify }) => {
     const dispatch = useDispatch()
     const posts = useSelector((state) => state.posts.items)
+    const postsLoaded = useSelector((state) => state.posts.loaded)
     const postCats = useSelector(selectPostCategoryLabels)
-    const [editor, setEditor] = useState(null)
+    const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect(() => {
         dispatch(fetchPosts()).then((action) => {
@@ -28,41 +33,25 @@ export const Posts = ({ onError, onNotify }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch])
 
+    const action = searchParams.get('action')
+    const editId = searchParams.get('id')
+
     const publishedCount = posts.filter((post) => post.published).length
 
-    const togglePublish = async (index) => {
+    const togglePublish = async (id) => {
         try {
-            const updated = await dispatch(togglePostPublish(posts[index]._id)).unwrap()
+            const updated = await dispatch(togglePostPublish(id)).unwrap()
             onNotify(updated.published ? 'Post published' : 'Post moved to drafts')
         } catch (err) {
             onError(err)
         }
     }
 
-    const openNewPostEditor = () => {
-        setEditor({
-            index: null,
-            category: postCats[0] || 'React',
-            title: '',
-            excerpt: '',
-            published: false,
-            image: '',
-        })
-    }
+    const openNewPostEditor = () => setSearchParams({ action: 'new' })
+    const openEditPostEditor = (id) => setSearchParams({ action: 'edit', id })
+    const closeEditor = () => setSearchParams({})
 
-    const openEditPostEditor = (index) => {
-        const post = posts[index]
-        setEditor({
-            index,
-            category: post.category,
-            title: post.title,
-            excerpt: post.excerpt || '',
-            published: post.published,
-            image: post.image || '',
-        })
-    }
-
-    const savePost = async (draft) => {
+    const savePost = async (draft, id) => {
         const title = (draft.title || '').trim() || 'Untitled post'
         try {
             let body
@@ -71,6 +60,7 @@ export const Posts = ({ onError, onNotify }) => {
                 body.append('title', title)
                 body.append('category', draft.category)
                 body.append('excerpt', draft.excerpt)
+                body.append('content', draft.content || '')
                 body.append('published', String(draft.published))
                 body.append('image', draft.imageFile)
             } else {
@@ -78,6 +68,7 @@ export const Posts = ({ onError, onNotify }) => {
                     title,
                     category: draft.category,
                     excerpt: draft.excerpt,
+                    content: draft.content || '',
                     published: draft.published,
                 }
                 // send the image only when it's a real URL or an explicit
@@ -87,13 +78,57 @@ export const Posts = ({ onError, onNotify }) => {
                 }
             }
 
-            const id = draft.index === null ? undefined : posts[draft.index]._id
             await dispatch(savePostThunk({ id, body })).unwrap()
-            onNotify(draft.index === null ? 'Post created' : 'Post saved')
-            setEditor(null)
+            onNotify(id ? 'Post saved' : 'Post created')
+            closeEditor()
         } catch (err) {
             onError(err)
         }
+    }
+
+    if (action === 'new') {
+        return (
+            <PostEditor
+                key="new"
+                mode="new"
+                categories={postCats}
+                onSave={savePost}
+                onCancel={closeEditor}
+            />
+        )
+    }
+
+    if (action === 'edit') {
+        if (!postsLoaded) {
+            return (
+                <main className="st-admin__view">
+                    <p className="st-admin__empty">Loading…</p>
+                </main>
+            )
+        }
+
+        const editingPost = posts.find((post) => post._id === editId)
+        if (!editingPost) {
+            return (
+                <main className="st-admin__view">
+                    <p className="st-admin__empty">Post not found.</p>
+                    <button type="button" className="st-admin__editor-back" onClick={closeEditor}>
+                        ← Back to posts
+                    </button>
+                </main>
+            )
+        }
+
+        return (
+            <PostEditor
+                key={editingPost._id}
+                mode="edit"
+                post={editingPost}
+                categories={postCats}
+                onSave={savePost}
+                onCancel={closeEditor}
+            />
+        )
     }
 
     return (
@@ -108,8 +143,8 @@ export const Posts = ({ onError, onNotify }) => {
                 {posts.length === 0 && (
                     <p className="st-admin__empty">No posts yet — create your first one.</p>
                 )}
-                {posts.map((post, index) => (
-                    <div className="st-admin__card st-admin__post" key={post._id ?? `${post.title}-${index}`}>
+                {posts.map((post) => (
+                    <div className="st-admin__card st-admin__post" key={post._id}>
                         <img src={post.image} alt={post.title} />
                         <div className="st-admin__post-body">
                             <div className="st-admin__post-tags">
@@ -130,14 +165,14 @@ export const Posts = ({ onError, onNotify }) => {
                             <button
                                 type="button"
                                 className="st-admin__btn-ghost"
-                                onClick={() => togglePublish(index)}
+                                onClick={() => togglePublish(post._id)}
                             >
                                 {post.published ? 'Unpublish' : 'Publish'}
                             </button>
                             <button
                                 type="button"
                                 className="st-admin__btn-primary"
-                                onClick={() => openEditPostEditor(index)}
+                                onClick={() => openEditPostEditor(post._id)}
                             >
                                 Edit
                             </button>
@@ -145,15 +180,6 @@ export const Posts = ({ onError, onNotify }) => {
                     </div>
                 ))}
             </div>
-
-            {editor && (
-                <PostEditorModal
-                    editor={editor}
-                    categories={postCats}
-                    onSave={savePost}
-                    onClose={() => setEditor(null)}
-                />
-            )}
         </main>
     )
 }

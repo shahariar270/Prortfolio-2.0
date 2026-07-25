@@ -24,11 +24,25 @@ const paths = {
             <rect x="13" y="13" width="7" height="7" rx="1.4" />
         </>
     ),
+    projects: (
+        <>
+            <rect x="3.5" y="7" width="17" height="12" rx="1.6" />
+            <path d="M8.5 7V5.6a1.6 1.6 0 0 1 1.6-1.6h3.8a1.6 1.6 0 0 1 1.6 1.6V7" />
+            <path d="M3.5 12h17" />
+        </>
+    ),
     taxonomy: (
         <>
             <path d="M4 6.5h9M4 12h13M4 17.5h7" />
             <circle cx="18" cy="6.5" r="2" />
             <circle cx="13" cy="17.5" r="2" />
+        </>
+    ),
+    content: (
+        <>
+            <path d="M6 3.5h9l3.5 3.5V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z" />
+            <path d="M14.5 3.5V7a1 1 0 0 0 1 1H19" />
+            <path d="m9.5 15.5 1.8-.4 5-5a1.1 1.1 0 0 0-1.6-1.6l-5 5-.4 1.8Z" />
         </>
     ),
     visitors: (

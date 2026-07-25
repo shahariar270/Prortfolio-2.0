@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { adjustSkillLevel as adjustSkillLevelThunk, createSkill, fetchSkills } from '../../../store/slices/skillsSlice'
+import { adjustSkillLevel as adjustSkillLevelThunk, createSkill, deleteSkill as deleteSkillThunk, fetchSkills } from '../../../store/slices/skillsSlice'
 import { fetchTaxonomies, selectSkillGroupLabels } from '../../../store/slices/taxonomiesSlice'
 import { skillLogoFor } from '../helper'
 import { SkillEditorModal } from '../SkillEditorModal'
@@ -42,15 +42,34 @@ export const Skills = ({ onError, onNotify }) => {
         }
     }
 
+    const removeSkill = async (id) => {
+        try {
+            await dispatch(deleteSkillThunk(id)).unwrap()
+            onNotify('Skill deleted')
+        } catch (err) {
+            onError(err)
+        }
+    }
+
     const saveSkill = async (draft) => {
         const name = (draft.name || '').trim() || 'New skill'
         try {
-            await dispatch(createSkill({
-                name,
-                group: draft.group,
-                logo: skillLogoFor(name),
-                level: draft.level,
-            })).unwrap()
+            let body
+            if (draft.imageFile) {
+                body = new FormData()
+                body.append('name', name)
+                body.append('group', draft.group)
+                body.append('level', String(draft.level))
+                body.append('image', draft.imageFile)
+            } else {
+                body = {
+                    name,
+                    group: draft.group,
+                    logo: skillLogoFor(name),
+                    level: draft.level,
+                }
+            }
+            await dispatch(createSkill(body)).unwrap()
             setEditorOpen(false)
             onNotify('Skill added')
         } catch (err) {
@@ -105,6 +124,14 @@ export const Skills = ({ onError, onNotify }) => {
                                                 onClick={() => adjustLevel(index, 4)}
                                             >
                                                 ＋
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="st-admin__skill-delete"
+                                                aria-label={`Delete ${skill.name}`}
+                                                onClick={() => removeSkill(skill._id)}
+                                            >
+                                                ✕
                                             </button>
                                         </div>
                                     </div>

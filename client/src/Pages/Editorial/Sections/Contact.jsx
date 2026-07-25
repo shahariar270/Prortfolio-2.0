@@ -1,9 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Field, Form, Formik } from 'formik'
+import { useDispatch, useSelector } from 'react-redux'
 import { API_URL } from '../../../config/api'
-import { socialLinks } from '../helper'
+import { fetchContent } from '../../../store/slices/contentSlice'
 
 export const Contact = () => {
+    const dispatch = useDispatch()
+    const content = useSelector((state) => state.content.data)
+
+    useEffect(() => {
+        dispatch(fetchContent())
+    }, [dispatch])
+
+    const contact = content?.contact
+    const social = contact?.social || []
+
     const handleSubmit = async (values, { resetForm }) => {
         try {
             const response = await fetch(`${API_URL}/contact`, {
@@ -31,16 +42,19 @@ export const Contact = () => {
             <h2 className="st-editorial__heading">Let's talk</h2>
             <div className="st-editorial__contact-grid">
                 <div className="st-editorial__contact-info">
-                    <p>
-                        Have a product to ship — or a codebase that needs AI-era velocity? Send a message; I
-                        reply within 24 hours.
-                    </p>
+                    {contact?.intro && <p>{contact.intro}</p>}
                     <div className="st-editorial__contact-lines">
-                        <a href="mailto:dev.shahariar.official@gmail.com">dev.shahariar.official@gmail.com</a>
-                        <span>+880 1410-270766 · Jhenaidah, Bangladesh</span>
+                        {contact?.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
+                        {(contact?.phone || contact?.location) && (
+                            <span>
+                                {contact.phone}
+                                {contact.phone && contact.location ? ' · ' : ''}
+                                {contact.location}
+                            </span>
+                        )}
                     </div>
                     <div className="st-editorial__contact-social">
-                        {socialLinks.map((item) => (
+                        {social.map((item) => (
                             <a
                                 key={item.label}
                                 href={item.href}
@@ -62,9 +76,7 @@ export const Contact = () => {
                     </Form>
                 </Formik>
             </div>
-            <p className="st-editorial__footer">
-                © 2026 Shahariar — built with React, MERN &amp; AI copilots.
-            </p>
+            {content?.footer && <p className="st-editorial__footer">{content.footer}</p>}
         </section>
     )
 }

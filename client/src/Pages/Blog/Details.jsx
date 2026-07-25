@@ -1,57 +1,133 @@
-import React from 'react'
-import SeoHead from '@Component/SeoHead'
+import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { createBlogSlug, featuredPosts } from './helper'
+import SeoHead from '@Component/SeoHead'
+import { api } from '@Pages/Admin/api'
+import { RailNav } from '@Pages/Editorial/RailNav'
+import ImageFallback from '@Component/ImageFallback'
+import { useTheme } from '../../config/theme'
+import { sanitizeHtml } from '../../utils/sanitizeHtml'
+
+const formatDate = (iso) =>
+    iso
+        ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+        : ''
 
 export const BlogDetails = () => {
-  const { title } = useParams()
-  const post = featuredPosts.find((item) => createBlogSlug(item.title) === title)
+    const { slug } = useParams()
+    const [isDark, toggleTheme] = useTheme()
+    // keyed by slug so a param change is recognized as "loading" again
+    // without setting state synchronously in the effect body
+    const [result, setResult] = useState({ slug: null, status: 'loading', post: null })
+    // sidebar list of other notes — fetched once, independent of which post
+    // is currently open
+    const [otherPosts, setOtherPosts] = useState([])
 
-  if (!post) {
-    return (
-      <section className="st-portfolio--blog-detail">
-        <SeoHead
-          title="Post not found"
-          description="This blog article is not available."
-          noIndex
-        />
-        <div className="blog-detail__not-found">
-          <p>Post not found</p>
-          <h2>This blog article is not available.</h2>
-          <Link to="/blog">Back to Blog</Link>
-        </div>
-      </section>
+    useEffect(() => {
+        let cancelled = false
+        api.posts()
+            .then((data) => {
+                if (!cancelled) setOtherPosts(data)
+            })
+            .catch(() => {})
+        return () => {
+            cancelled = true
+        }
+    }, [])
+
+    useEffect(() => {
+        let cancelled = false
+        api.postBySlug(slug)
+            .then((data) => {
+                if (cancelled) return
+                setResult({ slug, status: 'ready', post: data })
+                api.addPostView(slug).catch(() => {})
+            })
+            .catch(() => {
+                if (!cancelled) setResult({ slug, status: 'error', post: null })
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [slug])
+
+    const status = result.slug === slug ? result.status : 'loading'
+    const post = result.slug === slug ? result.post : null
+    const sidebarPosts = otherPosts.filter((p) => p.slug !== slug)
+
+    const sidebar = sidebarPosts.length > 0 && (
+        <aside className="st-editorial-read__sidebar">
+            <h2>Other notes</h2>
+            <nav>
+                {sidebarPosts.map((p) => (
+                    <Link key={p._id} to={`/blog/${p.slug}`} className="st-editorial-read__sidebar-link">
+                        {p.title}
+                    </Link>
+                ))}
+            </nav>
+        </aside>
     )
-  }
 
-  return (
-    <article className="st-portfolio--blog-detail">
-      <SeoHead
-        title={`${post.category}: ${post.seoTitle ?? post.title}`}
-        description={post.seoDescription ?? post.excerpt}
-        image={post.image}
-        type="article"
-      />
-      <Link className="blog-detail__back" to="/blog">Back to Blog</Link>
+    if (status === 'loading') {
+        return (
+            <div className="st-editorial-read">
+                <SeoHead title="Loading…" description="Loading this note." noIndex />
+                <RailNav isDark={isDark} onToggleTheme={toggleTheme} />
+                <main className="st-editorial-read__main" />
+            </div>
+        )
+    }
 
-      <div className="blog-detail__hero">
-        <img src={post.image} alt={post.title} />
-        <div className="blog-detail__intro">
-          <div className="blog-detail__meta">
-            <span>{post.category}</span>
-            <small>{post.date} | {post.readTime}</small>
-          </div>
-          <h1>{post.title}</h1>
-          {post.subtitle ? <h2 className="blog-detail__subtitle">{post.subtitle}</h2> : null}
-          <p>{post.excerpt}</p>
+    if (!post) {
+        return (
+            <div className="st-editorial-read">
+                <SeoHead title="Post not found" description="This note is not available." noIndex />
+                <RailNav isDark={isDark} onToggleTheme={toggleTheme} />
+                <main className="st-editorial-read__main">
+                    <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
+                    <h1 className="st-editorial-read__title">This note isn't available</h1>
+                </main>
+            </div>
+        )
+    }
+
+    return (
+        <div className="st-editorial-read">
+            <SeoHead
+                title={`${post.category}: ${post.title}`}
+                description={post.excerpt}
+                image={post.image}
+                type="article"
+            />
+            <RailNav activeSection="sec-blog" isDark={isDark} onToggleTheme={toggleTheme} />
+            <main className="st-editorial-read__main">
+                <div className="st-editorial-read__layout">
+                    {sidebar}
+                    <article className="st-editorial-read__content">
+                        <Link className="st-editorial-read__back" to="/blog">← Back to Notes</Link>
+
+                        <div className="st-editorial-read__hero">
+                            {post.image ? (
+                                <img src={post.image} alt={post.title} />
+                            ) : (
+                                <ImageFallback />
+                            )}
+                        </div>
+
+                        <div className="st-editorial-read__meta">
+                            <span>{post.category}</span>
+                            <small>
+                                {formatDate(post.createdAt)} · {post.read_time}
+                            </small>
+                        </div>
+                        <h1 className="st-editorial-read__title">{post.title}</h1>
+
+                        <div
+                            className="st-editorial-read__body"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+                        />
+                    </article>
+                </div>
+            </main>
         </div>
-        <div className="blog-detail__content">
-          {post.content.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
-      </div>
-
-    </article>
-  )
+    )
 }

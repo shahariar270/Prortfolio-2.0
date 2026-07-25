@@ -1,0 +1,31 @@
+[
+  { "name": "HTML", "group": "Languages & Scripting", "logo": "https://skillicons.dev/icons?i=html", "level": 85 },
+  { "name": "CSS", "group": "Languages & Scripting", "logo": "https://skillicons.dev/icons?i=css", "level": 85 },
+  { "name": "JavaScript", "group": "Languages & Scripting", "logo": "https://skillicons.dev/icons?i=js", "level": 88 },
+  { "name": "PHP", "group": "Languages & Scripting", "logo": "https://skillicons.dev/icons?i=php", "level": 70 },
+
+  { "name": "React", "group": "Frontend", "logo": "https://skillicons.dev/icons?i=react", "level": 92 },
+  { "name": "Redux", "group": "Frontend", "logo": "https://skillicons.dev/icons?i=redux", "level": 80 },
+  { "name": "Next.js", "group": "Frontend", "logo": "https://skillicons.dev/icons?i=nextjs", "level": 84 },
+  { "name": "Bootstrap", "group": "Frontend", "logo": "https://skillicons.dev/icons?i=bootstrap", "level": 78 },
+  { "name": "Tailwind", "group": "Frontend", "logo": "https://skillicons.dev/icons?i=tailwind", "level": 88 },
+  { "name": "SCSS", "group": "Frontend", "logo": "https://skillicons.dev/icons?i=sass", "level": 82 },
+  { "name": "Chakra UI", "group": "Frontend", "logo": "https://cdn.simpleicons.org/chakraui/319795", "level": 75 },
+
+  { "name": "Node.js", "group": "Backend & Database", "logo": "https://skillicons.dev/icons?i=nodejs", "level": 85 },
+  { "name": "Express", "group": "Backend & Database", "logo": "https://skillicons.dev/icons?i=express", "level": 80 },
+  { "name": "MongoDB", "group": "Backend & Database", "logo": "https://skillicons.dev/icons?i=mongodb", "level": 80 },
+  { "name": "MySQL", "group": "Backend & Database", "logo": "https://skillicons.dev/icons?i=mysql", "level": 75 },
+  { "name": "Firebase", "group": "Backend & Database", "logo": "https://skillicons.dev/icons?i=firebase", "level": 70 },
+
+  { "name": "Git", "group": "Tools & AI", "logo": "https://skillicons.dev/icons?i=git", "level": 85 },
+  { "name": "GitHub", "group": "Tools & AI", "logo": "https://skillicons.dev/icons?i=github", "level": 85 },
+  { "name": "VS Code", "group": "Tools & AI", "logo": "https://skillicons.dev/icons?i=vscode", "level": 90 },
+  { "name": "WordPress", "group": "Tools & AI", "logo": "https://skillicons.dev/icons?i=wordpress", "level": 75 },
+  { "name": "Vite", "group": "Tools & AI", "logo": "https://skillicons.dev/icons?i=vite", "level": 80 },
+  { "name": "Webpack", "group": "Tools & AI", "logo": "https://skillicons.dev/icons?i=webpack", "level": 70 },
+  { "name": "Cursor AI", "group": "Tools & AI", "logo": "https://cdn.simpleicons.org/cursor", "level": 86 },
+  { "name": "Claude", "group": "Tools & AI", "logo": "https://cdn.simpleicons.org/claude", "level": 90 },
+  { "name": "Codex", "group": "Tools & AI", "logo": "https://cdn.simpleicons.org/openai", "level": 80 },
+  { "name": "Gemini CLI", "group": "Tools & AI", "logo": "https://cdn.simpleicons.org/googlegemini", "level": 75 }
+]

@@ -67,6 +67,9 @@ export const api = {
         request('/auth/login', { method: 'POST', body: { email, password } }),
     profile: () => request('/auth/profile', { auth: true }),
 
+    posts: () => request('/api/posts'),
+    postBySlug: (slug) => request(`/api/posts/${slug}`),
+    addPostView: (slug) => request(`/api/posts/${slug}/view`, { method: 'POST' }),
     allPosts: () => request('/api/posts/all', { auth: true }),
     createPost: (body) => request('/api/post', { method: 'POST', body, auth: true }),
     updatePost: (id, body) => request(`/api/post/${id}`, { method: 'PUT', body, auth: true }),
@@ -76,6 +79,13 @@ export const api = {
     createSkill: (body) => request('/api/skill', { method: 'POST', body, auth: true }),
     adjustSkillLevel: (id, delta) =>
         request(`/api/skill/${id}/level`, { method: 'PATCH', body: { delta }, auth: true }),
+    deleteSkill: (id) => request(`/api/skill/${id}`, { method: 'DELETE', auth: true }),
+
+    projects: () => request('/api/projects'),
+    projectBySlug: (slug) => request(`/api/projects/${slug}`),
+    createProject: (body) => request('/api/project', { method: 'POST', body, auth: true }),
+    updateProject: (id, body) => request(`/api/project/${id}`, { method: 'PUT', body, auth: true }),
+    deleteProject: (id) => request(`/api/project/${id}`, { method: 'DELETE', auth: true }),
 
     taxonomies: () => request('/api/taxonomies'),
     createTaxonomy: (label, kind) =>
@@ -84,4 +94,7 @@ export const api = {
 
     analyticsSummary: (range) =>
         request(`/api/analytics/summary?range=${encodeURIComponent(range)}`, { auth: true }),
+
+    content: () => request('/api/content'),
+    updateContent: (body) => request('/api/content', { method: 'PUT', body, auth: true }),
 }

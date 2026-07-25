@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
-import { createBlogSlug, featuredPosts } from '@Pages/Blog/helper'
 import { trackPageView } from '../../config/tracking'
+import { useTheme } from '../../config/theme'
 import { sections, sectionSeo } from './helper'
 import { RailNav } from './RailNav'
 import { Hero } from './Sections/Hero'
@@ -12,43 +12,45 @@ import { Projects } from './Sections/Projects'
 import { Blog } from './Sections/Blog'
 import { Contact } from './Sections/Contact'
 
-const THEME_STORAGE_KEY = 'portfolio-redesign-b-theme'
-
-const getInitialTheme = () => {
-    try {
-        const saved = localStorage.getItem(THEME_STORAGE_KEY)
-        if (saved) return saved === 'dark'
-    } catch {
-        // localStorage unavailable — fall back to default
-    }
-    return true
-}
-
 const scrollToSection = (id, behavior = 'smooth') => {
     const el = document.getElementById(id)
     if (el) window.scrollTo({ top: el.offsetTop, behavior })
 }
 
 export const Editorial = ({ section = 'sec-home' }) => {
-    const [activeSection, setActiveSection] = useState(section)
-    const [isDark, setIsDark] = useState(getInitialTheme)
-    const { title } = useParams()
     const location = useLocation()
+    const hashId = location.hash.slice(1)
+    // a URL hash (deep link, refresh, shared link) should win over the
+    // route's default section so both the scroll target and the highlighted
+    // rail item are correct on the very first render, not just after a click
+    const initialSection = sections.some((s) => s.id === hashId) ? hashId : section
 
-    const expandedPostIndex = title
-        ? featuredPosts.findIndex((post) => createBlogSlug(post.title) === title)
-        : -1
+    const [activeSection, setActiveSection] = useState(initialSection)
+    const [isDark, toggleTheme] = useTheme()
+    // tracks what the URL currently reflects, so we only touch history when
+    // the scrolled-to section actually changes, not on every scroll tick
+    const lastSyncedSection = useRef(initialSection)
 
     useEffect(() => {
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
-    }, [isDark])
-
-    useEffect(() => {
-        if (section === 'sec-home') {
+        if (initialSection === 'sec-home') {
             window.scrollTo({ top: 0, behavior: 'auto' })
-        } else {
-            scrollToSection(section, 'auto')
+            return
         }
+
+        scrollToSection(initialSection, 'auto')
+
+        // Skills/Projects/Blog fetch their data on mount and can grow the
+        // page after this jump, leaving the scroll position stale — keep
+        // correcting while the page is still settling from those fetches
+        const observer = new ResizeObserver(() => scrollToSection(initialSection, 'auto'))
+        observer.observe(document.body)
+        const settleTimer = setTimeout(() => observer.disconnect(), 2000)
+
+        return () => {
+            observer.disconnect()
+            clearTimeout(settleTimer)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section])
 
     // page-view beacon: fires once per mounted path, flushed with a duration
@@ -88,23 +90,22 @@ export const Editorial = ({ section = 'sec-home' }) => {
                 if (el && el.offsetTop <= y) active = s.id
             }
             setActiveSection(active)
+
+            // keep the address bar honest as you scroll — it otherwise stays
+            // stuck on whatever path/hash you arrived with (e.g. /project)
+            // even once you've scrolled well past that section. Plain
+            // history.replaceState, not react-router's navigate: this must
+            // never trigger a route match/remount, just update the URL text.
+            if (active !== lastSyncedSection.current) {
+                lastSyncedSection.current = active
+                const url = active === 'sec-home' ? '/' : `/#${active}`
+                window.history.replaceState(null, '', url)
+            }
         }
         onScroll()
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
-
-    const toggleTheme = () => {
-        setIsDark((prev) => {
-            const next = !prev
-            try {
-                localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light')
-            } catch {
-                // localStorage unavailable — theme just won't persist
-            }
-            return next
-        })
-    }
 
     const seo = sectionSeo[section] ?? sectionSeo['sec-home']
 
@@ -113,7 +114,6 @@ export const Editorial = ({ section = 'sec-home' }) => {
             <SeoHead title={seo.title} description={seo.description} />
             <RailNav
                 activeSection={activeSection}
-                onNavigate={(id) => scrollToSection(id)}
                 isDark={isDark}
                 onToggleTheme={toggleTheme}
             />
@@ -122,7 +122,7 @@ export const Editorial = ({ section = 'sec-home' }) => {
                 <About />
                 <Skills />
                 <Projects />
-                <Blog initialExpanded={expandedPostIndex >= 0 ? expandedPostIndex : null} />
+                <Blog />
                 <Contact />
             </main>
         </div>

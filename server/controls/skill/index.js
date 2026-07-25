@@ -1,4 +1,5 @@
 const Skill = require('../../model/skill/index');
+const { uploadImage } = require('../../utils/cloudniry');
 const ApiResponse = require('../../utils/api_response');
 
 const clamp_level = (level) => Math.max(0, Math.min(100, level));
@@ -28,10 +29,15 @@ class skill_controller {
                 return ApiResponse.error(res, "Skill already exists in this group", 400);
             }
 
+            let logo_url = logo;
+            if (req.file) {
+                logo_url = await uploadImage(req.file.path, 'portfolio_skills');
+            }
+
             const new_skill = await Skill.create({
                 name,
                 group,
-                logo,
+                logo: logo_url,
                 level: level === undefined ? 70 : clamp_level(level),
                 user_id,
             });
@@ -50,7 +56,11 @@ class skill_controller {
             const updates = {};
             if (name !== undefined) updates.name = name;
             if (group !== undefined) updates.group = group;
-            if (logo !== undefined) updates.logo = logo;
+            if (req.file) {
+                updates.logo = await uploadImage(req.file.path, 'portfolio_skills');
+            } else if (logo !== undefined) {
+                updates.logo = logo;
+            }
             if (level !== undefined) updates.level = clamp_level(level);
 
             const updated_skill = await Skill

@@ -1,58 +1,65 @@
-import React, { useState } from 'react'
-import { featuredPosts } from '@Pages/Blog/helper'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { api } from '@Pages/Admin/api'
+import ImageFallback from '@Component/ImageFallback'
 
-export const Blog = ({ initialExpanded = null }) => {
-    const [expandedPost, setExpandedPost] = useState(initialExpanded)
+const formatDate = (iso) =>
+    iso
+        ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+        : ''
+
+export const Blog = () => {
+    const [posts, setPosts] = useState([])
+    const [status, setStatus] = useState('loading')
+
+    useEffect(() => {
+        let cancelled = false
+        api.posts()
+            .then((data) => {
+                if (cancelled) return
+                setPosts(data)
+                setStatus('ready')
+            })
+            .catch(() => {
+                if (!cancelled) setStatus('error')
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [])
 
     return (
         <section id="sec-blog" className="st-editorial__section st-editorial__blog">
             <h2 className="st-editorial__heading">Notes</h2>
+
+            {status === 'error' && <p className="st-editorial__blog-status">Couldn't load posts — try again shortly.</p>}
+            {status === 'ready' && posts.length === 0 && (
+                <p className="st-editorial__blog-status">No notes published yet.</p>
+            )}
+
             <div className="st-editorial__blog-list">
-                {featuredPosts.map((post, index) => {
-                    const expanded = expandedPost === index
-                    return (
-                        <article className="st-editorial__blog-item" key={post.title}>
-                            <div
-                                className="st-editorial__blog-row"
-                                role="button"
-                                tabIndex={0}
-                                aria-expanded={expanded}
-                                onClick={() => setExpandedPost(expanded ? null : index)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault()
-                                        setExpandedPost(expanded ? null : index)
-                                    }
-                                }}
-                            >
+                {posts.map((post) => (
+                    <article className="st-editorial__blog-item" key={post._id}>
+                        <Link className="st-editorial__blog-row" to={`/blog/${post.slug}`}>
+                            {post.image ? (
                                 <img src={post.image} alt={post.title} loading="lazy" />
-                                <div className="st-editorial__blog-meta">
-                                    <div className="st-editorial__blog-tags">
-                                        <span>{post.category}</span>
-                                        <small>
-                                            {post.date} · {post.readTime}
-                                        </small>
-                                    </div>
-                                    <h3>{post.title}</h3>
-                                    <p>{post.excerpt}</p>
-                                </div>
-                                <span
-                                    className={`st-editorial__blog-chevron ${expanded ? 'is-open' : ''}`}
-                                    aria-hidden="true"
-                                >
-                                    ↓
-                                </span>
-                            </div>
-                            {expanded && (
-                                <div className="st-editorial__blog-content">
-                                    {post.content.map((paragraph) => (
-                                        <p key={paragraph.slice(0, 40)}>{paragraph}</p>
-                                    ))}
-                                </div>
+                            ) : (
+                                <ImageFallback />
                             )}
-                        </article>
-                    )
-                })}
+                            <div className="st-editorial__blog-meta">
+                                <div className="st-editorial__blog-tags">
+                                    <span>{post.category}</span>
+                                    <small>
+                                        {formatDate(post.createdAt)} · {post.read_time}
+                                    </small>
+                                </div>
+                                <h3>{post.title}</h3>
+                                {post.excerpt && <p>{post.excerpt}</p>}
+                            </div>
+                            <span className="st-editorial__see-more">Read post →</span>
+                        </Link>
+                    </article>
+                ))}
             </div>
         </section>
     )

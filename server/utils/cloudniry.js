@@ -8,11 +8,11 @@ cloudinary.config({
 });
 
 
-const uploadImage = async (filePath) => {
+const uploadImage = async (filePath, folder = 'portfolio_posts') => {
     if (!filePath) return null;
     try {
         const result = await cloudinary.uploader.upload(filePath, {
-            folder: 'portfolio_posts',
+            folder,
             use_filename: true,
             unique_filename: false,
             overwrite: true
