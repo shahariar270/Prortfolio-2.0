@@ -5,6 +5,7 @@ export const navItems = [
     { key: 'posts', label: 'Posts', icon: 'posts' },
     { key: 'skills', label: 'Skills', icon: 'skills' },
     { key: 'projects', label: 'Projects', icon: 'projects' },
+    { key: 'content', label: 'Content', icon: 'content' },
     { key: 'taxonomy', label: 'Taxonomy', icon: 'taxonomy' },
 ]
 
@@ -13,6 +14,7 @@ export const pageTitles = {
     posts: ['Posts', 'Create, edit, and publish your blog notes'],
     skills: ['Skills', 'Update your skills and proficiency levels'],
     projects: ['Projects', 'Showcase the work on your portfolio'],
+    content: ['Content', 'Edit the hero, about, and contact copy on your site'],
     taxonomy: ['Taxonomy', 'Manage post categories and skill groups'],
 }
 

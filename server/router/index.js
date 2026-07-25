@@ -7,6 +7,7 @@ const skill_router = require('./skill/index');
 const project_router = require('./project/index');
 const taxonomy_router = require('./taxonomy/index');
 const analytics_router = require('./analytics/index');
+const content_router = require('./content/index');
 
 router.use('/', contact_router);
 router.use('/auth', auth_router);
@@ -15,5 +16,6 @@ router.use('/api', skill_router);
 router.use('/api', project_router);
 router.use('/api', taxonomy_router);
 router.use('/api', analytics_router);
+router.use('/api', content_router);
 
 module.exports = router;

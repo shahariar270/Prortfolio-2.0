@@ -4,6 +4,7 @@ import skillsReducer from './slices/skillsSlice'
 import projectsReducer from './slices/projectsSlice'
 import taxonomiesReducer from './slices/taxonomiesSlice'
 import analyticsReducer from './slices/analyticsSlice'
+import contentReducer from './slices/contentSlice'
 
 export const store = configureStore({
     reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
         projects: projectsReducer,
         taxonomies: taxonomiesReducer,
         analytics: analyticsReducer,
+        content: contentReducer,
     },
 })

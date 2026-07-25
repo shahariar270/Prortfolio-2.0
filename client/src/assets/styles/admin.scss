@@ -940,6 +940,121 @@
         }
     }
 
+    /* ---------- Content (site copy) ---------- */
+
+    &__content-form {
+        display: grid;
+        gap: 20px;
+        max-width: 760px;
+
+        > .st-admin__card {
+            display: grid;
+            gap: 16px;
+        }
+    }
+
+    &__repeat-list {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    &__repeat-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 8px;
+        align-items: center;
+
+        &--social {
+            grid-template-columns: 1fr 1.4fr 1fr auto;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 13.5px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 9px;
+            background: var(--surface-muted);
+            color: var(--text-primary);
+
+            &:focus {
+                outline: none;
+                border-color: var(--color-primary);
+            }
+        }
+
+        > button {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-muted);
+            color: var(--text-secondary);
+            cursor: pointer;
+
+            &:hover {
+                border-color: var(--neg);
+                color: var(--neg);
+            }
+        }
+    }
+
+    &__repeat-block {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        background: var(--surface-muted);
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 13.5px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 9px;
+            background: var(--surface);
+            color: var(--text-primary);
+
+            &:focus {
+                outline: none;
+                border-color: var(--color-primary);
+            }
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+    }
+
+    &__repeat-block-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        strong {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        button {
+            border: none;
+            background: none;
+            padding: 0;
+            color: var(--neg);
+            font-size: 12.5px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+        }
+    }
+
     /* ---------- Taxonomy ---------- */
 
     &__view--taxonomy {

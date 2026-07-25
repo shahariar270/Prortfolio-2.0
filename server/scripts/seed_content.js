@@ -5,6 +5,7 @@ const Post = require('../model/post');
 const Skill = require('../model/skill');
 const Project = require('../model/project');
 const Taxonomy = require('../model/taxonomy');
+const SiteContent = require('../model/content');
 
 // Seeds the portfolio's current static content into MongoDB so the admin
 // panel and the live site have real data to start from: npm run seed:content
@@ -115,6 +116,76 @@ const POSTS = [
     },
 ];
 
+const SITE_CONTENT = {
+    hero: {
+        status: 'Available for work · Jhenaidah, Bangladesh',
+        headline: 'Shahariar builds web products for the AI era.',
+        highlight: 'AI era',
+        bio: 'React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop. Human judgment, machine speed.',
+        stats: [
+            { value: '10+', label: 'Core skills' },
+            { value: '4', label: 'Shipped projects' },
+            { value: '4', label: 'AI copilots' },
+            { value: '24h', label: 'Response' },
+        ],
+    },
+    about: {
+        bio: "I build scalable, high-performance web solutions with clean architecture. As a MERN specialist and WordPress expert, I lead a development team — and I've rebuilt my whole workflow around AI: Claude for planning and review, Cursor for pair-coding, Codex for agentic edits.",
+        experience: [
+            {
+                title: 'React Developer',
+                company: 'Kodezen',
+                period: 'Dec 2024 — Present',
+                points: [
+                    'Led development on a CRM plugin, coordinating implementation decisions and keeping the team focused on practical, maintainable delivery.',
+                    'Architected React-driven interfaces and optimized frontend workflows for cleaner state and better long-term scalability.',
+                    'Managed task breakdowns, reviewed code quality, and supported developers through technical blockers.',
+                ],
+            },
+            {
+                title: 'MERN Expense Tracker',
+                company: 'Full-Stack Project',
+                period: 'Project',
+                points: [
+                    'Built a MERN application for tracking expenses with structured data handling, reusable UI components, and practical dashboard flows.',
+                ],
+            },
+            {
+                title: 'E-commerce system',
+                company: 'Full-Stack Project',
+                period: 'Project',
+                points: [
+                    'Developed a full-featured MERN e-commerce platform with secure JWT auth, cart, order processing, and an admin dashboard.',
+                ],
+            },
+            {
+                title: 'YouTube Video Downloader',
+                company: 'Utility Project',
+                period: 'Project',
+                points: [
+                    'Developed a focused download utility with attention to usability, real-time API handling, and efficient frontend feedback states.',
+                ],
+            },
+        ],
+        education: [
+            { degree: 'B.Sc. in Computer Science & Engineering', status: 'currently pursuing' },
+            { degree: 'Diploma in Computer Engineering', status: 'completed' },
+        ],
+    },
+    contact: {
+        intro: 'Have a product to ship — or a codebase that needs AI-era velocity? Send a message; I reply within 24 hours.',
+        email: 'dev.shahariar.official@gmail.com',
+        phone: '+880 1410-270766',
+        location: 'Jhenaidah, Bangladesh',
+        social: [
+            { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shahariar270/', icon: 'st-icon--linkedin' },
+            { label: 'GitHub', href: 'https://github.com/shahariar270', icon: 'st-icon--github' },
+            { label: 'Facebook', href: 'https://www.facebook.com/shahariar270/', icon: 'st-icon--facebook' },
+        ],
+    },
+    footer: '© 2026 Shahariar — built with React, MERN & AI copilots.',
+};
+
 const seed = async () => {
     const db_url = process.env.DB_URL || 'mongodb://127.0.0.1:27017/portfolio';
     await mongoose.connect(db_url);
@@ -155,6 +226,13 @@ const seed = async () => {
         console.log(`Seeded ${PROJECTS.length} projects`);
     } else {
         console.log('Projects already present — skipped');
+    }
+
+    if (await SiteContent.countDocuments() === 0) {
+        await SiteContent.create({ ...SITE_CONTENT, user_id });
+        console.log('Seeded site content');
+    } else {
+        console.log('Site content already present — skipped');
     }
 
     await mongoose.disconnect();

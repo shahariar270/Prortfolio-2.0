@@ -1,22 +1,29 @@
-import React from 'react'
-import profileImg from '../../../assets/images/profile.jpg'
-import { experienceItems, educationItems } from '../helper'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchContent } from '../../../store/slices/contentSlice'
+import defaultProfileImg from '../../../assets/images/profile.jpg'
 
 export const About = () => {
+    const dispatch = useDispatch()
+    const content = useSelector((state) => state.content.data)
+
+    useEffect(() => {
+        dispatch(fetchContent())
+    }, [dispatch])
+
+    const about = content?.about
+    const experience = about?.experience || []
+    const education = about?.education || []
+
     return (
         <section id="sec-about" className="st-editorial__section st-editorial__about">
             <h2 className="st-editorial__heading">About</h2>
             <div className="st-editorial__about-grid">
-                <img className="st-editorial__about-photo" src={profileImg} alt="Shahariar" />
+                <img className="st-editorial__about-photo" src={about?.photo || defaultProfileImg} alt="Shahariar" />
                 <div className="st-editorial__about-body">
-                    <p className="st-editorial__about-lede">
-                        I build scalable, high-performance web solutions with clean architecture. As a MERN
-                        specialist and WordPress expert, I lead a development team — and I've rebuilt my whole
-                        workflow around AI: Claude for planning and review, Cursor for pair-coding, Codex for
-                        agentic edits.
-                    </p>
+                    {about?.bio && <p className="st-editorial__about-lede">{about.bio}</p>}
                     <div className="st-editorial__about-list">
-                        {experienceItems.map((exp) => (
+                        {experience.map((exp) => (
                             <article className="st-editorial__about-row" key={exp.title}>
                                 <span className="st-editorial__about-period">{exp.period}</span>
                                 <div>
@@ -24,23 +31,25 @@ export const About = () => {
                                         {exp.title} <span>— {exp.company}</span>
                                     </h3>
                                     <ul>
-                                        {exp.points.map((point) => (
+                                        {(exp.points || []).map((point) => (
                                             <li key={point}>{point}</li>
                                         ))}
                                     </ul>
                                 </div>
                             </article>
                         ))}
-                        <article className="st-editorial__about-row">
-                            <span className="st-editorial__about-period">Education</span>
-                            <div className="st-editorial__about-education">
-                                {educationItems.map((item) => (
-                                    <p key={item.degree}>
-                                        {item.degree} <span>— {item.status}</span>
-                                    </p>
-                                ))}
-                            </div>
-                        </article>
+                        {education.length > 0 && (
+                            <article className="st-editorial__about-row">
+                                <span className="st-editorial__about-period">Education</span>
+                                <div className="st-editorial__about-education">
+                                    {education.map((item) => (
+                                        <p key={item.degree}>
+                                            {item.degree} <span>— {item.status}</span>
+                                        </p>
+                                    ))}
+                                </div>
+                            </article>
+                        )}
                     </div>
                 </div>
             </div>

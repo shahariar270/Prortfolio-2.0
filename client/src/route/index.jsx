@@ -54,6 +54,7 @@ export const router = createBrowserRouter([
             { path: 'posts', lazy: adminExport('AdminPosts') },
             { path: 'skills', lazy: adminExport('AdminSkills') },
             { path: 'projects', lazy: adminExport('AdminProjects') },
+            { path: 'content', lazy: adminExport('AdminContent') },
             { path: 'taxonomy', lazy: adminExport('AdminTaxonomy') },
         ]
     },

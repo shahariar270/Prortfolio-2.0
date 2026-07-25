@@ -94,4 +94,7 @@ export const api = {
 
     analyticsSummary: (range) =>
         request(`/api/analytics/summary?range=${encodeURIComponent(range)}`, { auth: true }),
+
+    content: () => request('/api/content'),
+    updateContent: (body) => request('/api/content', { method: 'PUT', body, auth: true }),
 }

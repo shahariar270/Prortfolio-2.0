@@ -10,6 +10,7 @@ import { Analytics } from './Views/Analytics'
 import { Posts } from './Views/Posts'
 import { Skills } from './Views/Skills'
 import { Projects } from './Views/Projects'
+import { Content } from './Views/Content'
 import { Taxonomy } from './Views/Taxonomy'
 
 const THEME_STORAGE_KEY = 'portfolio-redesign-b-theme'
@@ -174,6 +175,11 @@ export const AdminSkills = () => {
 export const AdminProjects = () => {
     const { onError, onNotify } = useOutletContext()
     return <Projects onError={onError} onNotify={onNotify} />
+}
+
+export const AdminContent = () => {
+    const { onError, onNotify } = useOutletContext()
+    return <Content onError={onError} onNotify={onNotify} />
 }
 
 export const AdminTaxonomy = () => {
