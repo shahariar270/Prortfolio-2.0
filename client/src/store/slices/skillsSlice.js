@@ -38,6 +38,18 @@ export const createSkill = createAsyncThunk(
     }
 )
 
+export const deleteSkill = createAsyncThunk(
+    'skills/deleteSkill',
+    async (id, { rejectWithValue }) => {
+        try {
+            await api.deleteSkill(id)
+            return id
+        } catch (err) {
+            return rejectWithValue(toErrorPayload(err))
+        }
+    }
+)
+
 const skillsSlice = createSlice({
     name: 'skills',
     initialState: { items: [], loaded: false },
@@ -54,6 +66,9 @@ const skillsSlice = createSlice({
             })
             .addCase(createSkill.fulfilled, (state, action) => {
                 state.items.push(action.payload)
+            })
+            .addCase(deleteSkill.fulfilled, (state, action) => {
+                state.items = state.items.filter((skill) => skill._id !== action.payload)
             })
     },
 })

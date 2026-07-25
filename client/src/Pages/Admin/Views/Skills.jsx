@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { adjustSkillLevel as adjustSkillLevelThunk, createSkill, fetchSkills } from '../../../store/slices/skillsSlice'
+import { adjustSkillLevel as adjustSkillLevelThunk, createSkill, deleteSkill as deleteSkillThunk, fetchSkills } from '../../../store/slices/skillsSlice'
 import { fetchTaxonomies, selectSkillGroupLabels } from '../../../store/slices/taxonomiesSlice'
 import { skillLogoFor } from '../helper'
 import { SkillEditorModal } from '../SkillEditorModal'
@@ -37,6 +37,15 @@ export const Skills = ({ onError, onNotify }) => {
     const adjustLevel = async (index, delta) => {
         try {
             await dispatch(adjustSkillLevelThunk({ id: skills[index]._id, delta })).unwrap()
+        } catch (err) {
+            onError(err)
+        }
+    }
+
+    const removeSkill = async (id) => {
+        try {
+            await dispatch(deleteSkillThunk(id)).unwrap()
+            onNotify('Skill deleted')
         } catch (err) {
             onError(err)
         }
@@ -115,6 +124,14 @@ export const Skills = ({ onError, onNotify }) => {
                                                 onClick={() => adjustLevel(index, 4)}
                                             >
                                                 ＋
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="st-admin__skill-delete"
+                                                aria-label={`Delete ${skill.name}`}
+                                                onClick={() => removeSkill(skill._id)}
+                                            >
+                                                ✕
                                             </button>
                                         </div>
                                     </div>

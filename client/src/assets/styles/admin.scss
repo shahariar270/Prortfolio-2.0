@@ -933,6 +933,11 @@
                 border-color: var(--color-primary);
             }
         }
+
+        .st-admin__skill-delete:hover {
+            border-color: var(--neg);
+            color: var(--neg);
+        }
     }
 
     /* ---------- Taxonomy ---------- */

@@ -79,6 +79,7 @@ export const api = {
     createSkill: (body) => request('/api/skill', { method: 'POST', body, auth: true }),
     adjustSkillLevel: (id, delta) =>
         request(`/api/skill/${id}/level`, { method: 'PATCH', body: { delta }, auth: true }),
+    deleteSkill: (id) => request(`/api/skill/${id}`, { method: 'DELETE', auth: true }),
 
     projects: () => request('/api/projects'),
     projectBySlug: (slug) => request(`/api/projects/${slug}`),
