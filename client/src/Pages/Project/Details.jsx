@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
 import { RailNav } from '@Pages/Editorial/RailNav'
+import ImageFallback from '@Component/ImageFallback'
 import { useTheme } from '../../config/theme'
 import { sanitizeHtml } from '../../utils/sanitizeHtml'
 
@@ -66,11 +67,13 @@ export const ProjectDetails = () => {
             <article className="st-editorial-read__main">
                 <Link className="st-editorial-read__back" to="/project">← Back to Projects</Link>
 
-                {project.image && (
-                    <div className="st-editorial-read__hero">
+                <div className="st-editorial-read__hero">
+                    {project.image ? (
                         <img src={project.image} alt={project.label} />
-                    </div>
-                )}
+                    ) : (
+                        <ImageFallback />
+                    )}
+                </div>
 
                 <div className="st-editorial-read__meta">
                     <span>{project.type}</span>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '@Pages/Admin/api'
+import ImageFallback from '@Component/ImageFallback'
 
 const formatDate = (iso) =>
     iso
@@ -40,7 +41,11 @@ export const Blog = () => {
                 {posts.map((post) => (
                     <article className="st-editorial__blog-item" key={post._id}>
                         <Link className="st-editorial__blog-row" to={`/blog/${post.slug}`}>
-                            <img src={post.image} alt={post.title} loading="lazy" />
+                            {post.image ? (
+                                <img src={post.image} alt={post.title} loading="lazy" />
+                            ) : (
+                                <ImageFallback />
+                            )}
                             <div className="st-editorial__blog-meta">
                                 <div className="st-editorial__blog-tags">
                                     <span>{post.category}</span>

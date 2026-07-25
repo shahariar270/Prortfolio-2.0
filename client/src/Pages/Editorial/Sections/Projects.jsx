@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '@Pages/Admin/api'
 import { projectTabs } from '../helper'
 import { sanitizeHtml } from '../../../utils/sanitizeHtml'
+import ImageFallback from '@Component/ImageFallback'
 
 export const Projects = () => {
     const [tab, setTab] = useState('all')
@@ -55,7 +56,11 @@ export const Projects = () => {
                 {filteredProjects.map((project) => (
                     <div className="st-editorial__project-card" key={project._id}>
                         <div className="st-editorial__project-media">
-                            <img src={project.image} alt={`${project.label} preview`} loading="lazy" />
+                            {project.image ? (
+                                <img src={project.image} alt={`${project.label} preview`} loading="lazy" />
+                            ) : (
+                                <ImageFallback />
+                            )}
                         </div>
                         <div className="st-editorial__project-body">
                             <span className="st-editorial__project-type">{project.type}</span>
