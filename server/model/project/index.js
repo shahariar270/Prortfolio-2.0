@@ -32,7 +32,6 @@ const project_schema = new mongoose.Schema(
             type: String,
             default: '',
             trim: true,
-            maxlength: 4000,
         },
         technologies: {
             type: [String],
