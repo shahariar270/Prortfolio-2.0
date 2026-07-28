@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchContent } from '../../../store/slices/contentSlice'
+import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import Skeleton from '@Component/Skeleton'
 import defaultHeroImg from '../../../assets/images/home.jpg'
 
 // wraps the `highlight` substring of `headline` in <em>, preserving it as a
@@ -23,14 +24,33 @@ const renderHeadline = (headline, highlight) => {
 
 export const Hero = ({ onSeeWork }) => {
     const dispatch = useDispatch()
-    const content = useSelector((state) => state.content.data)
+    const content = useSelector((state) => state.bootstrap.content)
+    const loaded = useSelector((state) => state.bootstrap.loaded)
 
     useEffect(() => {
-        dispatch(fetchContent())
+        dispatch(fetchBootstrap())
     }, [dispatch])
 
     const hero = content?.hero
     const stats = hero?.stats || []
+
+    if (!loaded) {
+        return (
+            <section id="sec-home" className="st-editorial__hero">
+                <div className="st-editorial__hero-top">
+                    <div className="st-editorial__hero-intro st-editorial__skeleton-group">
+                        <Skeleton width="55%" height="1em" />
+                        <Skeleton width="90%" height="2.4em" />
+                        <Skeleton width="70%" height="2.4em" />
+                        <Skeleton width="80%" height="1em" />
+                    </div>
+                    <div className="st-editorial__hero-media">
+                        <Skeleton className="st-editorial__skeleton-card" width="100%" height="100%" />
+                    </div>
+                </div>
+            </section>
+        )
+    }
 
     return (
         <section id="sec-home" className="st-editorial__hero">

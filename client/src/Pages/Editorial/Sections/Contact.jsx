@@ -2,14 +2,14 @@ import React, { useEffect } from 'react'
 import { Field, Form, Formik } from 'formik'
 import { useDispatch, useSelector } from 'react-redux'
 import { API_URL } from '../../../config/api'
-import { fetchContent } from '../../../store/slices/contentSlice'
+import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
 
 export const Contact = () => {
     const dispatch = useDispatch()
-    const content = useSelector((state) => state.content.data)
+    const content = useSelector((state) => state.bootstrap.content)
 
     useEffect(() => {
-        dispatch(fetchContent())
+        dispatch(fetchBootstrap())
     }, [dispatch])
 
     const contact = content?.contact

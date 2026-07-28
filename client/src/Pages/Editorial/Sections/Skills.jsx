@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { api } from '@Pages/Admin/api'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import Skeleton from '@Component/Skeleton'
 
 const groupSkills = (skills) => {
     const order = []
@@ -15,33 +17,43 @@ const groupSkills = (skills) => {
 }
 
 export const Skills = () => {
-    const [skills, setSkills] = useState([])
-    const [status, setStatus] = useState('loading')
+    const dispatch = useDispatch()
+    const skills = useSelector((state) => state.bootstrap.skills)
+    const status = useSelector((state) => state.bootstrap.status)
+    const loaded = useSelector((state) => state.bootstrap.loaded)
 
     useEffect(() => {
-        let cancelled = false
-        api.skills()
-            .then((data) => {
-                if (cancelled) return
-                setSkills(data)
-                setStatus('ready')
-            })
-            .catch(() => {
-                if (!cancelled) setStatus('error')
-            })
-        return () => {
-            cancelled = true
-        }
-    }, [])
+        dispatch(fetchBootstrap())
+    }, [dispatch])
 
     const categories = groupSkills(skills)
+
+    if (!loaded && status !== 'failed') {
+        return (
+            <section id="sec-skill" className="st-editorial__section st-editorial__skills">
+                <h2 className="st-editorial__heading">Skills &amp; AI stack</h2>
+                <div className="st-editorial__skills-list">
+                    {[1, 2, 3].map((row) => (
+                        <div className="st-editorial__skills-row st-editorial__skeleton-group" key={row}>
+                            <Skeleton width="140px" height="1.1em" />
+                            <div className="st-editorial__skeleton-row">
+                                {[1, 2, 3, 4].map((chip) => (
+                                    <Skeleton key={chip} className="st-editorial__skeleton-chip" />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        )
+    }
 
     return (
         <section id="sec-skill" className="st-editorial__section st-editorial__skills">
             <h2 className="st-editorial__heading">Skills &amp; AI stack</h2>
 
-            {status === 'error' && <p className="st-editorial__skills-status">Couldn't load skills — try again shortly.</p>}
-            {status === 'ready' && categories.length === 0 && (
+            {status === 'failed' && <p className="st-editorial__skills-status">Couldn't load skills — try again shortly.</p>}
+            {status !== 'failed' && categories.length === 0 && (
                 <p className="st-editorial__skills-status">No skills added yet.</p>
             )}
 

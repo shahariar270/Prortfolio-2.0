@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
+import { fetchBootstrap } from '../../store/slices/bootstrapSlice'
 import { RailNav } from '@Pages/Editorial/RailNav'
 import ImageFallback from '@Component/ImageFallback'
 import { useTheme } from '../../config/theme'
@@ -14,25 +16,18 @@ const formatDate = (iso) =>
 
 export const BlogDetails = () => {
     const { slug } = useParams()
+    const dispatch = useDispatch()
     const [isDark, toggleTheme] = useTheme()
     // keyed by slug so a param change is recognized as "loading" again
     // without setting state synchronously in the effect body
     const [result, setResult] = useState({ slug: null, status: 'loading', post: null })
-    // sidebar list of other notes — fetched once, independent of which post
-    // is currently open
-    const [otherPosts, setOtherPosts] = useState([])
+    // sidebar list of other notes — shares the bootstrap cache with the
+    // Editorial page, so arriving here from "/" costs no extra request
+    const otherPosts = useSelector((state) => state.bootstrap.posts)
 
     useEffect(() => {
-        let cancelled = false
-        api.posts()
-            .then((data) => {
-                if (!cancelled) setOtherPosts(data)
-            })
-            .catch(() => {})
-        return () => {
-            cancelled = true
-        }
-    }, [])
+        dispatch(fetchBootstrap())
+    }, [dispatch])
 
     useEffect(() => {
         let cancelled = false

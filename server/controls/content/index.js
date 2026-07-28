@@ -87,13 +87,20 @@ const DEFAULTS = {
 };
 
 class content_controller {
+    // shared by get_content and the bootstrap controller so the
+    // create-default-on-first-read logic only lives in one place
+    async get_content_doc() {
+        let content = await SiteContent.findOne();
+        if (!content) {
+            content = await SiteContent.create({ ...DEFAULTS, user_id: 'system' });
+        }
+        return content;
+    }
+
     // public: powers Hero/About/Contact on the live site
     async get_content(req, res) {
         try {
-            let content = await SiteContent.findOne();
-            if (!content) {
-                content = await SiteContent.create({ ...DEFAULTS, user_id: 'system' });
-            }
+            const content = await this.get_content_doc();
             return ApiResponse.success(res, 'Content retrieved successfully', content);
         } catch (error) {
             return ApiResponse.error(res, 'Error retrieving content', 500, error.message);

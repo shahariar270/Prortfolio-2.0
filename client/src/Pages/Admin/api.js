@@ -97,4 +97,8 @@ export const api = {
 
     content: () => request('/api/content'),
     updateContent: (body) => request('/api/content', { method: 'PUT', body, auth: true }),
+
+    // combines content + skills + projects + posts into one request — used
+    // by the public site instead of each section fetching independently
+    bootstrap: () => request('/api/bootstrap'),
 }
