@@ -601,13 +601,14 @@ a {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 24px;
-        align-items: start;
+        align-items: stretch;
     }
 
     &__project-card {
         display: flex;
         flex-direction: column;
         gap: 18px;
+        height: 100%;
         padding: clamp(18px, 2.5vw, 24px);
         border-radius: 4px;
         background: var(--layout-bg);
@@ -635,8 +636,10 @@ a {
     }
 
     &__project-body {
-        display: grid;
+        display: flex;
+        flex-direction: column;
         gap: 14px;
+        flex: 1;
 
         h3 {
             @include display-font;
@@ -705,6 +708,7 @@ a {
         gap: 10px;
         align-items: center;
         padding-top: 4px;
+        margin-top: auto;
     }
 
     &__project-demo {
