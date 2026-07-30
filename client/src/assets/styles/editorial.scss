@@ -911,6 +911,12 @@ a {
             background: var(--accent-soft);
             color: var(--color-primary);
         }
+
+        &.is-active {
+            background: var(--accent-soft);
+            color: var(--color-primary);
+            font-weight: 800;
+        }
     }
 
     &-read__content {
