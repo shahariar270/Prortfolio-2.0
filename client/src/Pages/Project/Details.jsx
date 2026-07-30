@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
+import { fetchBootstrap } from '../../store/slices/bootstrapSlice'
 import { RailNav } from '@Pages/Editorial/RailNav'
 import ImageFallback from '@Component/ImageFallback'
 import { useTheme } from '../../config/theme'
@@ -9,10 +11,23 @@ import { sanitizeHtml } from '../../utils/sanitizeHtml'
 
 export const ProjectDetails = () => {
     const { slug } = useParams()
+    const dispatch = useDispatch()
     const [isDark, toggleTheme] = useTheme()
     // keyed by slug so a param change is recognized as "loading" again
     // without setting state synchronously in the effect body
     const [result, setResult] = useState({ slug: null, status: 'loading', project: null })
+    // sidebar list of other projects — shares the bootstrap cache with the
+    // Editorial page, so arriving here from "/" costs no extra request
+    const otherProjects = useSelector((state) => state.bootstrap.projects)
+    // the bootstrap list already carries full project content, so a project
+    // reached via the sidebar can render instantly from cache instead of
+    // waiting on a fresh fetch — this is what removes the loading flash
+    // when jumping between projects
+    const cachedProject = otherProjects.find((p) => p.slug === slug) || null
+
+    useEffect(() => {
+        dispatch(fetchBootstrap())
+    }, [dispatch])
 
     useEffect(() => {
         let cancelled = false
@@ -29,8 +44,32 @@ export const ProjectDetails = () => {
         }
     }, [slug])
 
-    const status = result.slug === slug ? result.status : 'loading'
-    const project = result.slug === slug ? result.project : null
+    // switching projects should feel instant, not reset scroll wherever the
+    // previous project happened to leave it
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [slug])
+
+    const fetched = result.slug === slug ? result : null
+    const project = fetched?.project || cachedProject
+    const status = fetched?.status === 'ready' || cachedProject ? 'ready' : (fetched?.status || 'loading')
+
+    const sidebar = otherProjects.length > 0 && (
+        <aside className="st-editorial-read__sidebar">
+            <h2>Other projects</h2>
+            <nav>
+                {otherProjects.map((p) => (
+                    <Link
+                        key={p._id}
+                        to={`/project/${p.slug}`}
+                        className={`st-editorial-read__sidebar-link ${p.slug === slug ? 'is-active' : ''}`}
+                    >
+                        {p.label}
+                    </Link>
+                ))}
+            </nav>
+        </aside>
+    )
 
     if (status === 'loading') {
         return (
@@ -64,49 +103,54 @@ export const ProjectDetails = () => {
                 type="article"
             />
             <RailNav activeSection="sec-project" isDark={isDark} onToggleTheme={toggleTheme} />
-            <article className="st-editorial-read__main">
-                <Link className="st-editorial-read__back" to="/project">← Back to Projects</Link>
+            <main className="st-editorial-read__main">
+                <div className="st-editorial-read__layout">
+                    {sidebar}
+                    <article className="st-editorial-read__content">
+                        <Link className="st-editorial-read__back" to="/project">← Back to Projects</Link>
 
-                <div className="st-editorial-read__hero">
-                    {project.image ? (
-                        <img src={project.image} alt={project.label} />
-                    ) : (
-                        <ImageFallback />
-                    )}
+                        <div className="st-editorial-read__hero">
+                            {project.image ? (
+                                <img src={project.image} alt={project.label} />
+                            ) : (
+                                <ImageFallback />
+                            )}
+                        </div>
+
+                        <div className="st-editorial-read__meta">
+                            <span>{project.type}</span>
+                        </div>
+                        <h1 className="st-editorial-read__title">{project.label}</h1>
+
+                        <div
+                            className="st-editorial-read__body"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.description) }}
+                        />
+
+                        {project.technologies?.length > 0 && (
+                            <div className="st-editorial-read__tech">
+                                {project.technologies.map((tech) => (
+                                    <span key={tech}>{tech}</span>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="st-editorial-read__links">
+                            {project.liveDemo && (
+                                <a
+                                    href={project.liveDemo}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="st-editorial__project-demo"
+                                >
+                                    Live Demo →
+                                </a>
+                            )}
+                            <span className="st-editorial__project-locked">Source 🔒</span>
+                        </div>
+                    </article>
                 </div>
-
-                <div className="st-editorial-read__meta">
-                    <span>{project.type}</span>
-                </div>
-                <h1 className="st-editorial-read__title">{project.label}</h1>
-
-                <div
-                    className="st-editorial-read__body"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.description) }}
-                />
-
-                {project.technologies?.length > 0 && (
-                    <div className="st-editorial-read__tech">
-                        {project.technologies.map((tech) => (
-                            <span key={tech}>{tech}</span>
-                        ))}
-                    </div>
-                )}
-
-                <div className="st-editorial-read__links">
-                    {project.liveDemo && (
-                        <a
-                            href={project.liveDemo}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="st-editorial__project-demo"
-                        >
-                            Live Demo →
-                        </a>
-                    )}
-                    <span className="st-editorial__project-locked">Source 🔒</span>
-                </div>
-            </article>
+            </main>
         </div>
     )
 }
