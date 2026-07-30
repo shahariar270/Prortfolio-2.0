@@ -2,8 +2,8 @@ export const sections = [
     { label: 'Home', id: 'sec-home', icon: 'home' },
     { label: 'About', id: 'sec-about', icon: 'about' },
     { label: 'Skills', id: 'sec-skill', icon: 'skills' },
-    { label: 'Work', id: 'sec-project', icon: 'work' },
-    { label: 'Notes', id: 'sec-blog', icon: 'notes' },
+    { label: 'Projects', id: 'sec-project', icon: 'work' },
+    { label: 'Blog', id: 'sec-blog', icon: 'notes' },
     { label: 'Contact', id: 'sec-contact', icon: 'contact' },
 ]
 
