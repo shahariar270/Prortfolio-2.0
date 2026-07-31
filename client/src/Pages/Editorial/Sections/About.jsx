@@ -1,23 +1,47 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchContent } from '../../../store/slices/contentSlice'
+import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import Skeleton from '@Component/Skeleton'
 import defaultProfileImg from '../../../assets/images/profile.jpg'
 
 export const About = () => {
     const dispatch = useDispatch()
-    const content = useSelector((state) => state.content.data)
+    const content = useSelector((state) => state.bootstrap.content)
+    const loaded = useSelector((state) => state.bootstrap.loaded)
+    const status = useSelector((state) => state.bootstrap.status)
 
     useEffect(() => {
-        dispatch(fetchContent())
+        dispatch(fetchBootstrap())
     }, [dispatch])
 
     const about = content?.about
     const experience = about?.experience || []
     const education = about?.education || []
 
+    if (!loaded && status !== 'failed') {
+        return (
+            <section id="sec-about" className="st-editorial__section st-editorial__about">
+                <h2 className="st-editorial__heading">About</h2>
+                <div className="st-editorial__about-grid">
+                    <Skeleton className="st-editorial__about-photo" width="100%" height="320px" />
+                    <div className="st-editorial__about-body st-editorial__skeleton-group">
+                        <Skeleton width="95%" height="1.2em" />
+                        <Skeleton width="85%" height="1.2em" />
+                        <Skeleton width="60%" height="1.2em" />
+                        <Skeleton width="100%" height="90px" />
+                        <Skeleton width="100%" height="90px" />
+                    </div>
+                </div>
+            </section>
+        )
+    }
+
     return (
         <section id="sec-about" className="st-editorial__section st-editorial__about">
             <h2 className="st-editorial__heading">About</h2>
+            {status === 'failed' && !about && (
+                <p className="st-editorial__about-status">Couldn't load — please refresh.</p>
+            )}
             <div className="st-editorial__about-grid">
                 <img className="st-editorial__about-photo" src={about?.photo || defaultProfileImg} alt="Shahariar" />
                 <div className="st-editorial__about-body">

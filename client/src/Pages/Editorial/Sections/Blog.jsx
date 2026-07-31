@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { api } from '@Pages/Admin/api'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import Skeleton from '@Component/Skeleton'
 import ImageFallback from '@Component/ImageFallback'
 
 const formatDate = (iso) =>
@@ -9,31 +11,38 @@ const formatDate = (iso) =>
         : ''
 
 export const Blog = () => {
-    const [posts, setPosts] = useState([])
-    const [status, setStatus] = useState('loading')
+    const dispatch = useDispatch()
+    const posts = useSelector((state) => state.bootstrap.posts)
+    const status = useSelector((state) => state.bootstrap.status)
+    const loaded = useSelector((state) => state.bootstrap.loaded)
 
     useEffect(() => {
-        let cancelled = false
-        api.posts()
-            .then((data) => {
-                if (cancelled) return
-                setPosts(data)
-                setStatus('ready')
-            })
-            .catch(() => {
-                if (!cancelled) setStatus('error')
-            })
-        return () => {
-            cancelled = true
-        }
-    }, [])
+        dispatch(fetchBootstrap())
+    }, [dispatch])
+
+    if (!loaded && status !== 'failed') {
+        return (
+            <section id="sec-blog" className="st-editorial__section st-editorial__blog">
+                <h2 className="st-editorial__heading">Notes</h2>
+                <div className="st-editorial__blog-list">
+                    {[1, 2, 3].map((item) => (
+                        <div className="st-editorial__blog-item st-editorial__skeleton-group" key={item}>
+                            <Skeleton width="100%" height="160px" />
+                            <Skeleton width="40%" height="1em" />
+                            <Skeleton width="80%" height="1.2em" />
+                        </div>
+                    ))}
+                </div>
+            </section>
+        )
+    }
 
     return (
         <section id="sec-blog" className="st-editorial__section st-editorial__blog">
             <h2 className="st-editorial__heading">Notes</h2>
 
-            {status === 'error' && <p className="st-editorial__blog-status">Couldn't load posts — try again shortly.</p>}
-            {status === 'ready' && posts.length === 0 && (
+            {status === 'failed' && <p className="st-editorial__blog-status">Couldn't load posts — try again shortly.</p>}
+            {status !== 'failed' && posts.length === 0 && (
                 <p className="st-editorial__blog-status">No notes published yet.</p>
             )}
 

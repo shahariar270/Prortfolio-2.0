@@ -145,7 +145,11 @@ export const Posts = ({ onError, onNotify }) => {
                 )}
                 {posts.map((post) => (
                     <div className="st-admin__card st-admin__post" key={post._id}>
-                        <img src={post.image} alt={post.title} />
+                        {post.image ? (
+                            <img src={post.image} alt={post.title} />
+                        ) : (
+                            <div className="st-admin__img-placeholder" />
+                        )}
                         <div className="st-admin__post-body">
                             <div className="st-admin__post-tags">
                                 <span className="st-admin__chip">{post.category}</span>

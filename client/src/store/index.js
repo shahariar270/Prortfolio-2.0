@@ -5,6 +5,7 @@ import projectsReducer from './slices/projectsSlice'
 import taxonomiesReducer from './slices/taxonomiesSlice'
 import analyticsReducer from './slices/analyticsSlice'
 import contentReducer from './slices/contentSlice'
+import bootstrapReducer from './slices/bootstrapSlice'
 
 export const store = configureStore({
     reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
         taxonomies: taxonomiesReducer,
         analytics: analyticsReducer,
         content: contentReducer,
+        bootstrap: bootstrapReducer,
     },
 })

@@ -14,6 +14,12 @@ const site_content_schema = new mongoose.Schema(
             bio: { type: String, default: '', trim: true },
             // falls back to the bundled default image on the frontend when empty
             image: { type: String, default: '', trim: true },
+            // role titles the hero rotates through one at a time, e.g.
+            // "Software Engineer" -> "AI-Driven Developer" -> "WordPress Expert"
+            roles: {
+                type: [String],
+                default: [],
+            },
             stats: {
                 type: [{ value: String, label: String, _id: false }],
                 default: [],

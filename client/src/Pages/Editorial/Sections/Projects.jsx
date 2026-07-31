@@ -1,33 +1,40 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { api } from '@Pages/Admin/api'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import Skeleton from '@Component/Skeleton'
 import { projectTabs } from '../helper'
 import { sanitizeHtml } from '../../../utils/sanitizeHtml'
 import ImageFallback from '@Component/ImageFallback'
 
 export const Projects = () => {
+    const dispatch = useDispatch()
     const [tab, setTab] = useState('all')
-    const [projects, setProjects] = useState([])
-    const [status, setStatus] = useState('loading')
+    const projects = useSelector((state) => state.bootstrap.projects)
+    const status = useSelector((state) => state.bootstrap.status)
+    const loaded = useSelector((state) => state.bootstrap.loaded)
 
     useEffect(() => {
-        let cancelled = false
-        api.projects()
-            .then((data) => {
-                if (cancelled) return
-                setProjects(data)
-                setStatus('ready')
-            })
-            .catch(() => {
-                if (!cancelled) setStatus('error')
-            })
-        return () => {
-            cancelled = true
-        }
-    }, [])
+        dispatch(fetchBootstrap())
+    }, [dispatch])
 
     const filteredProjects =
         tab === 'all' ? projects : projects.filter((project) => project.category === tab)
+
+    if (!loaded && status !== 'failed') {
+        return (
+            <section id="sec-project" className="st-editorial__section st-editorial__projects">
+                <div className="st-editorial__projects-head">
+                    <h2 className="st-editorial__heading">Projects</h2>
+                </div>
+                <div className="st-editorial__projects-list st-editorial__skeleton-row">
+                    {[1, 2, 3, 4].map((card) => (
+                        <Skeleton key={card} className="st-editorial__skeleton-card" />
+                    ))}
+                </div>
+            </section>
+        )
+    }
 
     return (
         <section id="sec-project" className="st-editorial__section st-editorial__projects">
@@ -47,8 +54,8 @@ export const Projects = () => {
                 </div>
             </div>
 
-            {status === 'error' && <p className="st-editorial__projects-status">Couldn't load projects — try again shortly.</p>}
-            {status === 'ready' && filteredProjects.length === 0 && (
+            {status === 'failed' && <p className="st-editorial__projects-status">Couldn't load projects — try again shortly.</p>}
+            {status !== 'failed' && filteredProjects.length === 0 && (
                 <p className="st-editorial__projects-status">No projects to show yet.</p>
             )}
 

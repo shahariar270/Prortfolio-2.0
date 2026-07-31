@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
+import { fetchBootstrap } from '../../store/slices/bootstrapSlice'
 import { RailNav } from '@Pages/Editorial/RailNav'
 import ImageFallback from '@Component/ImageFallback'
 import { useTheme } from '../../config/theme'
@@ -14,25 +16,23 @@ const formatDate = (iso) =>
 
 export const BlogDetails = () => {
     const { slug } = useParams()
+    const dispatch = useDispatch()
     const [isDark, toggleTheme] = useTheme()
     // keyed by slug so a param change is recognized as "loading" again
     // without setting state synchronously in the effect body
     const [result, setResult] = useState({ slug: null, status: 'loading', post: null })
-    // sidebar list of other notes — fetched once, independent of which post
-    // is currently open
-    const [otherPosts, setOtherPosts] = useState([])
+    // sidebar list of other notes — shares the bootstrap cache with the
+    // Editorial page, so arriving here from "/" costs no extra request
+    const otherPosts = useSelector((state) => state.bootstrap.posts)
+    // the bootstrap list already carries full post content, so a post
+    // reached via the sidebar can render instantly from cache instead of
+    // waiting on a fresh fetch — this is what removes the loading flash
+    // when jumping between notes
+    const cachedPost = otherPosts.find((p) => p.slug === slug) || null
 
     useEffect(() => {
-        let cancelled = false
-        api.posts()
-            .then((data) => {
-                if (!cancelled) setOtherPosts(data)
-            })
-            .catch(() => {})
-        return () => {
-            cancelled = true
-        }
-    }, [])
+        dispatch(fetchBootstrap())
+    }, [dispatch])
 
     useEffect(() => {
         let cancelled = false
@@ -50,16 +50,26 @@ export const BlogDetails = () => {
         }
     }, [slug])
 
-    const status = result.slug === slug ? result.status : 'loading'
-    const post = result.slug === slug ? result.post : null
-    const sidebarPosts = otherPosts.filter((p) => p.slug !== slug)
+    // switching notes should feel instant, not reset scroll wherever the
+    // previous article happened to leave it
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [slug])
 
-    const sidebar = sidebarPosts.length > 0 && (
+    const fetched = result.slug === slug ? result : null
+    const post = fetched?.post || cachedPost
+    const status = fetched?.status === 'ready' || cachedPost ? 'ready' : (fetched?.status || 'loading')
+
+    const sidebar = otherPosts.length > 0 && (
         <aside className="st-editorial-read__sidebar">
             <h2>Other notes</h2>
             <nav>
-                {sidebarPosts.map((p) => (
-                    <Link key={p._id} to={`/blog/${p.slug}`} className="st-editorial-read__sidebar-link">
+                {otherPosts.map((p) => (
+                    <Link
+                        key={p._id}
+                        to={`/blog/${p.slug}`}
+                        className={`st-editorial-read__sidebar-link ${p.slug === slug ? 'is-active' : ''}`}
+                    >
                         {p.title}
                     </Link>
                 ))}

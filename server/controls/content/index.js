@@ -19,9 +19,10 @@ const parse_field = (value) => {
 const DEFAULTS = {
     hero: {
         status: 'Available for work · Jhenaidah, Bangladesh',
-        headline: 'Shahariar builds web products for the AI era.',
-        highlight: 'AI era',
+        headline: 'Hey there, I\'m Shahariar',
+        highlight: '',
         bio: 'React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop. Human judgment, machine speed.',
+        roles: ['Software Engineer', 'AI-Driven Developer', 'WordPress Expert'],
         stats: [
             { value: '10+', label: 'Core skills' },
             { value: '4', label: 'Shipped projects' },
@@ -86,14 +87,24 @@ const DEFAULTS = {
     footer: '© 2026 Shahariar — built with React, MERN & AI copilots.',
 };
 
+// shared by get_content and the bootstrap controller so the
+// create-default-on-first-read logic only lives in one place — a plain
+// function rather than a class method, since routes call get_content as a
+// bare reference (router.get('/content', content_controller.get_content)),
+// which strips `this` when Express invokes it
+const get_content_doc = async () => {
+    let content = await SiteContent.findOne();
+    if (!content) {
+        content = await SiteContent.create({ ...DEFAULTS, user_id: 'system' });
+    }
+    return content;
+};
+
 class content_controller {
     // public: powers Hero/About/Contact on the live site
     async get_content(req, res) {
         try {
-            let content = await SiteContent.findOne();
-            if (!content) {
-                content = await SiteContent.create({ ...DEFAULTS, user_id: 'system' });
-            }
+            const content = await get_content_doc();
             return ApiResponse.success(res, 'Content retrieved successfully', content);
         } catch (error) {
             return ApiResponse.error(res, 'Error retrieving content', 500, error.message);
@@ -128,4 +139,6 @@ class content_controller {
     }
 }
 
-module.exports = new content_controller;
+const instance = new content_controller;
+instance.get_content_doc = get_content_doc;
+module.exports = instance;

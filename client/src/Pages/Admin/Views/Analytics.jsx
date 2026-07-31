@@ -101,8 +101,8 @@ export const Analytics = ({ onError }) => {
                         <p className="st-admin__empty">No traffic recorded yet for this range.</p>
                     ) : (
                         <div className="st-admin__chart">
-                            {chart.map((bar) => (
-                                <div className="st-admin__chart-col" key={bar.label}>
+                            {chart.map((bar, i) => (
+                                <div className="st-admin__chart-col" key={`${bar.label}-${i}`}>
                                     <div
                                         className="st-admin__chart-bar"
                                         title={`${bar.value} visitors`}

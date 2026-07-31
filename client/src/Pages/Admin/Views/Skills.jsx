@@ -102,7 +102,11 @@ export const Skills = ({ onError, onNotify }) => {
                                 const index = skills.indexOf(skill)
                                 return (
                                     <div className="st-admin__skill-row" key={skill._id ?? skill.name}>
-                                        <img src={skill.logo} alt="" loading="lazy" />
+                                        {skill.logo ? (
+                                            <img src={skill.logo} alt="" loading="lazy" />
+                                        ) : (
+                                            <div className="st-admin__img-placeholder" />
+                                        )}
                                         <span className="st-admin__skill-name">{skill.name}</span>
                                         <div className="st-admin__skill-level">
                                             <div className="st-admin__meter">
