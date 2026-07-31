@@ -8,6 +8,7 @@ export const About = () => {
     const dispatch = useDispatch()
     const content = useSelector((state) => state.bootstrap.content)
     const loaded = useSelector((state) => state.bootstrap.loaded)
+    const status = useSelector((state) => state.bootstrap.status)
 
     useEffect(() => {
         dispatch(fetchBootstrap())
@@ -17,7 +18,7 @@ export const About = () => {
     const experience = about?.experience || []
     const education = about?.education || []
 
-    if (!loaded) {
+    if (!loaded && status !== 'failed') {
         return (
             <section id="sec-about" className="st-editorial__section st-editorial__about">
                 <h2 className="st-editorial__heading">About</h2>
@@ -38,6 +39,9 @@ export const About = () => {
     return (
         <section id="sec-about" className="st-editorial__section st-editorial__about">
             <h2 className="st-editorial__heading">About</h2>
+            {status === 'failed' && !about && (
+                <p className="st-editorial__about-status">Couldn't load — please refresh.</p>
+            )}
             <div className="st-editorial__about-grid">
                 <img className="st-editorial__about-photo" src={about?.photo || defaultProfileImg} alt="Shahariar" />
                 <div className="st-editorial__about-body">

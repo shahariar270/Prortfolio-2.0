@@ -26,6 +26,7 @@ export const Hero = ({ onSeeWork }) => {
     const dispatch = useDispatch()
     const content = useSelector((state) => state.bootstrap.content)
     const loaded = useSelector((state) => state.bootstrap.loaded)
+    const status = useSelector((state) => state.bootstrap.status)
 
     useEffect(() => {
         dispatch(fetchBootstrap())
@@ -34,7 +35,7 @@ export const Hero = ({ onSeeWork }) => {
     const hero = content?.hero
     const stats = hero?.stats || []
 
-    if (!loaded) {
+    if (!loaded && status !== 'failed') {
         return (
             <section id="sec-home" className="st-editorial__hero">
                 <div className="st-editorial__hero-top">
@@ -56,6 +57,9 @@ export const Hero = ({ onSeeWork }) => {
         <section id="sec-home" className="st-editorial__hero">
             <div className="st-editorial__hero-top">
                 <div className="st-editorial__hero-intro">
+                    {status === 'failed' && !hero && (
+                        <p className="st-editorial__hero-status">Couldn't load — please refresh.</p>
+                    )}
                     {hero?.status && <p className="st-editorial__hero-status">{hero.status}</p>}
                     {hero?.headline && <h1>{renderHeadline(hero.headline, hero.highlight)}</h1>}
                     <div className="st-editorial__hero-row">
