@@ -86,21 +86,24 @@ const DEFAULTS = {
     footer: '© 2026 Shahariar — built with React, MERN & AI copilots.',
 };
 
-class content_controller {
-    // shared by get_content and the bootstrap controller so the
-    // create-default-on-first-read logic only lives in one place
-    async get_content_doc() {
-        let content = await SiteContent.findOne();
-        if (!content) {
-            content = await SiteContent.create({ ...DEFAULTS, user_id: 'system' });
-        }
-        return content;
+// shared by get_content and the bootstrap controller so the
+// create-default-on-first-read logic only lives in one place — a plain
+// function rather than a class method, since routes call get_content as a
+// bare reference (router.get('/content', content_controller.get_content)),
+// which strips `this` when Express invokes it
+const get_content_doc = async () => {
+    let content = await SiteContent.findOne();
+    if (!content) {
+        content = await SiteContent.create({ ...DEFAULTS, user_id: 'system' });
     }
+    return content;
+};
 
+class content_controller {
     // public: powers Hero/About/Contact on the live site
     async get_content(req, res) {
         try {
-            const content = await this.get_content_doc();
+            const content = await get_content_doc();
             return ApiResponse.success(res, 'Content retrieved successfully', content);
         } catch (error) {
             return ApiResponse.error(res, 'Error retrieving content', 500, error.message);
@@ -135,4 +138,6 @@ class content_controller {
     }
 }
 
-module.exports = new content_controller;
+const instance = new content_controller;
+instance.get_content_doc = get_content_doc;
+module.exports = instance;
