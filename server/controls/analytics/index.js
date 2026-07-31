@@ -117,10 +117,19 @@ class analytics_controller {
                 }])
             );
 
-            // chart: unique visitors bucketed by day / week / month
+            // chart: unique visitors bucketed by day / week / month — for day
+            // buckets, align the window to whole calendar days rather than
+            // reusing `since` (now minus exactly 7*24h). A window exactly one
+            // week wide always starts and ends on the same weekday, so with
+            // traffic on both boundary days it produces two buckets sharing
+            // one weekday label (e.g. "Fri" twice) — align to day boundaries
+            // so the range covers exactly `days` distinct calendar dates.
             const unit = CHART_UNIT[range];
+            const chart_since = unit === 'day'
+                ? new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - (days - 1)))
+                : since;
             const buckets = await PageView.aggregate([
-                { $match: { createdAt: { $gte: since, $lt: now } } },
+                { $match: { createdAt: { $gte: chart_since, $lt: now } } },
                 {
                     $group: {
                         _id: { $dateTrunc: { date: '$createdAt', unit } },

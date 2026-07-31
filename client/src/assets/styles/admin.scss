@@ -776,12 +776,17 @@
         padding: 14px;
         border-radius: 14px;
 
-        > img {
+        > img,
+        > .st-admin__img-placeholder {
             width: 84px;
             height: 60px;
             object-fit: cover;
             border-radius: 8px;
             border: 1px solid var(--border-color);
+        }
+
+        > .st-admin__img-placeholder {
+            background: var(--surface-muted);
         }
     }
 
@@ -876,7 +881,8 @@
         gap: 14px;
         align-items: center;
 
-        > img {
+        > img,
+        > .st-admin__img-placeholder {
             width: 34px;
             height: 34px;
             object-fit: contain;
