@@ -1,8 +1,31 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
 import Skeleton from '@Component/Skeleton'
 import defaultHeroImg from '../../../assets/images/home.jpg'
+
+// cycles through `roles` one at a time, admin-editable via the Content form
+const RotatingRoles = ({ roles }) => {
+    const [index, setIndex] = useState(0)
+
+    useEffect(() => {
+        if (roles.length < 2) return
+        const timer = setInterval(() => {
+            setIndex((i) => (i + 1) % roles.length)
+        }, 1000)
+        return () => clearInterval(timer)
+    }, [roles])
+
+    if (roles.length === 0) return null
+
+    return (
+        <p className="st-editorial__hero-roles">
+            <span key={index} className="st-editorial__hero-role">
+                {roles[index]}
+            </span>
+        </p>
+    )
+}
 
 // wraps the `highlight` substring of `headline` in <em>, preserving it as a
 // single non-wrapping phrase like the original hardcoded markup did
@@ -34,6 +57,7 @@ export const Hero = ({ onSeeWork }) => {
 
     const hero = content?.hero
     const stats = hero?.stats || []
+    const roles = hero?.roles || []
 
     if (!loaded && status !== 'failed') {
         return (
@@ -43,6 +67,7 @@ export const Hero = ({ onSeeWork }) => {
                         <Skeleton width="55%" height="1em" />
                         <Skeleton width="90%" height="2.4em" />
                         <Skeleton width="70%" height="2.4em" />
+                        <Skeleton width="40%" height="1.2em" />
                         <Skeleton width="80%" height="1em" />
                     </div>
                     <div className="st-editorial__hero-media">
@@ -62,6 +87,7 @@ export const Hero = ({ onSeeWork }) => {
                     )}
                     {hero?.status && <p className="st-editorial__hero-status">{hero.status}</p>}
                     {hero?.headline && <h1>{renderHeadline(hero.headline, hero.highlight)}</h1>}
+                    <RotatingRoles roles={roles} />
                     <div className="st-editorial__hero-row">
                         {hero?.bio && <p>{hero.bio}</p>}
                         <div className="st-editorial__hero-actions">

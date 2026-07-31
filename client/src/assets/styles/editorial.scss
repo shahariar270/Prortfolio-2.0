@@ -80,6 +80,17 @@ a {
     }
 }
 
+@keyframes st-hero-role-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @mixin display-font {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
@@ -331,6 +342,23 @@ a {
             background: #34d399;
             animation: pulseDot 2s ease infinite;
         }
+    }
+
+    &__hero-roles {
+        display: flex;
+        align-items: center;
+        height: 1.4em;
+        margin: 4px 0 0;
+        overflow: hidden;
+    }
+
+    &__hero-role {
+        display: inline-block;
+        color: var(--color-primary);
+        font-size: clamp(16px, 1.6vw, 20px);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        animation: st-hero-role-in 0.4s ease;
     }
 
     &__hero-row {

@@ -19,9 +19,10 @@ const parse_field = (value) => {
 const DEFAULTS = {
     hero: {
         status: 'Available for work · Jhenaidah, Bangladesh',
-        headline: 'Shahariar builds web products for the AI era.',
-        highlight: 'AI era',
+        headline: 'Hey there, I\'m Shahariar',
+        highlight: '',
         bio: 'React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop. Human judgment, machine speed.',
+        roles: ['Software Engineer', 'AI-Driven Developer', 'WordPress Expert'],
         stats: [
             { value: '10+', label: 'Core skills' },
             { value: '4', label: 'Shipped projects' },

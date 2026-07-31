@@ -38,6 +38,7 @@ const ContentForm = ({ content, onError, onNotify }) => {
             headline: content?.hero?.headline || '',
             highlight: content?.hero?.highlight || '',
             bio: content?.hero?.bio || '',
+            roles: (content?.hero?.roles || []).map((text) => ({ text: text || '' })),
             stats: (content?.hero?.stats || []).map((s) => ({ value: s.value || '', label: s.label || '' })),
         },
         about: {
@@ -108,7 +109,11 @@ const ContentForm = ({ content, onError, onNotify }) => {
         // uploaded file when present, so a stale data: preview here never
         // actually gets persisted
         const body = new FormData()
-        body.append('hero', JSON.stringify({ ...draft.hero, image: draft.heroImage }))
+        body.append('hero', JSON.stringify({
+            ...draft.hero,
+            image: draft.heroImage,
+            roles: draft.hero.roles.map((r) => r.text.trim()).filter(Boolean),
+        }))
         body.append('about', JSON.stringify({
             bio: draft.about.bio,
             experience: draft.about.experience.map((exp) => ({
@@ -210,6 +215,29 @@ const ContentForm = ({ content, onError, onNotify }) => {
                             onChange={(e) => patchSection('hero', { bio: e.target.value })}
                         ></textarea>
                     </label>
+
+                    <div className="st-admin__field">
+                        <span>Rotating roles</span>
+                        <div className="st-admin__repeat-list">
+                            {draft.hero.roles.map((role, index) => (
+                                <div className="st-admin__repeat-row" key={index}>
+                                    <input
+                                        value={role.text}
+                                        onChange={(e) => patchListItem('hero', 'roles', index, { text: e.target.value })}
+                                        placeholder="Software Engineer"
+                                    />
+                                    <button type="button" onClick={() => removeListItem('hero', 'roles', index)}>✕</button>
+                                </div>
+                            ))}
+                        </div>
+                        <button
+                            type="button"
+                            className="st-admin__btn-ghost"
+                            onClick={() => addListItem('hero', 'roles', { text: '' })}
+                        >
+                            ＋ Add role
+                        </button>
+                    </div>
 
                     <div className="st-admin__field">
                         <span>Stats</span>
