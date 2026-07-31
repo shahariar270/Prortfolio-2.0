@@ -270,7 +270,8 @@ a {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: clamp(40px, 8vw, 120px) clamp(24px, 6vw, 96px);
+        // padding: clamp(40px, 8vw, 120px) clamp(24px, 6vw, 96px);
+        padding: 40px;
         position: relative;
         overflow: hidden;
         background: radial-gradient(900px 480px at 85% 10%, var(--accent-soft), transparent 60%),
@@ -278,7 +279,7 @@ a {
 
         h1 {
             @include display-font;
-            font-size: clamp(44px, 7.5vw, 110px);
+            font-size: 44px;
             line-height: 0.98;
             letter-spacing: -0.035em;
             margin: 0;
@@ -307,7 +308,7 @@ a {
 
     &__hero-media {
         flex: 1 1 320px;
-        max-width: 480px;
+        // max-width: 480px;
         aspect-ratio: 4 / 3;
         border-radius: 16px;
         overflow: hidden;
@@ -347,15 +348,16 @@ a {
     &__hero-roles {
         display: flex;
         align-items: center;
-        height: 1.4em;
+        // height: 1.4em;
         margin: 4px 0 0;
         overflow: hidden;
+        text-align: center;
     }
 
     &__hero-role {
         display: inline-block;
         color: var(--color-primary);
-        font-size: clamp(16px, 1.6vw, 20px);
+        font-size: 30px;
         font-weight: 700;
         letter-spacing: -0.01em;
         animation: st-hero-role-in 0.4s ease;
@@ -363,11 +365,10 @@ a {
 
     &__hero-row {
         display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
         gap: 32px;
         flex-wrap: wrap;
-        margin-top: clamp(32px, 5vw, 56px);
+        margin-top: 32px;
+        flex-direction: column;
 
         > p {
             max-width: 520px;
