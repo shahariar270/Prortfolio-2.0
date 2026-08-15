@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import { fetchSkills } from '../../../store/slices/skillsSlice'
 import Skeleton from '@Component/Skeleton'
 
 const groupSkills = (skills) => {
@@ -18,12 +18,12 @@ const groupSkills = (skills) => {
 
 export const Skills = () => {
     const dispatch = useDispatch()
-    const skills = useSelector((state) => state.bootstrap.skills)
-    const status = useSelector((state) => state.bootstrap.status)
-    const loaded = useSelector((state) => state.bootstrap.loaded)
+    const skills = useSelector((state) => state.skills.items)
+    const status = useSelector((state) => state.skills.status)
+    const loaded = useSelector((state) => state.skills.loaded)
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchSkills())
     }, [dispatch])
 
     const categories = groupSkills(skills)

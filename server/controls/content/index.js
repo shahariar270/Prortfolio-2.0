@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const SiteContent = require('../../model/content/index');
 const { uploadImage } = require('../../utils/cloudniry');
 const ApiResponse = require('../../utils/api_response');
@@ -85,6 +87,7 @@ const DEFAULTS = {
         ],
     },
     footer: '© 2026 Shahariar — built with React, MERN & AI copilots.',
+    resumeUrl: '/resume.pdf',
 };
 
 // shared by get_content and the bootstrap controller so the
@@ -111,12 +114,47 @@ class content_controller {
         };
     }
 
+    async get_hero(req, res) {
+        try {
+            const content = await get_content_doc();
+            const heroObj = content.hero ? (content.hero.toObject ? content.hero.toObject() : content.hero) : {};
+            return ApiResponse.success(res, 'Hero content retrieved successfully', {
+                ...heroObj,
+                resumeUrl: content.resumeUrl,
+            });
+        } catch (error) {
+            return ApiResponse.error(res, 'Error retrieving hero content', 500, error.message);
+        };
+    }
+
+    async get_about(req, res) {
+        try {
+            const content = await get_content_doc();
+            return ApiResponse.success(res, 'About content retrieved successfully', content.about);
+        } catch (error) {
+            return ApiResponse.error(res, 'Error retrieving about content', 500, error.message);
+        };
+    }
+
+    async get_contact(req, res) {
+        try {
+            const content = await get_content_doc();
+            return ApiResponse.success(res, 'Contact content retrieved successfully', {
+                contact: content.contact,
+                footer: content.footer,
+            });
+        } catch (error) {
+            return ApiResponse.error(res, 'Error retrieving contact content', 500, error.message);
+        };
+    }
+
     async update_content(req, res) {
         try {
             const hero = parse_field(req.body.hero) || {};
             const about = parse_field(req.body.about) || {};
             const contact = parse_field(req.body.contact) || {};
-            const { footer } = req.body;
+            const { footer, resumeUrl } = req.body;
+            let finalResumeUrl = resumeUrl || '/resume.pdf';
             const user_id = req.user.id;
 
             if (req.files?.heroImage?.[0]) {
@@ -125,10 +163,24 @@ class content_controller {
             if (req.files?.aboutPhoto?.[0]) {
                 about.photo = await uploadImage(req.files.aboutPhoto[0].path, 'portfolio_content');
             }
+            if (req.files?.resumeFile?.[0]) {
+                const file = req.files.resumeFile[0];
+                const uploadsDir = path.join(__dirname, '..', '..', 'public', 'uploads');
+                fs.mkdirSync(uploadsDir, { recursive: true });
+                const ext = path.extname(file.originalname).toLowerCase() || '.pdf';
+                const filename = `resume-${Date.now()}${ext}`;
+                const targetPath = path.join(uploadsDir, filename);
+                fs.copyFileSync(file.path, targetPath);
+                try { fs.unlinkSync(file.path); } catch {}
+
+                const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+                const baseUrl = process.env.BACKEND_URL || `${protocol}://${req.get('host')}`;
+                finalResumeUrl = `${baseUrl}/uploads/${filename}`;
+            }
 
             const content = await SiteContent.findOneAndUpdate(
                 {},
-                { hero, about, contact, footer, user_id },
+                { hero, about, contact, footer, resumeUrl: finalResumeUrl, user_id },
                 { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
             );
 

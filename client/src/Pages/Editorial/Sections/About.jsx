@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import { fetchAboutContent } from '../../../store/slices/contentSlice'
 import Skeleton from '@Component/Skeleton'
 import defaultProfileImg from '../../../assets/images/profile.jpg'
 
 export const About = () => {
     const dispatch = useDispatch()
-    const content = useSelector((state) => state.bootstrap.content)
-    const loaded = useSelector((state) => state.bootstrap.loaded)
-    const status = useSelector((state) => state.bootstrap.status)
+    const about = useSelector((state) => state.content.about)
+    const loaded = useSelector((state) => state.content.aboutLoaded)
+    const status = useSelector((state) => state.content.aboutStatus)
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchAboutContent())
     }, [dispatch])
 
-    const about = content?.about
     const experience = about?.experience || []
     const education = about?.education || []
 

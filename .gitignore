@@ -20,6 +20,8 @@ dist-ssr
 # Vite's own convention is to commit non-local .env files
 !client/.env.production
 server/public/tem
+server/public/uploads/*
+!server/public/uploads/.gitkeep
 
 # Playwright
 test-results/

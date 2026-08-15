@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
-import { fetchPosts, savePost as savePostThunk, togglePostPublish } from '../../../store/slices/postsSlice'
+import { fetchPosts, savePost as savePostThunk, deletePost as deletePostThunk, togglePostPublish } from '../../../store/slices/postsSlice'
 import { fetchTaxonomies, selectPostCategoryLabels } from '../../../store/slices/taxonomiesSlice'
 import { PostEditor } from './PostEditor'
 
@@ -42,6 +42,16 @@ export const Posts = ({ onError, onNotify }) => {
         try {
             const updated = await dispatch(togglePostPublish(id)).unwrap()
             onNotify(updated.published ? 'Post published' : 'Post moved to drafts')
+        } catch (err) {
+            onError(err)
+        }
+    }
+
+    const removePost = async (id) => {
+        try {
+            await dispatch(deletePostThunk(id)).unwrap()
+            onNotify('Post deleted')
+            if (editId === id) closeEditor()
         } catch (err) {
             onError(err)
         }
@@ -127,6 +137,7 @@ export const Posts = ({ onError, onNotify }) => {
                 categories={postCats}
                 onSave={savePost}
                 onCancel={closeEditor}
+                onDelete={() => removePost(editingPost._id)}
             />
         )
     }
@@ -166,6 +177,13 @@ export const Posts = ({ onError, onNotify }) => {
                             </span>
                         </div>
                         <div className="st-admin__post-actions">
+                            <button
+                                type="button"
+                                className="st-admin__btn-ghost"
+                                onClick={() => removePost(post._id)}
+                            >
+                                Delete
+                            </button>
                             <button
                                 type="button"
                                 className="st-admin__btn-ghost"

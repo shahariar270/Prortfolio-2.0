@@ -3,8 +3,20 @@ import { api, AuthError } from '../../Pages/Admin/api'
 
 const toErrorPayload = (err) => ({ message: err.message, isAuthError: err instanceof AuthError })
 
-// condition-gated: if posts are already cached, dispatching this is a no-op
-// (no network call, no pending/fulfilled action)
+// Fetch published posts for public view
+export const fetchPublicPosts = createAsyncThunk(
+    'posts/fetchPublicPosts',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await api.posts()
+        } catch (err) {
+            return rejectWithValue(toErrorPayload(err))
+        }
+    },
+    { condition: (_, { getState }) => !getState().posts.publicLoaded && getState().posts.publicStatus !== 'loading' }
+)
+
+// Fetch all posts (published & draft) for admin
 export const fetchPosts = createAsyncThunk(
     'posts/fetchPosts',
     async (_, { rejectWithValue }) => {
@@ -39,12 +51,41 @@ export const savePost = createAsyncThunk(
     }
 )
 
+export const deletePost = createAsyncThunk(
+    'posts/deletePost',
+    async (id, { rejectWithValue }) => {
+        try {
+            await api.deletePost(id)
+            return id
+        } catch (err) {
+            return rejectWithValue(toErrorPayload(err))
+        }
+    }
+)
+
 const postsSlice = createSlice({
     name: 'posts',
-    initialState: { items: [], loaded: false },
+    initialState: {
+        items: [],
+        loaded: false,
+        publicItems: [],
+        publicLoaded: false,
+        publicStatus: 'idle',
+    },
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(fetchPublicPosts.pending, (state) => {
+                state.publicStatus = 'loading'
+            })
+            .addCase(fetchPublicPosts.fulfilled, (state, action) => {
+                state.publicItems = action.payload
+                state.publicLoaded = true
+                state.publicStatus = 'succeeded'
+            })
+            .addCase(fetchPublicPosts.rejected, (state) => {
+                state.publicStatus = 'failed'
+            })
             .addCase(fetchPosts.fulfilled, (state, action) => {
                 state.items = action.payload
                 state.loaded = true
@@ -57,6 +98,10 @@ const postsSlice = createSlice({
                 const index = state.items.findIndex((post) => post._id === action.payload._id)
                 if (index !== -1) state.items[index] = action.payload
                 else state.items.unshift(action.payload)
+            })
+            .addCase(deletePost.fulfilled, (state, action) => {
+                state.items = state.items.filter((post) => post._id !== action.payload)
+                state.publicItems = state.publicItems.filter((post) => post._id !== action.payload)
             })
     },
 })

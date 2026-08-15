@@ -2,17 +2,17 @@ import React, { useEffect } from 'react'
 import { Field, Form, Formik } from 'formik'
 import { useDispatch, useSelector } from 'react-redux'
 import { API_URL } from '../../../config/api'
-import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import { fetchContactContent } from '../../../store/slices/contentSlice'
 
 export const Contact = () => {
     const dispatch = useDispatch()
-    const content = useSelector((state) => state.bootstrap.content)
+    const contact = useSelector((state) => state.content.contact)
+    const footer = useSelector((state) => state.content.footer)
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchContactContent())
     }, [dispatch])
 
-    const contact = content?.contact
     const social = contact?.social || []
 
     const handleSubmit = async (values, { resetForm }) => {
@@ -76,7 +76,7 @@ export const Contact = () => {
                     </Form>
                 </Formik>
             </div>
-            {content?.footer && <p className="st-editorial__footer">{content.footer}</p>}
+            {footer && <p className="st-editorial__footer">{footer}</p>}
         </section>
     )
 }

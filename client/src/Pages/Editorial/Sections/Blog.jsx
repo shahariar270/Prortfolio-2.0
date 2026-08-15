@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import { fetchPublicPosts } from '../../../store/slices/postsSlice'
 import Skeleton from '@Component/Skeleton'
 import ImageFallback from '@Component/ImageFallback'
 
@@ -12,12 +12,12 @@ const formatDate = (iso) =>
 
 export const Blog = () => {
     const dispatch = useDispatch()
-    const posts = useSelector((state) => state.bootstrap.posts)
-    const status = useSelector((state) => state.bootstrap.status)
-    const loaded = useSelector((state) => state.bootstrap.loaded)
+    const posts = useSelector((state) => state.posts.publicItems)
+    const status = useSelector((state) => state.posts.publicStatus)
+    const loaded = useSelector((state) => state.posts.publicLoaded)
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchPublicPosts())
     }, [dispatch])
 
     if (!loaded && status !== 'failed') {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import { fetchProjects } from '../../../store/slices/projectsSlice'
 import Skeleton from '@Component/Skeleton'
 import { projectTabs } from '../helper'
 import { sanitizeHtml } from '../../../utils/sanitizeHtml'
@@ -10,12 +10,12 @@ import ImageFallback from '@Component/ImageFallback'
 export const Projects = () => {
     const dispatch = useDispatch()
     const [tab, setTab] = useState('all')
-    const projects = useSelector((state) => state.bootstrap.projects)
-    const status = useSelector((state) => state.bootstrap.status)
-    const loaded = useSelector((state) => state.bootstrap.loaded)
+    const projects = useSelector((state) => state.projects.items)
+    const status = useSelector((state) => state.projects.status)
+    const loaded = useSelector((state) => state.projects.loaded)
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchProjects())
     }, [dispatch])
 
     const filteredProjects =

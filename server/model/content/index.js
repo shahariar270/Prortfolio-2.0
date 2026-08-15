@@ -55,6 +55,7 @@ const site_content_schema = new mongoose.Schema(
             },
         },
         footer: { type: String, default: '', trim: true },
+        resumeUrl: { type: String, default: '/resume.pdf', trim: true },
         user_id: {
             type: String,
             required: true,

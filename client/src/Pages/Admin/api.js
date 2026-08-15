@@ -74,6 +74,7 @@ export const api = {
     createPost: (body) => request('/api/post', { method: 'POST', body, auth: true }),
     updatePost: (id, body) => request(`/api/post/${id}`, { method: 'PUT', body, auth: true }),
     togglePublish: (id) => request(`/api/post/${id}/publish`, { method: 'PATCH', auth: true }),
+    deletePost: (id) => request(`/api/post/${id}`, { method: 'DELETE', auth: true }),
 
     skills: () => request('/api/skills'),
     createSkill: (body) => request('/api/skill', { method: 'POST', body, auth: true }),
@@ -96,9 +97,11 @@ export const api = {
         request(`/api/analytics/summary?range=${encodeURIComponent(range)}`, { auth: true }),
 
     content: () => request('/api/content'),
+    heroContent: () => request('/api/content/hero'),
+    aboutContent: () => request('/api/content/about'),
+    contactContent: () => request('/api/content/contact'),
     updateContent: (body) => request('/api/content', { method: 'PUT', body, auth: true }),
 
-    // combines content + skills + projects + posts into one request — used
-    // by the public site instead of each section fetching independently
+    // combines content + skills + projects + posts into one request
     bootstrap: () => request('/api/bootstrap'),
 }
