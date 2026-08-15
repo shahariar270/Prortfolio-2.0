@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import profile from '../../assets/images/profile.jpg'
 import { resumeDownloadFilename, resumeDownloadUrl } from '../../config/resume'
 
 const MOBILE_MEDIA = '(max-width: 768px)'
 
-const externalResume = /^https?:\/\//i.test(resumeDownloadUrl)
-
 export const LeftContentBox = () => {
+  const hero = useSelector((state) => state.content?.hero)
+  const content = useSelector((state) => state.content?.data || state.bootstrap?.content)
+  const activeResumeUrl = hero?.resumeUrl || content?.resumeUrl || resumeDownloadUrl
+  const isExternalResume = /^https?:\/\//i.test(activeResumeUrl)
+
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA).matches,
   )
@@ -208,8 +212,8 @@ export const LeftContentBox = () => {
 
       <a
         className="st-portfolio--resume-link"
-        href={resumeDownloadUrl}
-        {...(externalResume
+        href={activeResumeUrl}
+        {...(isExternalResume
           ? { target: '_blank', rel: 'noopener noreferrer' }
           : { download: resumeDownloadFilename })}
       >

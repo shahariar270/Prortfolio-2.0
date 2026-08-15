@@ -1,4 +1,5 @@
 require('./config/env');
+const path = require('path');
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -8,6 +9,8 @@ const mongoSanitize = require('./middlewares/sanitize');
 const { default: mongoose } = require('mongoose');
 const router = require('./router');
 const ApiResponse = require('./utils/api_response');
+
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
 const allowedOrigins = [
     process.env.FRONTEND_URL,

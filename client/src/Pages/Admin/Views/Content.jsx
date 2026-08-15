@@ -59,6 +59,8 @@ const ContentForm = ({ content, onError, onNotify }) => {
             social: (content?.contact?.social || []).map((s) => ({ label: s.label || '', href: s.href || '', icon: s.icon || '' })),
         },
         footer: content?.footer || '',
+        resumeUrl: content?.resumeUrl || '/resume.pdf',
+        resumeFile: null,
         // kept separate from hero/about — these are plain "current URL or
         // FileReader preview" fields, same shape PostEditor/ProjectEditor use
         heroImage: content?.hero?.image || '',
@@ -130,8 +132,10 @@ const ContentForm = ({ content, onError, onNotify }) => {
         }))
         body.append('contact', JSON.stringify(draft.contact))
         body.append('footer', draft.footer)
+        body.append('resumeUrl', draft.resumeUrl)
         if (draft.heroImageFile) body.append('heroImage', draft.heroImageFile)
         if (draft.aboutPhotoFile) body.append('aboutPhoto', draft.aboutPhotoFile)
+        if (draft.resumeFile) body.append('resumeFile', draft.resumeFile)
 
         try {
             await dispatch(updateContent(body)).unwrap()
@@ -464,6 +468,51 @@ const ContentForm = ({ content, onError, onNotify }) => {
                             placeholder="© 2026 Your name — built with …"
                         />
                     </label>
+                </div>
+
+                <div className="st-admin__card">
+                    <div className="st-admin__card-head">
+                        <h3>Resume / CV Document</h3>
+                    </div>
+                    <label className="st-admin__field">
+                        <span>Resume URL (Hosted link or PDF URL)</span>
+                        <input
+                            value={draft.resumeUrl}
+                            onChange={(e) => setDraft((prev) => ({ ...prev, resumeUrl: e.target.value }))}
+                            placeholder="e.g. /resume.pdf or https://drive.google.com/..."
+                        />
+                    </label>
+                    <div className="st-admin__field">
+                        <span>Upload New Resume File (PDF / DOC)</span>
+                        <label className="st-admin__dropzone">
+                            <span className="st-admin__dropzone-icon">↑</span>
+                            <strong>{draft.resumeFile ? draft.resumeFile.name : 'Choose Resume File'}</strong>
+                            <span>PDF, DOC, DOCX · click to select file</span>
+                            <input
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) {
+                                        setDraft((prev) => ({ ...prev, resumeFile: file }))
+                                    }
+                                }}
+                            />
+                        </label>
+                    </div>
+                    {draft.resumeUrl && (
+                        <div style={{ marginTop: '12px' }}>
+                            <a
+                                href={draft.resumeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="st-admin__btn-ghost"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                Preview Current Resume ↗
+                            </a>
+                        </div>
+                    )}
                 </div>
             </form>
         </main>

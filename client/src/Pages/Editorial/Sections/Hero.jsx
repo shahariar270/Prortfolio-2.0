@@ -48,8 +48,10 @@ const renderHeadline = (headline, highlight) => {
 export const Hero = ({ onSeeWork }) => {
     const dispatch = useDispatch()
     const hero = useSelector((state) => state.content.hero)
+    const content = useSelector((state) => state.content.data)
     const loaded = useSelector((state) => state.content.heroLoaded)
     const status = useSelector((state) => state.content.heroStatus)
+    const resumeUrl = hero?.resumeUrl || content?.resumeUrl || '/resume.pdf'
 
     useEffect(() => {
         dispatch(fetchHeroContent())
@@ -94,8 +96,10 @@ export const Hero = ({ onSeeWork }) => {
                                 See the work ↓
                             </button>
                             <a
-                                href="/resume.pdf"
-                                download="Shahariar-Resume.pdf"
+                                href={resumeUrl}
+                                {...(/^https?:\/\//i.test(resumeUrl)
+                                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                                    : { download: 'Shahariar-Resume.pdf' })}
                                 className="st-editorial__btn st-editorial__btn--ghost"
                             >
                                 ↓ Resume

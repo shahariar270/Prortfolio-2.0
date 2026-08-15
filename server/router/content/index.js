@@ -7,6 +7,7 @@ const { upload } = require('../../middlewares/file_handle');
 const uploadContentImages = upload.fields([
     { name: 'heroImage', maxCount: 1 },
     { name: 'aboutPhoto', maxCount: 1 },
+    { name: 'resumeFile', maxCount: 1 },
 ]);
 
 router.get('/content', content_controller.get_content);
