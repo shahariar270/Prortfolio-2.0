@@ -96,9 +96,11 @@ export const api = {
         request(`/api/analytics/summary?range=${encodeURIComponent(range)}`, { auth: true }),
 
     content: () => request('/api/content'),
+    heroContent: () => request('/api/content/hero'),
+    aboutContent: () => request('/api/content/about'),
+    contactContent: () => request('/api/content/contact'),
     updateContent: (body) => request('/api/content', { method: 'PUT', body, auth: true }),
 
-    // combines content + skills + projects + posts into one request — used
-    // by the public site instead of each section fetching independently
+    // combines content + skills + projects + posts into one request
     bootstrap: () => request('/api/bootstrap'),
 }

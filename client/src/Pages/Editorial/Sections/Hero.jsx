@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchBootstrap } from '../../../store/slices/bootstrapSlice'
+import { fetchHeroContent } from '../../../store/slices/contentSlice'
 import Skeleton from '@Component/Skeleton'
 import defaultHeroImg from '../../../assets/images/home.jpg'
 
@@ -47,15 +47,14 @@ const renderHeadline = (headline, highlight) => {
 
 export const Hero = ({ onSeeWork }) => {
     const dispatch = useDispatch()
-    const content = useSelector((state) => state.bootstrap.content)
-    const loaded = useSelector((state) => state.bootstrap.loaded)
-    const status = useSelector((state) => state.bootstrap.status)
+    const hero = useSelector((state) => state.content.hero)
+    const loaded = useSelector((state) => state.content.heroLoaded)
+    const status = useSelector((state) => state.content.heroStatus)
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchHeroContent())
     }, [dispatch])
 
-    const hero = content?.hero
     const stats = hero?.stats || []
     const roles = hero?.roles || []
 

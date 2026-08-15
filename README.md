@@ -58,7 +58,16 @@ server/
 
 ## Getting Started
 
+### Quick Start (All-in-One)
+
+Run the root `run.sh` script to install dependencies (if missing) and start both the backend server and frontend client concurrently:
+
+```bash
+./run.sh
+```
+
 ### 1. Frontend Setup
+
 
 ```bash
 cd client

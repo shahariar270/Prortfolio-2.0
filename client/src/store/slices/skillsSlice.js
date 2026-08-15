@@ -13,7 +13,7 @@ export const fetchSkills = createAsyncThunk(
             return rejectWithValue(toErrorPayload(err))
         }
     },
-    { condition: (_, { getState }) => !getState().skills.loaded }
+    { condition: (_, { getState }) => !getState().skills.loaded && getState().skills.status !== 'loading' }
 )
 
 export const adjustSkillLevel = createAsyncThunk(
@@ -52,13 +52,20 @@ export const deleteSkill = createAsyncThunk(
 
 const skillsSlice = createSlice({
     name: 'skills',
-    initialState: { items: [], loaded: false },
+    initialState: { items: [], loaded: false, status: 'idle' },
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(fetchSkills.pending, (state) => {
+                state.status = 'loading'
+            })
             .addCase(fetchSkills.fulfilled, (state, action) => {
                 state.items = action.payload
                 state.loaded = true
+                state.status = 'succeeded'
+            })
+            .addCase(fetchSkills.rejected, (state) => {
+                state.status = 'failed'
             })
             .addCase(adjustSkillLevel.fulfilled, (state, action) => {
                 const index = state.items.findIndex((skill) => skill._id === action.payload._id)

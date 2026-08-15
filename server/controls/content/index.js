@@ -111,6 +111,36 @@ class content_controller {
         };
     }
 
+    async get_hero(req, res) {
+        try {
+            const content = await get_content_doc();
+            return ApiResponse.success(res, 'Hero content retrieved successfully', content.hero);
+        } catch (error) {
+            return ApiResponse.error(res, 'Error retrieving hero content', 500, error.message);
+        };
+    }
+
+    async get_about(req, res) {
+        try {
+            const content = await get_content_doc();
+            return ApiResponse.success(res, 'About content retrieved successfully', content.about);
+        } catch (error) {
+            return ApiResponse.error(res, 'Error retrieving about content', 500, error.message);
+        };
+    }
+
+    async get_contact(req, res) {
+        try {
+            const content = await get_content_doc();
+            return ApiResponse.success(res, 'Contact content retrieved successfully', {
+                contact: content.contact,
+                footer: content.footer,
+            });
+        } catch (error) {
+            return ApiResponse.error(res, 'Error retrieving contact content', 500, error.message);
+        };
+    }
+
     async update_content(req, res) {
         try {
             const hero = parse_field(req.body.hero) || {};

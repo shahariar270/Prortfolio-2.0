@@ -4,7 +4,6 @@ import { api, AuthError } from '../../Pages/Admin/api'
 const toErrorPayload = (err) => ({ message: err.message, isAuthError: err instanceof AuthError })
 
 // condition-gated: if projects are already cached, dispatching this is a no-op
-// (no network call, no pending/fulfilled action)
 export const fetchProjects = createAsyncThunk(
     'projects/fetchProjects',
     async (_, { rejectWithValue }) => {
@@ -14,7 +13,7 @@ export const fetchProjects = createAsyncThunk(
             return rejectWithValue(toErrorPayload(err))
         }
     },
-    { condition: (_, { getState }) => !getState().projects.loaded }
+    { condition: (_, { getState }) => !getState().projects.loaded && getState().projects.status !== 'loading' }
 )
 
 export const saveProject = createAsyncThunk(
@@ -42,13 +41,20 @@ export const deleteProject = createAsyncThunk(
 
 const projectsSlice = createSlice({
     name: 'projects',
-    initialState: { items: [], loaded: false },
+    initialState: { items: [], loaded: false, status: 'idle' },
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(fetchProjects.pending, (state) => {
+                state.status = 'loading'
+            })
             .addCase(fetchProjects.fulfilled, (state, action) => {
                 state.items = action.payload
                 state.loaded = true
+                state.status = 'succeeded'
+            })
+            .addCase(fetchProjects.rejected, (state) => {
+                state.status = 'failed'
             })
             .addCase(saveProject.fulfilled, (state, action) => {
                 const index = state.items.findIndex((project) => project._id === action.payload._id)

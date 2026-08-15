@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
-import { fetchBootstrap } from '../../store/slices/bootstrapSlice'
+import { fetchProjects } from '../../store/slices/projectsSlice'
 import { RailNav } from '@Pages/Editorial/RailNav'
 import ImageFallback from '@Component/ImageFallback'
 import { useTheme } from '../../config/theme'
@@ -16,17 +16,16 @@ export const ProjectDetails = () => {
     // keyed by slug so a param change is recognized as "loading" again
     // without setting state synchronously in the effect body
     const [result, setResult] = useState({ slug: null, status: 'loading', project: null })
-    // sidebar list of other projects — shares the bootstrap cache with the
-    // Editorial page, so arriving here from "/" costs no extra request
-    const otherProjects = useSelector((state) => state.bootstrap.projects)
-    // the bootstrap list already carries full project content, so a project
+    // sidebar list of other projects — shares the projects cache with the
+    // Projects section
+    const otherProjects = useSelector((state) => state.projects.items)
+    // the project list already carries full project content, so a project
     // reached via the sidebar can render instantly from cache instead of
-    // waiting on a fresh fetch — this is what removes the loading flash
-    // when jumping between projects
+    // waiting on a fresh fetch
     const cachedProject = otherProjects.find((p) => p.slug === slug) || null
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchProjects())
     }, [dispatch])
 
     useEffect(() => {

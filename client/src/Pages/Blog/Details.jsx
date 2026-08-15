@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import SeoHead from '@Component/SeoHead'
 import { api } from '@Pages/Admin/api'
-import { fetchBootstrap } from '../../store/slices/bootstrapSlice'
+import { fetchPublicPosts } from '../../store/slices/postsSlice'
 import { RailNav } from '@Pages/Editorial/RailNav'
 import ImageFallback from '@Component/ImageFallback'
 import { useTheme } from '../../config/theme'
@@ -21,17 +21,16 @@ export const BlogDetails = () => {
     // keyed by slug so a param change is recognized as "loading" again
     // without setting state synchronously in the effect body
     const [result, setResult] = useState({ slug: null, status: 'loading', post: null })
-    // sidebar list of other notes — shares the bootstrap cache with the
-    // Editorial page, so arriving here from "/" costs no extra request
-    const otherPosts = useSelector((state) => state.bootstrap.posts)
-    // the bootstrap list already carries full post content, so a post
+    // sidebar list of other notes — shares the public posts cache with the
+    // Blog section
+    const otherPosts = useSelector((state) => state.posts.publicItems)
+    // the posts list already carries full post content, so a post
     // reached via the sidebar can render instantly from cache instead of
-    // waiting on a fresh fetch — this is what removes the loading flash
-    // when jumping between notes
+    // waiting on a fresh fetch
     const cachedPost = otherPosts.find((p) => p.slug === slug) || null
 
     useEffect(() => {
-        dispatch(fetchBootstrap())
+        dispatch(fetchPublicPosts())
     }, [dispatch])
 
     useEffect(() => {
@@ -43,7 +42,7 @@ export const BlogDetails = () => {
                 api.addPostView(slug).catch(() => {})
             })
             .catch(() => {
-                if (!cancelled) setResult({ slug, status: 'error', post: null })
+                if (!cancelled) setResult({ slug, status: 'error', project: null })
             })
         return () => {
             cancelled = true
