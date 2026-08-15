@@ -10,12 +10,11 @@ export const LeftContentBox = () => {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA).matches,
   )
-  const [workExpanded, setWorkExpanded] = useState(() =>
-    typeof window !== 'undefined' ? !window.matchMedia(MOBILE_MEDIA).matches : true,
-  )
-  const [factsExpanded, setFactsExpanded] = useState(() =>
-    typeof window !== 'undefined' ? !window.matchMedia(MOBILE_MEDIA).matches : true,
-  )
+  const [workExpandedState, setWorkExpanded] = useState(true)
+  const [factsExpandedState, setFactsExpanded] = useState(true)
+
+  const workExpanded = isMobile ? workExpandedState : true
+  const factsExpanded = isMobile ? factsExpandedState : true
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_MEDIA)
@@ -24,14 +23,6 @@ export const LeftContentBox = () => {
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
   }, [])
-
-  useEffect(() => {
-    setWorkExpanded(!isMobile)
-  }, [isMobile])
-
-  useEffect(() => {
-    setFactsExpanded(!isMobile)
-  }, [isMobile])
 
   const [isDark, setIsDark] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
