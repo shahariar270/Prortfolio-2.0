@@ -51,6 +51,18 @@ export const savePost = createAsyncThunk(
     }
 )
 
+export const deletePost = createAsyncThunk(
+    'posts/deletePost',
+    async (id, { rejectWithValue }) => {
+        try {
+            await api.deletePost(id)
+            return id
+        } catch (err) {
+            return rejectWithValue(toErrorPayload(err))
+        }
+    }
+)
+
 const postsSlice = createSlice({
     name: 'posts',
     initialState: {
@@ -86,6 +98,10 @@ const postsSlice = createSlice({
                 const index = state.items.findIndex((post) => post._id === action.payload._id)
                 if (index !== -1) state.items[index] = action.payload
                 else state.items.unshift(action.payload)
+            })
+            .addCase(deletePost.fulfilled, (state, action) => {
+                state.items = state.items.filter((post) => post._id !== action.payload)
+                state.publicItems = state.publicItems.filter((post) => post._id !== action.payload)
             })
     },
 })

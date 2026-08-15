@@ -10,8 +10,12 @@ router.get('/posts/:slug', post_controller.get_post_by_slug);
 router.post('/posts/:slug/view', post_controller.add_view);
 
 router.post('/post', auth_middleware.verify_token, auth_middleware.verify_role('admin'), upload.single('image'), post_controller.create_post);
+router.post('/posts', auth_middleware.verify_token, auth_middleware.verify_role('admin'), upload.single('image'), post_controller.create_post);
 router.put('/post/:id', auth_middleware.verify_token, auth_middleware.verify_role('admin'), upload.single('image'), post_controller.update_post);
+router.put('/posts/:id', auth_middleware.verify_token, auth_middleware.verify_role('admin'), upload.single('image'), post_controller.update_post);
 router.patch('/post/:id/publish', auth_middleware.verify_token, auth_middleware.verify_role('admin'), post_controller.toggle_publish);
+router.patch('/posts/:id/publish', auth_middleware.verify_token, auth_middleware.verify_role('admin'), post_controller.toggle_publish);
 router.delete('/post/:id', auth_middleware.verify_token, auth_middleware.verify_role('admin'), post_controller.delete_post);
+router.delete('/posts/:id', auth_middleware.verify_token, auth_middleware.verify_role('admin'), post_controller.delete_post);
 
 module.exports = router;

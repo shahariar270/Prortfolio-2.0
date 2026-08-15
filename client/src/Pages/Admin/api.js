@@ -74,6 +74,7 @@ export const api = {
     createPost: (body) => request('/api/post', { method: 'POST', body, auth: true }),
     updatePost: (id, body) => request(`/api/post/${id}`, { method: 'PUT', body, auth: true }),
     togglePublish: (id) => request(`/api/post/${id}/publish`, { method: 'PATCH', auth: true }),
+    deletePost: (id) => request(`/api/post/${id}`, { method: 'DELETE', auth: true }),
 
     skills: () => request('/api/skills'),
     createSkill: (body) => request('/api/skill', { method: 'POST', body, auth: true }),

@@ -6,7 +6,7 @@ import RichTextEditor from '@Component/RichTextEditor'
 // Mounted only once its data is fully resolved (see Views/Posts.jsx) — safe
 // to seed state from `post` once, on mount.
 
-export const PostEditor = ({ mode, post, categories, onSave, onCancel }) => {
+export const PostEditor = ({ mode, post, categories, onSave, onCancel, onDelete }) => {
     const isNew = mode === 'new'
     const [draft, setDraft] = useState({
         title: post?.title || '',
@@ -40,9 +40,16 @@ export const PostEditor = ({ mode, post, categories, onSave, onCancel }) => {
                 <button type="button" className="st-admin__editor-back" onClick={onCancel}>
                     ← Back to posts
                 </button>
-                <button type="submit" form="post-editor-form" className="st-admin__btn-primary">
-                    {draft.published ? 'Publish post' : 'Save draft'}
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    {onDelete && (
+                        <button type="button" className="st-admin__btn-ghost" onClick={onDelete}>
+                            Delete post
+                        </button>
+                    )}
+                    <button type="submit" form="post-editor-form" className="st-admin__btn-primary">
+                        {draft.published ? 'Publish post' : 'Save draft'}
+                    </button>
+                </div>
             </div>
 
             <form id="post-editor-form" className="st-admin__editor-grid" onSubmit={handleSubmit}>
