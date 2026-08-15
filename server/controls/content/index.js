@@ -173,7 +173,8 @@ class content_controller {
                 fs.copyFileSync(file.path, targetPath);
                 try { fs.unlinkSync(file.path); } catch {}
 
-                const baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+                const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+                const baseUrl = process.env.BACKEND_URL || `${protocol}://${req.get('host')}`;
                 finalResumeUrl = `${baseUrl}/uploads/${filename}`;
             }
 
