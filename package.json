@@ -1,0 +1,20 @@
+{
+  "name": "portfolio-2.0",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Full-stack MERN Portfolio with React frontend and Express backend",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "seed:content": "npm --prefix server run seed:content",
+    "seed:admin": "npm --prefix server run seed:admin"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
