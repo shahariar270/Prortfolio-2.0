@@ -26,6 +26,20 @@ const unique_slug = async (title, ignoreId = null) => {
     }
 };
 
+const parse_tags = (tags) => {
+    if (!tags) return [];
+    if (Array.isArray(tags)) return tags.map((t) => String(t).trim()).filter(Boolean);
+    if (typeof tags === 'string') {
+        try {
+            const parsed = JSON.parse(tags);
+            if (Array.isArray(parsed)) return parsed.map((t) => String(t).trim()).filter(Boolean);
+        } catch {
+            return tags.split(',').map((t) => t.trim()).filter(Boolean);
+        }
+    }
+    return [];
+};
+
 class post_controller {
     // public: published posts for the live blog section
     async get_posts(req, res) {
@@ -62,7 +76,7 @@ class post_controller {
 
     async create_post(req, res) {
         try {
-            const { title, category, excerpt, content, image, read_time, published } = req.body;
+            const { title, category, excerpt, content, image, read_time, published, seoTitle, seoDescription, tags } = req.body;
             const user_id = req.user.id;
 
             if (!title || !category) {
@@ -84,6 +98,9 @@ class post_controller {
                 image: image_url,
                 read_time,
                 published: to_bool(published),
+                seoTitle: seoTitle || '',
+                seoDescription: seoDescription || '',
+                tags: parse_tags(tags),
                 user_id,
             });
 
@@ -96,7 +113,7 @@ class post_controller {
     async update_post(req, res) {
         try {
             const { id } = req.params;
-            const { title, category, excerpt, content, image, read_time, published } = req.body;
+            const { title, category, excerpt, content, image, read_time, published, seoTitle, seoDescription, tags } = req.body;
 
             const post = await Post.findById(id);
             if (!post) {
@@ -117,6 +134,9 @@ class post_controller {
             }
             if (read_time !== undefined) post.read_time = read_time;
             if (published !== undefined) post.published = to_bool(published);
+            if (seoTitle !== undefined) post.seoTitle = seoTitle;
+            if (seoDescription !== undefined) post.seoDescription = seoDescription;
+            if (tags !== undefined) post.tags = parse_tags(tags);
 
             await post.save();
             return ApiResponse.success(res, 'Post updated successfully', post);

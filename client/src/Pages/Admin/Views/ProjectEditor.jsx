@@ -23,6 +23,9 @@ export const ProjectEditor = ({ mode, project, onSave, onCancel }) => {
         liveDemo: project?.liveDemo || '',
         image: project?.image || '',
         imageFile: null,
+        seoTitle: project?.seoTitle || '',
+        seoDescription: project?.seoDescription || '',
+        tags: Array.isArray(project?.tags) ? project.tags.join(', ') : (project?.tags || ''),
     })
 
     const patch = (changes) => setDraft((prev) => ({ ...prev, ...changes }))
@@ -147,6 +150,38 @@ export const ProjectEditor = ({ mode, project, onSave, onCancel }) => {
                                 onChange={(e) => patch({ liveDemo: e.target.value })}
                                 placeholder="https://…  (leave blank if there isn't one)"
                             />
+                        </label>
+                    </div>
+
+                    <div className="st-admin__card">
+                        <h3 style={{ fontSize: '0.95rem', marginBottom: '12px', fontWeight: 600 }}>SEO Settings</h3>
+                        <label className="st-admin__field">
+                            <span>SEO Title</span>
+                            <input
+                                value={draft.seoTitle}
+                                onChange={(e) => patch({ seoTitle: e.target.value })}
+                                placeholder="Custom meta title (optional)"
+                            />
+                        </label>
+                        <label className="st-admin__field">
+                            <span>Meta Description</span>
+                            <textarea
+                                value={draft.seoDescription}
+                                onChange={(e) => patch({ seoDescription: e.target.value })}
+                                placeholder="Custom meta description for search engines…"
+                                rows={3}
+                            ></textarea>
+                        </label>
+                        <label className="st-admin__field">
+                            <span>SEO Tags / Keywords</span>
+                            <input
+                                value={draft.tags}
+                                onChange={(e) => patch({ tags: e.target.value })}
+                                placeholder="mern, finance, hisabox, fullstack…"
+                            />
+                            <span style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: '4px', display: 'block' }}>
+                                Comma-separated tags for Google and search filters
+                            </span>
                         </label>
                     </div>
                 </div>

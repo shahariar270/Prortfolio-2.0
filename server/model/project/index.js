@@ -47,6 +47,22 @@ const project_schema = new mongoose.Schema(
             default: '',
             trim: true,
         },
+        seoTitle: {
+            type: String,
+            default: '',
+            trim: true,
+            maxlength: 200,
+        },
+        seoDescription: {
+            type: String,
+            default: '',
+            trim: true,
+            maxlength: 500,
+        },
+        tags: {
+            type: [String],
+            default: [],
+        },
         user_id: {
             type: String,
             required: true,

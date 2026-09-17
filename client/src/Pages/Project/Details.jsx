@@ -93,18 +93,23 @@ export const ProjectDetails = () => {
         )
     }
 
-    const projectDescription = project.description
+    const defaultDescription = project.description
         ? project.description.replace(/<[^>]*>?/gm, '').trim().slice(0, 160)
         : `${project.label} — ${project.type} developed by Shahariar (shahariar270) at Novakrift.`
+
+    const seoTitle = project.seoTitle?.trim() || `${project.label} | ${project.type}`
+    const seoDescription = project.seoDescription?.trim() || defaultDescription
+    const projectTags = Array.isArray(project.tags) && project.tags.length > 0 ? project.tags : []
 
     return (
         <div className="st-editorial-read">
             <SeoHead
-                title={`${project.label} | ${project.type}`}
-                description={projectDescription}
+                title={seoTitle}
+                description={seoDescription}
                 image={project.image}
                 type="article"
                 keywords={[
+                    ...projectTags,
                     project.label,
                     project.type,
                     ...(Array.isArray(project.technologies) ? project.technologies : []),

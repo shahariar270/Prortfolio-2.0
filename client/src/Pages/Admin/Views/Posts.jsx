@@ -73,6 +73,9 @@ export const Posts = ({ onError, onNotify }) => {
                 body.append('content', draft.content || '')
                 body.append('published', String(draft.published))
                 body.append('image', draft.imageFile)
+                body.append('seoTitle', draft.seoTitle || '')
+                body.append('seoDescription', draft.seoDescription || '')
+                body.append('tags', draft.tags || '')
             } else {
                 body = {
                     title,
@@ -80,6 +83,9 @@ export const Posts = ({ onError, onNotify }) => {
                     excerpt: draft.excerpt,
                     content: draft.content || '',
                     published: draft.published,
+                    seoTitle: draft.seoTitle || '',
+                    seoDescription: draft.seoDescription || '',
+                    tags: draft.tags || '',
                 }
                 // send the image only when it's a real URL or an explicit
                 // clear — never a stale FileReader data: preview
