@@ -75,7 +75,7 @@ export const LeftContentBox = () => {
         <img src={profile} alt="" />
         <div className="st-portfolio--content">
           <h1>Shahariar</h1>
-          <p>React Developer | MERN Stack Enthusiast | CMS & Framework Expert</p>
+          <p>Founder @ Novakrift · Creator of Hisabox · React & MERN Specialist</p>
         </div>
       </div>
 

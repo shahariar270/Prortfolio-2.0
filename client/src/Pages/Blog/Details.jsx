@@ -106,6 +106,16 @@ export const BlogDetails = () => {
                 description={post.excerpt}
                 image={post.image}
                 type="article"
+                keywords={[
+                    post.category,
+                    post.title,
+                    'Shahariar',
+                    'shahariar270',
+                    'Novakrift',
+                    'Web Development',
+                    'React',
+                    'MERN',
+                ]}
             />
             <RailNav activeSection="sec-blog" isDark={isDark} onToggleTheme={toggleTheme} />
             <main className="st-editorial-read__main">

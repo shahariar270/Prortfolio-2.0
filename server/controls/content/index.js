@@ -23,8 +23,8 @@ const DEFAULTS = {
         status: 'Available for work · Jhenaidah, Bangladesh',
         headline: 'Hey there, I\'m Shahariar',
         highlight: '',
-        bio: 'React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop. Human judgment, machine speed.',
-        roles: ['Software Engineer', 'AI-Driven Developer', 'WordPress Expert'],
+        bio: 'Founder of Novakrift & creator of Hisabox. React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop.',
+        roles: ['Founder @ Novakrift', 'Creator of Hisabox', 'MERN Stack Engineer', 'AI-Driven Developer'],
         stats: [
             { value: '10+', label: 'Core skills' },
             { value: '4', label: 'Shipped projects' },

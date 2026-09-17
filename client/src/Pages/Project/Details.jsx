@@ -93,13 +93,26 @@ export const ProjectDetails = () => {
         )
     }
 
+    const projectDescription = project.description
+        ? project.description.replace(/<[^>]*>?/gm, '').trim().slice(0, 160)
+        : `${project.label} — ${project.type} developed by Shahariar (shahariar270) at Novakrift.`
+
     return (
         <div className="st-editorial-read">
             <SeoHead
-                title={`${project.type}: ${project.label}`}
-                description={project.type}
+                title={`${project.label} | ${project.type}`}
+                description={projectDescription}
                 image={project.image}
                 type="article"
+                keywords={[
+                    project.label,
+                    project.type,
+                    ...(Array.isArray(project.technologies) ? project.technologies : []),
+                    'Novakrift',
+                    'shahariar',
+                    'shahariar270',
+                    'Hisabox',
+                ]}
             />
             <RailNav activeSection="sec-project" isDark={isDark} onToggleTheme={toggleTheme} />
             <main className="st-editorial-read__main">

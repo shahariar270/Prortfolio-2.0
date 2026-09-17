@@ -33,16 +33,22 @@ export default function SeoHead({
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: siteAuthor,
-    alternateName: siteAlternateName,
-    jobTitle: 'React & MERN Developer',
+    alternateName: [siteAlternateName, 'shahariar', 'shahariar270'],
+    jobTitle: 'Founder of Novakrift & Full-Stack MERN Developer',
     description: defaultDescription,
     ...(siteUrl ? { url: siteUrl } : {}),
     image: resolvedImage || logoUrl,
+    sameAs: [
+      'https://github.com/shahariar270',
+      'https://www.linkedin.com/in/shahariar270/',
+      'https://www.facebook.com/shahariar270/',
+    ],
     worksFor: {
       '@type': 'Organization',
       name: siteBrand,
       ...(siteUrl ? { url: siteUrl } : {}),
     },
+    knowsAbout: ['React', 'MERN Stack', 'Node.js', 'Hisabox', 'Novakrift', 'Web Development'],
   }
 
   return (
