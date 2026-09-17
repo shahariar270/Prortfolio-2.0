@@ -39,9 +39,48 @@ export const deleteProject = createAsyncThunk(
     }
 )
 
+const DEFAULT_PROJECTS = [
+    {
+        _id: 'p-hisabox',
+        label: 'Hisabox',
+        slug: 'hisabox',
+        category: 'development',
+        type: 'MERN Desktop & Web App',
+        description:
+            'A streamlined MERN financial management and expense tracker platform built by Shahariar at Novakrift for monitoring personal and business accounting.',
+        technologies: ['MERN', 'React', 'Node.js', 'MongoDB'],
+        liveDemo: 'https://expense-tracker-le1b.vercel.app/',
+        image: '/projects/expense.jpg',
+    },
+    {
+        _id: 'p-vireokit',
+        label: 'VireoKit',
+        slug: 'vireokit',
+        category: 'design',
+        type: 'Component Library',
+        description:
+            'A themeable React + SCSS component library published on npm — 17 components across primitives, overlays, and layout with built-in light/dark theming.',
+        technologies: ['React', 'SCSS', 'Design Tokens'],
+        liveDemo: 'https://vireo-kit.vercel.app/',
+        image: '/projects/vireo-kit.jpg',
+    },
+    {
+        _id: 'p-ecom',
+        label: 'E-Commerce',
+        slug: 'e-commerce',
+        category: 'development',
+        type: 'MERN Platform',
+        description:
+            'A full-stack MERN e-commerce platform with customer shopping flow, JWT authentication, and admin dashboard.',
+        technologies: ['MERN', 'Redux Toolkit', 'MongoDB'],
+        liveDemo: 'https://e-commerce-rho-three-41.vercel.app/',
+        image: '/projects/ecom.jpg',
+    },
+]
+
 const projectsSlice = createSlice({
     name: 'projects',
-    initialState: { items: [], loaded: false, status: 'idle' },
+    initialState: { items: DEFAULT_PROJECTS, loaded: true, status: 'idle' },
     reducers: {},
     extraReducers: (builder) => {
         builder

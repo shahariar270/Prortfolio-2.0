@@ -77,20 +77,61 @@ export const updateContent = createAsyncThunk(
     }
 )
 
+const DEFAULT_HERO = {
+    status: 'Available for work · Jhenaidah, Bangladesh',
+    headline: "Hey there, I'm Shahariar",
+    highlight: '',
+    bio: 'Founder of Novakrift & creator of Hisabox. React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop.',
+    roles: ['Founder @ Novakrift', 'Creator of Hisabox', 'MERN Stack Engineer', 'AI-Driven Developer'],
+    stats: [
+        { value: '10+', label: 'Core skills' },
+        { value: '4', label: 'Shipped projects' },
+        { value: '4', label: 'AI copilots' },
+        { value: '24h', label: 'Response' },
+    ],
+}
+
+const DEFAULT_ABOUT = {
+    bio: "I build scalable, high-performance web solutions with clean architecture. As a MERN specialist and WordPress expert, I lead a development team — and I've rebuilt my whole workflow around AI: Claude for planning and review, Cursor for pair-coding, Codex for agentic edits.",
+    experience: [
+        {
+            title: 'Founder & Full-Stack Engineer',
+            company: 'Novakrift',
+            period: 'Present',
+            points: ['Building high-performance MERN web platforms and scalable web products like Hisabox.'],
+        },
+    ],
+    education: [
+        { degree: 'B.Sc. in Computer Science & Engineering', status: 'currently pursuing' },
+    ],
+}
+
+const DEFAULT_CONTACT = {
+    intro: "Have a product to ship — or a codebase that needs AI-era velocity? Send a message; I reply within 24 hours.",
+    email: 'dev.shahariar.official@gmail.com',
+    phone: '+880 1410-270766',
+    location: 'Jhenaidah, Bangladesh',
+    social: [
+        { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shahariar270/', icon: 'st-icon--linkedin' },
+        { label: 'GitHub', href: 'https://github.com/shahariar270', icon: 'st-icon--github' },
+        { label: 'Facebook', href: 'https://www.facebook.com/shahariar270/', icon: 'st-icon--facebook' },
+    ],
+}
+
 const contentSlice = createSlice({
     name: 'content',
     initialState: {
         data: null,
-        loaded: false,
-        hero: null,
-        heroLoaded: false,
+        loaded: true,
+        hero: DEFAULT_HERO,
+        heroLoaded: true,
         heroStatus: 'idle',
-        about: null,
-        aboutLoaded: false,
+        about: DEFAULT_ABOUT,
+        aboutLoaded: true,
         aboutStatus: 'idle',
-        contact: null,
-        footer: null,
-        contactLoaded: false,
+        contact: DEFAULT_CONTACT,
+        footer: '© 2026 Shahariar — Founder of Novakrift.',
+        contactLoaded: true,
         contactStatus: 'idle',
     },
     reducers: {},
