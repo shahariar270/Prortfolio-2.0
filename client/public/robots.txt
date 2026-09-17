@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /st-admin/
 
-Sitemap: /sitemap.xml
+Sitemap: https://prortfolio-2-0.vercel.app/sitemap.xml

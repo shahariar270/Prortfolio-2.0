@@ -3,7 +3,7 @@ const trimTrailingSlash = (url) => url.replace(/\/+$/, '')
 export const siteUrl =
   typeof import.meta.env.VITE_SITE_URL === 'string' && import.meta.env.VITE_SITE_URL
     ? trimTrailingSlash(import.meta.env.VITE_SITE_URL)
-    : ''
+    : 'https://prortfolio-2-0.vercel.app'
 
 export const siteName = 'Shahariar Portfolio'
 
