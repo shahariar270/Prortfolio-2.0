@@ -99,14 +99,19 @@ export const BlogDetails = () => {
         )
     }
 
+    const seoTitle = post.seoTitle?.trim() || `${post.category}: ${post.title}`
+    const seoDescription = post.seoDescription?.trim() || post.excerpt
+    const postTags = Array.isArray(post.tags) && post.tags.length > 0 ? post.tags : []
+
     return (
         <div className="st-editorial-read">
             <SeoHead
-                title={`${post.category}: ${post.title}`}
-                description={post.excerpt}
+                title={seoTitle}
+                description={seoDescription}
                 image={post.image}
                 type="article"
                 keywords={[
+                    ...postTags,
                     post.category,
                     post.title,
                     'Shahariar',

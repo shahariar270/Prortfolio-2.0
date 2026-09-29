@@ -44,6 +44,10 @@ export const Projects = ({ onError, onNotify }) => {
     const saveProject = async (draft, id) => {
         const label = (draft.label || '').trim() || 'Untitled project'
         const technologies = splitTechnologies(draft.technologies)
+        const tags = (draft.tags || '')
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean)
         try {
             let body
             if (draft.imageFile) {
@@ -55,6 +59,9 @@ export const Projects = ({ onError, onNotify }) => {
                 technologies.forEach((tech) => body.append('technologies', tech))
                 body.append('liveDemo', draft.liveDemo)
                 body.append('image', draft.imageFile)
+                body.append('seoTitle', draft.seoTitle || '')
+                body.append('seoDescription', draft.seoDescription || '')
+                tags.forEach((tag) => body.append('tags', tag))
             } else {
                 body = {
                     label,
@@ -63,6 +70,9 @@ export const Projects = ({ onError, onNotify }) => {
                     description: draft.description,
                     technologies,
                     liveDemo: draft.liveDemo,
+                    seoTitle: draft.seoTitle || '',
+                    seoDescription: draft.seoDescription || '',
+                    tags,
                 }
                 // send the image only when it's a real URL or an explicit
                 // clear — never a stale FileReader data: preview

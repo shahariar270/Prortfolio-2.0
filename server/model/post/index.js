@@ -52,6 +52,22 @@ const post_schema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        seoTitle: {
+            type: String,
+            default: '',
+            trim: true,
+            maxlength: 200,
+        },
+        seoDescription: {
+            type: String,
+            default: '',
+            trim: true,
+            maxlength: 500,
+        },
+        tags: {
+            type: [String],
+            default: [],
+        },
         user_id: {
             type: String,
             required: true,

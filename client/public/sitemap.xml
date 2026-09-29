@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://prortfolio-2-0.vercel.app/</loc>
+    <loc>https://shahariar.hisabox.pro/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://prortfolio-2-0.vercel.app/about</loc>
+    <loc>https://shahariar.hisabox.pro/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://prortfolio-2-0.vercel.app/project</loc>
+    <loc>https://shahariar.hisabox.pro/project</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://prortfolio-2-0.vercel.app/skill</loc>
+    <loc>https://shahariar.hisabox.pro/skill</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://prortfolio-2-0.vercel.app/blog</loc>
+    <loc>https://shahariar.hisabox.pro/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://prortfolio-2-0.vercel.app/contact</loc>
+    <loc>https://shahariar.hisabox.pro/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

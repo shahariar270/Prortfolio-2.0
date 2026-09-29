@@ -56,7 +56,7 @@ class project_controller {
 
     async create_project(req, res) {
         try {
-            const { label, category, type, description, technologies, liveDemo, image } = req.body;
+            const { label, category, type, description, technologies, liveDemo, image, seoTitle, seoDescription, tags } = req.body;
             const user_id = req.user.id;
 
             if (!label || !category) {
@@ -78,6 +78,9 @@ class project_controller {
                 technologies: to_array(technologies) || [],
                 liveDemo,
                 image: image_url,
+                seoTitle: seoTitle || '',
+                seoDescription: seoDescription || '',
+                tags: to_array(tags) || [],
                 user_id,
             });
 
@@ -90,7 +93,7 @@ class project_controller {
     async update_project(req, res) {
         try {
             const { id } = req.params;
-            const { label, category, type, description, technologies, liveDemo, image } = req.body;
+            const { label, category, type, description, technologies, liveDemo, image, seoTitle, seoDescription, tags } = req.body;
 
             const project = await Project.findById(id);
             if (!project) {
@@ -111,6 +114,9 @@ class project_controller {
             } else if (image !== undefined) {
                 project.image = image;
             }
+            if (seoTitle !== undefined) project.seoTitle = seoTitle;
+            if (seoDescription !== undefined) project.seoDescription = seoDescription;
+            if (tags !== undefined) project.tags = to_array(tags);
 
             await project.save();
             return ApiResponse.success(res, 'Project updated successfully', project);

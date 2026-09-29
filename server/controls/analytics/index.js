@@ -31,10 +31,15 @@ class analytics_controller {
                 try {
                     const host = new URL(referrer).hostname.replace(/^www\./, '');
                     // own-site navigation is not an external source
-                    const own = process.env.FRONTEND_URL
-                        ? new URL(process.env.FRONTEND_URL).hostname.replace(/^www\./, '')
-                        : 'localhost';
-                    if (host && host !== own) referrer_host = host;
+                    const isOwn =
+                        host === 'localhost' ||
+                        host === '127.0.0.1' ||
+                        host === 'hisabox.pro' ||
+                        host.endsWith('.hisabox.pro') ||
+                        host === 'vercel.app' ||
+                        host.endsWith('.vercel.app') ||
+                        (process.env.FRONTEND_URL && host === new URL(process.env.FRONTEND_URL).hostname.replace(/^www\./, ''));
+                    if (host && !isOwn) referrer_host = host;
                 } catch {
                     referrer_host = '';
                 }
