@@ -12,17 +12,63 @@ const ApiResponse = require('./utils/api_response');
 
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
-const allowedOrigins = [
-    process.env.FRONTEND_URL,
+const parseOrigins = (value) => {
+    if (!value || typeof value !== 'string') return [];
+    return value
+        .split(',')
+        .map((s) => s.trim().replace(/\/+$/, ''))
+        .filter(Boolean);
+};
+
+const explicitOrigins = new Set([
+    ...parseOrigins(process.env.FRONTEND_URL),
+    ...parseOrigins(process.env.ALLOWED_ORIGINS),
+    'https://shahariar.hisabox.pro',
+    'https://hisabox.pro',
+    'https://prortfolio-2-0.vercel.app',
     'http://localhost:5173',
     'http://localhost:4173',
-].filter(Boolean);
+    'http://localhost:3000',
+]);
 
-app.use(helmet());
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true;
+
+    const cleanOrigin = origin.replace(/\/+$/, '');
+    if (explicitOrigins.has(cleanOrigin)) return true;
+
+    try {
+        const { hostname, protocol } = new URL(cleanOrigin);
+        if (protocol !== 'https:' && protocol !== 'http:') return false;
+
+        // Allow hisabox.pro and all subdomains (e.g. shahariar.hisabox.pro)
+        if (hostname === 'hisabox.pro' || hostname.endsWith('.hisabox.pro')) {
+            return true;
+        }
+
+        // Allow vercel.app and all deployment subdomains
+        if (hostname === 'vercel.app' || hostname.endsWith('.vercel.app')) {
+            return true;
+        }
+
+        // Allow localhost and 127.0.0.1 for local development on any port
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return true;
+        }
+    } catch {
+        return false;
+    }
+
+    return false;
+};
+
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 app.use(cors({
     origin(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (isAllowedOrigin(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
