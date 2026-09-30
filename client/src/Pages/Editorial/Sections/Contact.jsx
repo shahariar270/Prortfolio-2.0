@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Field, Form, Formik } from 'formik'
 import { useDispatch, useSelector } from 'react-redux'
 import { API_URL } from '../../../config/api'
-import { fetchContactContent } from '../../../store/slices/contentSlice'
+import { fetchContent } from '../../../store/slices/contentSlice'
 
 export const Contact = () => {
     const dispatch = useDispatch()
@@ -10,7 +10,7 @@ export const Contact = () => {
     const footer = useSelector((state) => state.content.footer)
 
     useEffect(() => {
-        dispatch(fetchContactContent())
+        dispatch(fetchContent())
     }, [dispatch])
 
     const social = contact?.social || []

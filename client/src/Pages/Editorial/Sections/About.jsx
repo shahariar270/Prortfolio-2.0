@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAboutContent } from '../../../store/slices/contentSlice'
+import { fetchContent } from '../../../store/slices/contentSlice'
 import Skeleton from '@Component/Skeleton'
 import defaultProfileImg from '../../../assets/images/profile.jpg'
 
 export const About = () => {
     const dispatch = useDispatch()
     const about = useSelector((state) => state.content.about)
-    const loaded = useSelector((state) => state.content.aboutLoaded)
+    const loaded = useSelector((state) => state.content.aboutLoaded || state.content.loaded)
     const status = useSelector((state) => state.content.aboutStatus)
 
     useEffect(() => {
-        dispatch(fetchAboutContent())
+        dispatch(fetchContent())
     }, [dispatch])
 
     const experience = about?.experience || []

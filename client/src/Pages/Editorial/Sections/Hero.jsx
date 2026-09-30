@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchHeroContent } from '../../../store/slices/contentSlice'
+import { fetchContent } from '../../../store/slices/contentSlice'
 import Skeleton from '@Component/Skeleton'
 import defaultHeroImg from '../../../assets/images/home.jpg'
 
@@ -49,12 +49,12 @@ export const Hero = ({ onSeeWork }) => {
     const dispatch = useDispatch()
     const hero = useSelector((state) => state.content.hero)
     const content = useSelector((state) => state.content.data)
-    const loaded = useSelector((state) => state.content.heroLoaded)
+    const loaded = useSelector((state) => state.content.heroLoaded || state.content.loaded)
     const status = useSelector((state) => state.content.heroStatus)
     const resumeUrl = hero?.resumeUrl || content?.resumeUrl || '/resume.pdf'
 
     useEffect(() => {
-        dispatch(fetchHeroContent())
+        dispatch(fetchContent())
     }, [dispatch])
 
     const stats = hero?.stats || []
