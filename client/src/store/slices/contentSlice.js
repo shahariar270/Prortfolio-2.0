@@ -12,7 +12,12 @@ export const fetchContent = createAsyncThunk(
             return rejectWithValue(toErrorPayload(err))
         }
     },
-    { condition: (_, { getState }) => !getState().content.loaded }
+    {
+        condition: (_, { getState }) => {
+            const state = getState().content
+            return !state.loaded && state.contentStatus !== 'loading'
+        },
+    }
 )
 
 export const fetchHeroContent = createAsyncThunk(
@@ -27,7 +32,7 @@ export const fetchHeroContent = createAsyncThunk(
     {
         condition: (_, { getState }) => {
             const c = getState().content
-            return !c.heroLoaded && c.heroStatus !== 'loading'
+            return !c.heroLoaded && !c.loaded && c.heroStatus !== 'loading' && c.contentStatus !== 'loading'
         },
     }
 )
@@ -44,7 +49,7 @@ export const fetchAboutContent = createAsyncThunk(
     {
         condition: (_, { getState }) => {
             const c = getState().content
-            return !c.aboutLoaded && c.aboutStatus !== 'loading'
+            return !c.aboutLoaded && !c.loaded && c.aboutStatus !== 'loading' && c.contentStatus !== 'loading'
         },
     }
 )
@@ -61,7 +66,7 @@ export const fetchContactContent = createAsyncThunk(
     {
         condition: (_, { getState }) => {
             const c = getState().content
-            return !c.contactLoaded && c.contactStatus !== 'loading'
+            return !c.contactLoaded && !c.loaded && c.contactStatus !== 'loading' && c.contentStatus !== 'loading'
         },
     }
 )
@@ -122,34 +127,67 @@ const contentSlice = createSlice({
     name: 'content',
     initialState: {
         data: null,
-        loaded: true,
+        loaded: false,
+        contentStatus: 'idle',
         hero: DEFAULT_HERO,
-        heroLoaded: true,
+        heroLoaded: false,
         heroStatus: 'idle',
         about: DEFAULT_ABOUT,
-        aboutLoaded: true,
+        aboutLoaded: false,
         aboutStatus: 'idle',
         contact: DEFAULT_CONTACT,
         footer: '© 2026 Shahariar — Founder of Novakrift.',
-        contactLoaded: true,
+        contactLoaded: false,
         contactStatus: 'idle',
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(fetchContent.pending, (state) => {
+                state.contentStatus = 'loading'
+                if (!state.heroLoaded) state.heroStatus = 'loading'
+                if (!state.aboutLoaded) state.aboutStatus = 'loading'
+                if (!state.contactLoaded) state.contactStatus = 'loading'
+            })
             .addCase(fetchContent.fulfilled, (state, action) => {
-                state.data = action.payload
-                state.hero = action.payload?.hero || null
-                state.about = action.payload?.about || null
-                state.contact = action.payload?.contact || null
-                state.footer = action.payload?.footer || null
+                const c = action.payload
+                state.data = c
+                if (c) {
+                    if (c.hero) {
+                        state.hero = { ...c.hero, resumeUrl: c.resumeUrl || c.hero?.resumeUrl || state.hero?.resumeUrl || '/resume.pdf' }
+                    }
+                    if (c.about) {
+                        state.about = c.about
+                    }
+                    if (c.contact) {
+                        state.contact = c.contact
+                    }
+                    if (c.footer) {
+                        state.footer = c.footer
+                    }
+                }
                 state.loaded = true
+                state.heroLoaded = true
+                state.aboutLoaded = true
+                state.contactLoaded = true
+                state.contentStatus = 'succeeded'
+                state.heroStatus = 'succeeded'
+                state.aboutStatus = 'succeeded'
+                state.contactStatus = 'succeeded'
+            })
+            .addCase(fetchContent.rejected, (state) => {
+                state.contentStatus = 'failed'
+                state.heroStatus = 'failed'
+                state.aboutStatus = 'failed'
+                state.contactStatus = 'failed'
             })
             .addCase(fetchHeroContent.pending, (state) => {
                 state.heroStatus = 'loading'
             })
             .addCase(fetchHeroContent.fulfilled, (state, action) => {
-                state.hero = action.payload
+                if (action.payload) {
+                    state.hero = action.payload
+                }
                 state.heroLoaded = true
                 state.heroStatus = 'succeeded'
             })
@@ -160,7 +198,9 @@ const contentSlice = createSlice({
                 state.aboutStatus = 'loading'
             })
             .addCase(fetchAboutContent.fulfilled, (state, action) => {
-                state.about = action.payload
+                if (action.payload) {
+                    state.about = action.payload
+                }
                 state.aboutLoaded = true
                 state.aboutStatus = 'succeeded'
             })
@@ -171,8 +211,12 @@ const contentSlice = createSlice({
                 state.contactStatus = 'loading'
             })
             .addCase(fetchContactContent.fulfilled, (state, action) => {
-                state.contact = action.payload?.contact || null
-                state.footer = action.payload?.footer || null
+                if (action.payload?.contact) {
+                    state.contact = action.payload.contact
+                }
+                if (action.payload?.footer) {
+                    state.footer = action.payload.footer
+                }
                 state.contactLoaded = true
                 state.contactStatus = 'succeeded'
             })
@@ -180,11 +224,26 @@ const contentSlice = createSlice({
                 state.contactStatus = 'failed'
             })
             .addCase(updateContent.fulfilled, (state, action) => {
-                state.data = action.payload
-                state.hero = action.payload?.hero || null
-                state.about = action.payload?.about || null
-                state.contact = action.payload?.contact || null
-                state.footer = action.payload?.footer || null
+                const c = action.payload
+                state.data = c
+                if (c) {
+                    if (c.hero) {
+                        state.hero = { ...c.hero, resumeUrl: c.resumeUrl || c.hero?.resumeUrl || state.hero?.resumeUrl || '/resume.pdf' }
+                    }
+                    if (c.about) {
+                        state.about = c.about
+                    }
+                    if (c.contact) {
+                        state.contact = c.contact
+                    }
+                    if (c.footer) {
+                        state.footer = c.footer
+                    }
+                }
+                state.loaded = true
+                state.heroLoaded = true
+                state.aboutLoaded = true
+                state.contactLoaded = true
             })
     },
 })

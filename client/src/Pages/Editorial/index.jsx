@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import SeoHead from '@Component/SeoHead'
 import { trackPageView } from '../../config/tracking'
 import { useTheme } from '../../config/theme'
@@ -11,6 +12,7 @@ import { Skills } from './Sections/Skills'
 import { Projects } from './Sections/Projects'
 import { Blog } from './Sections/Blog'
 import { Contact } from './Sections/Contact'
+import { fetchContent } from '../../store/slices/contentSlice'
 
 const scrollToSection = (id, behavior = 'smooth') => {
     const el = document.getElementById(id)
@@ -18,6 +20,7 @@ const scrollToSection = (id, behavior = 'smooth') => {
 }
 
 export const Editorial = ({ section = 'sec-home' }) => {
+    const dispatch = useDispatch()
     const location = useLocation()
     const hashId = location.hash.slice(1)
     // a URL hash (deep link, refresh, shared link) should win over the
@@ -30,6 +33,10 @@ export const Editorial = ({ section = 'sec-home' }) => {
     // tracks what the URL currently reflects, so we only touch history when
     // the scrolled-to section actually changes, not on every scroll tick
     const lastSyncedSection = useRef(initialSection)
+
+    useEffect(() => {
+        dispatch(fetchContent())
+    }, [dispatch])
 
     useEffect(() => {
         if (initialSection === 'sec-home') {
