@@ -13,7 +13,7 @@ const taxonomy_schema = new mongoose.Schema(
         kind: {
             type: String,
             required: true,
-            enum: ['post_category', 'skill_group'],
+            enum: ['post_category', 'skill_group', 'project_category'],
         },
         user_id: {
             type: String,

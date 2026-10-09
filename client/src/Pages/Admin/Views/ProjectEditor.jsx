@@ -1,21 +1,34 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import RichTextEditor from '@Component/RichTextEditor'
+import { createTaxonomy } from '../../../store/slices/taxonomiesSlice'
 
-const CATEGORIES = [
-    { value: 'design', label: 'Web Design' },
-    { value: 'development', label: 'Web Development' },
-]
+const DEFAULT_CATEGORIES = ['Web Design', 'Web Development']
+
+const normalizeCategory = (cat) => {
+    if (!cat) return 'Web Development'
+    if (cat === 'design') return 'Web Design'
+    if (cat === 'development') return 'Web Development'
+    return cat
+}
 
 // The preview stays a FileReader data URL, but the picked File itself is kept
 // on the draft (imageFile) so saving can upload it as multipart form data.
 // Mounted only once its data is fully resolved (see Views/Projects.jsx) —
 // safe to seed state from `project` once, on mount.
 
-export const ProjectEditor = ({ mode, project, onSave, onCancel }) => {
+export const ProjectEditor = ({ mode, project, categories = [], onSave, onCancel }) => {
     const isNew = mode === 'new'
+    const dispatch = useDispatch()
+    const [newCatInput, setNewCatInput] = useState('')
+    const [showNewCatInput, setShowNewCatInput] = useState(false)
+
+    const initialCategory = normalizeCategory(project?.category || categories[0])
+
     const [draft, setDraft] = useState({
         label: project?.label || '',
-        category: project?.category || 'development',
+        category: initialCategory,
         type: project?.type || '',
         description: project?.description || '',
         // stored as an array — comma-joined for editing
@@ -29,6 +42,24 @@ export const ProjectEditor = ({ mode, project, onSave, onCancel }) => {
     })
 
     const patch = (changes) => setDraft((prev) => ({ ...prev, ...changes }))
+
+    const availableCategories = Array.from(
+        new Set([
+            ...(categories.length > 0 ? categories : DEFAULT_CATEGORIES),
+            draft.category,
+        ].filter(Boolean))
+    )
+
+    const handleAddCategory = async () => {
+        const val = newCatInput.trim()
+        if (!val) return
+        patch({ category: val })
+        try {
+            await dispatch(createTaxonomy({ label: val, kind: 'project_category' })).unwrap()
+        } catch {}
+        setShowNewCatInput(false)
+        setNewCatInput('')
+    }
 
     const pickImage = (e) => {
         const file = e.target.files && e.target.files[0]
@@ -69,19 +100,83 @@ export const ProjectEditor = ({ mode, project, onSave, onCancel }) => {
                     </label>
 
                     <div className="st-admin__field">
-                        <span>Category</span>
-                        <div className="st-admin__chip-options">
-                            {CATEGORIES.map((cat) => (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                            <span>Category</span>
+                            <Link
+                                to="/st-admin/taxonomy"
+                                style={{ fontSize: '0.8rem', color: 'var(--color-primary)', textDecoration: 'none' }}
+                            >
+                                Manage in Taxonomy ↗
+                            </Link>
+                        </div>
+                        <div className="st-admin__chip-options" style={{ flexWrap: 'wrap', gap: '8px' }}>
+                            {availableCategories.map((cat) => (
                                 <button
-                                    key={cat.value}
+                                    key={cat}
                                     type="button"
-                                    className={draft.category === cat.value ? 'is-active' : ''}
-                                    onClick={() => patch({ category: cat.value })}
+                                    className={draft.category === cat ? 'is-active' : ''}
+                                    onClick={() => patch({ category: cat })}
                                 >
-                                    {cat.label}
+                                    {cat}
                                 </button>
                             ))}
+                            {!showNewCatInput && (
+                                <button
+                                    type="button"
+                                    style={{ borderStyle: 'dashed' }}
+                                    onClick={() => setShowNewCatInput(true)}
+                                >
+                                    ＋ New category
+                                </button>
+                            )}
                         </div>
+                        {showNewCatInput && (
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                <input
+                                    value={newCatInput}
+                                    onChange={(e) => setNewCatInput(e.target.value)}
+                                    placeholder="Enter new category name…"
+                                    style={{
+                                        flex: 1,
+                                        padding: '7px 12px',
+                                        fontSize: '0.9rem',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--border-color)',
+                                        background: 'var(--surface-muted)',
+                                        color: 'var(--text-primary)'
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault()
+                                            handleAddCategory()
+                                        } else if (e.key === 'Escape') {
+                                            setShowNewCatInput(false)
+                                            setNewCatInput('')
+                                        }
+                                    }}
+                                    autoFocus
+                                />
+                                <button
+                                    type="button"
+                                    className="st-admin__btn-primary"
+                                    style={{ padding: '0 14px', fontSize: '0.85rem' }}
+                                    onClick={handleAddCategory}
+                                >
+                                    Add
+                                </button>
+                                <button
+                                    type="button"
+                                    className="st-admin__btn-ghost"
+                                    style={{ padding: '0 12px', fontSize: '0.85rem' }}
+                                    onClick={() => {
+                                        setShowNewCatInput(false)
+                                        setNewCatInput('')
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <label className="st-admin__field">

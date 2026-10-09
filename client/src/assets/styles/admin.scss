@@ -1100,10 +1100,39 @@
             cursor: pointer;
             font-size: 15px;
             line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
 
             &:hover {
                 border-color: var(--neg);
                 color: var(--neg);
+            }
+
+            &.st-admin__tax-btn-edit:hover,
+            &.st-admin__tax-btn-save:hover {
+                border-color: var(--color-primary);
+                color: var(--color-primary);
+            }
+        }
+
+        .st-admin__tax-edit-form {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+
+            input {
+                flex: 1;
+                min-width: 0;
+                padding: 6px 10px;
+                font-size: 13.5px;
+                border-radius: 7px;
+                border: 1px solid var(--color-primary);
+                background: var(--surface);
+                color: var(--text-primary);
+                outline: none;
             }
         }
     }
@@ -1119,6 +1148,10 @@
 
         &.is-secondary {
             background: var(--color-secondary);
+        }
+
+        &.is-accent {
+            background: #10b981;
         }
     }
 

@@ -13,6 +13,7 @@ const SiteContent = require('../model/content');
 
 const POST_CATEGORIES = ['Career', 'Projects', 'React', 'Frontend', 'MERN'];
 const SKILL_GROUPS = ['Frontend', 'Backend & Database', 'Tools & AI'];
+const PROJECT_CATEGORIES = ['Web Design', 'Web Development'];
 
 const skillIcon = (id) => `https://skillicons.dev/icons?i=${id}`;
 const brandIcon = (id) => `https://cdn.simpleicons.org/${id}`;
@@ -122,6 +123,7 @@ const SITE_CONTENT = {
         headline: 'Shahariar builds web products for the AI era.',
         highlight: 'AI era',
         bio: 'React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop. Human judgment, machine speed.',
+        roles: ['Founder @ Novakrift', 'Creator of Hisabox', 'MERN Stack Engineer', 'AI-Driven Developer'],
         stats: [
             { value: '10+', label: 'Core skills' },
             { value: '4', label: 'Shipped projects' },
@@ -201,9 +203,16 @@ const seed = async () => {
         await Taxonomy.insertMany([
             ...POST_CATEGORIES.map((label) => ({ label, kind: 'post_category', user_id })),
             ...SKILL_GROUPS.map((label) => ({ label, kind: 'skill_group', user_id })),
+            ...PROJECT_CATEGORIES.map((label) => ({ label, kind: 'project_category', user_id })),
         ]);
-        console.log(`Seeded ${POST_CATEGORIES.length + SKILL_GROUPS.length} taxonomies`);
+        console.log(`Seeded ${POST_CATEGORIES.length + SKILL_GROUPS.length + PROJECT_CATEGORIES.length} taxonomies`);
     } else {
+        if (await Taxonomy.countDocuments({ kind: 'project_category' }) === 0) {
+            await Taxonomy.insertMany(
+                PROJECT_CATEGORIES.map((label) => ({ label, kind: 'project_category', user_id }))
+            );
+            console.log(`Seeded ${PROJECT_CATEGORIES.length} missing project categories`);
+        }
         console.log('Taxonomies already present — skipped');
     }
 
@@ -228,11 +237,74 @@ const seed = async () => {
         console.log('Projects already present — skipped');
     }
 
-    if (await SiteContent.countDocuments() === 0) {
+    let siteContent = await SiteContent.findOne();
+    if (!siteContent) {
         await SiteContent.create({ ...SITE_CONTENT, user_id });
         console.log('Seeded site content');
     } else {
-        console.log('Site content already present — skipped');
+        let updated = false;
+
+        siteContent.hero = siteContent.hero || {};
+        if (!siteContent.hero.status) { siteContent.hero.status = SITE_CONTENT.hero.status; updated = true; }
+        if (!siteContent.hero.headline) { siteContent.hero.headline = SITE_CONTENT.hero.headline; updated = true; }
+        if (!siteContent.hero.highlight) { siteContent.hero.highlight = SITE_CONTENT.hero.highlight; updated = true; }
+        if (!siteContent.hero.bio) { siteContent.hero.bio = SITE_CONTENT.hero.bio; updated = true; }
+        if (!siteContent.hero.roles || siteContent.hero.roles.length === 0) {
+            siteContent.hero.roles = SITE_CONTENT.hero.roles;
+            updated = true;
+        }
+        if (!siteContent.hero.stats || siteContent.hero.stats.length === 0) {
+            siteContent.hero.stats = SITE_CONTENT.hero.stats;
+            updated = true;
+        }
+
+        siteContent.about = siteContent.about || {};
+        if (!siteContent.about.bio) { siteContent.about.bio = SITE_CONTENT.about.bio; updated = true; }
+
+        const currentExpTitles = new Set((siteContent.about.experience || []).map(e => e.title ? e.title.trim().toLowerCase() : ''));
+        const defaultExps = SITE_CONTENT.about.experience || [];
+        for (const exp of defaultExps) {
+            if (!currentExpTitles.has(exp.title.trim().toLowerCase())) {
+                siteContent.about.experience.push(exp);
+                updated = true;
+            }
+        }
+
+        const currentEduDegrees = new Set((siteContent.about.education || []).map(e => e.degree ? e.degree.toLowerCase().replace(/[^a-z]/g, '') : ''));
+        const defaultEdus = SITE_CONTENT.about.education || [];
+        for (const edu of defaultEdus) {
+            const normKey = edu.degree.toLowerCase().replace(/[^a-z]/g, '');
+            const isBscDuplicate = (normKey.includes('bsc') || normKey.includes('computerscience')) && Array.from(currentEduDegrees).some(k => k.includes('bsc') || k.includes('computerscience'));
+            if (!currentEduDegrees.has(normKey) && !isBscDuplicate) {
+                siteContent.about.education.push(edu);
+                updated = true;
+            }
+        }
+
+        siteContent.contact = siteContent.contact || {};
+        if (!siteContent.contact.intro) { siteContent.contact.intro = SITE_CONTENT.contact.intro; updated = true; }
+        if (!siteContent.contact.email) { siteContent.contact.email = SITE_CONTENT.contact.email; updated = true; }
+        if (!siteContent.contact.phone) { siteContent.contact.phone = SITE_CONTENT.contact.phone; updated = true; }
+        if (!siteContent.contact.location) { siteContent.contact.location = SITE_CONTENT.contact.location; updated = true; }
+
+        const validSocials = (siteContent.contact.social || []).filter(s => s.label && s.label.trim() !== '' && s.href && s.href.trim() !== '');
+        if (validSocials.length === 0) {
+            siteContent.contact.social = SITE_CONTENT.contact.social;
+            updated = true;
+        } else {
+            siteContent.contact.social = validSocials;
+        }
+
+        if (!siteContent.footer) { siteContent.footer = SITE_CONTENT.footer; updated = true; }
+        if (!siteContent.resumeUrl) { siteContent.resumeUrl = '/resume.pdf'; updated = true; }
+
+        if (updated) {
+            siteContent.user_id = siteContent.user_id || user_id;
+            await siteContent.save();
+            console.log('Updated site content with missing default fields (preserved existing custom data)');
+        } else {
+            console.log('Site content already fully populated');
+        }
     }
 
     await mongoose.disconnect();
