@@ -3,17 +3,23 @@ import { api, AuthError } from '../../Pages/Admin/api'
 
 const toErrorPayload = (err) => ({ message: err.message, isAuthError: err instanceof AuthError })
 
-// condition-gated: if projects are already cached, dispatching this is a no-op
+// condition-gated: if projects are already cached, dispatching this is a no-op unless force=true
 export const fetchProjects = createAsyncThunk(
     'projects/fetchProjects',
-    async (_, { rejectWithValue }) => {
+    async (force, { rejectWithValue }) => {
         try {
             return await api.projects()
         } catch (err) {
             return rejectWithValue(toErrorPayload(err))
         }
     },
-    { condition: (_, { getState }) => !getState().projects.loaded && getState().projects.status !== 'loading' }
+    {
+        condition: (force, { getState }) => {
+            if (force) return true
+            const state = getState().projects
+            return !state.loaded && state.status !== 'loading'
+        },
+    }
 )
 
 export const saveProject = createAsyncThunk(
@@ -80,25 +86,35 @@ const DEFAULT_PROJECTS = [
 
 const projectsSlice = createSlice({
     name: 'projects',
-    initialState: { items: DEFAULT_PROJECTS, loaded: true, status: 'idle' },
+    initialState: {
+        items: [],
+        loaded: false,
+        status: 'idle',
+        error: null,
+    },
     reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchProjects.pending, (state) => {
                 state.status = 'loading'
+                state.error = null
             })
             .addCase(fetchProjects.fulfilled, (state, action) => {
-                state.items = action.payload
+                state.items = Array.isArray(action.payload) && action.payload.length > 0 ? action.payload : DEFAULT_PROJECTS
                 state.loaded = true
                 state.status = 'succeeded'
             })
-            .addCase(fetchProjects.rejected, (state) => {
+            .addCase(fetchProjects.rejected, (state, action) => {
                 state.status = 'failed'
+                state.error = action.payload?.message
+                if (state.items.length === 0) {
+                    state.items = DEFAULT_PROJECTS
+                }
             })
             .addCase(saveProject.fulfilled, (state, action) => {
                 const index = state.items.findIndex((project) => project._id === action.payload._id)
                 if (index !== -1) state.items[index] = action.payload
-                else state.items.push(action.payload)
+                else state.items.unshift(action.payload)
             })
             .addCase(deleteProject.fulfilled, (state, action) => {
                 state.items = state.items.filter((project) => project._id !== action.payload)
