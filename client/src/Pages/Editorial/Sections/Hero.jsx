@@ -95,13 +95,6 @@ export const Hero = ({ onSeeWork, onOpenQuickModal }) => {
                             <button type="button" className="st-editorial__btn st-editorial__btn--primary" onClick={onSeeWork}>
                                 See the work ↓
                             </button>
-                            <button
-                                type="button"
-                                className="st-editorial__btn st-editorial__btn--ghost"
-                                onClick={onOpenQuickModal}
-                            >
-                                ⚡ Quick Info
-                            </button>
                             <a
                                 href={resumeUrl}
                                 {...(/^https?:\/\//i.test(resumeUrl)
