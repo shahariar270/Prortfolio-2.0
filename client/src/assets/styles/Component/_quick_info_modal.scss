@@ -118,18 +118,17 @@
 
 .st-quick-modal-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
 .st-quick-overview-box {
-  background: var(--surface-muted);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  font-size: 13.5px;
+  background: transparent;
+  border: none;
+  padding: 0 0 4px 0;
+  margin-bottom: 16px;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--text-secondary);
 }
