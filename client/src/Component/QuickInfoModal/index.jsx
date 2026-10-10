@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import profile from '../../assets/images/profile.jpg';
 import { resumeDownloadUrl } from '../../config/resume';
 
 export const QuickInfoModal = ({ isOpen, onClose, quickDataCustom }) => {
   const [copied, setCopied] = useState(false);
+  const siteContent = useSelector((state) => state.content?.data || state.bootstrap?.content);
 
   const defaultData = {
     name: 'Shahariar',
     title: 'Full-Stack Engineer | Competitive Programmer | AI Automation | CMS Expert',
-    email: 'dev.shahariar.official@gmail.com',
+    quickOverview: siteContent?.contact?.quickOverview || 'Full-Stack Engineer & Competitive Programmer building high-performance web products with MERN, Next.js, AI automation, and custom CMS workflows.',
+    email: siteContent?.contact?.email || 'dev.shahariar.official@gmail.com',
     whatsapp: 'https://wa.me/8801915579467',
     facebook: 'https://www.facebook.com/shahariar270/',
     linkedin: 'https://www.linkedin.com/in/shahariar270/',
     github: 'https://github.com/shahariar270',
-    location: 'Dhaka, Bangladesh (GMT+6)',
+    location: siteContent?.contact?.location || 'Dhaka, Bangladesh (GMT+6)',
     responseTime: 'Within a few hours',
-    skills: 'React, MERN, Next.js, AI Automation, Competitive Programming, CMS',
-    resumeUrl: resumeDownloadUrl
+    resumeUrl: siteContent?.resumeUrl || resumeDownloadUrl
   };
 
   const data = { ...defaultData, ...quickDataCustom };
@@ -68,8 +70,21 @@ export const QuickInfoModal = ({ isOpen, onClose, quickDataCustom }) => {
           </div>
         </div>
 
-        {/* Modal Content / Quick Links */}
+        {/* Modal Content */}
         <div className="st-quick-modal-body">
+          {/* Quick Overview Section */}
+          <h4 className="st-quick-modal-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Quick Overview
+          </h4>
+          <div className="st-quick-overview-box">
+            {data.quickOverview}
+          </div>
+
+          {/* Quick Contact & Socials Section (2-Column Grid) */}
           <h4 className="st-quick-modal-section-title">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
@@ -144,7 +159,7 @@ export const QuickInfoModal = ({ isOpen, onClose, quickDataCustom }) => {
             </a>
 
             {/* GitHub */}
-            <a href={data.github} target="_blank" rel="noopener noreferrer" className="st-quick-card github">
+            <a href={data.github} target="_blank" rel="noopener noreferrer" className="st-quick-card github" style={{ gridColumn: 'span 2' }}>
               <span className="st-card-icon github-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>

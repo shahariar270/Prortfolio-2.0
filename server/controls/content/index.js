@@ -77,9 +77,10 @@ const DEFAULTS = {
     },
     contact: {
         intro: "Have a product to ship — or a codebase that needs AI-era velocity? Send a message; I reply within 24 hours.",
+        quickOverview: "Full-Stack Engineer & Competitive Programmer building high-performance web products with MERN, Next.js, AI automation, and custom CMS workflows.",
         email: 'dev.shahariar.official@gmail.com',
-        phone: '+880 1410-270766',
-        location: 'Jhenaidah, Bangladesh',
+        phone: '+880 1915-579467',
+        location: 'Dhaka, Bangladesh',
         social: [
             { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shahariar270/', icon: 'st-icon--linkedin' },
             { label: 'GitHub', href: 'https://github.com/shahariar270', icon: 'st-icon--github' },

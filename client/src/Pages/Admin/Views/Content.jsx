@@ -53,6 +53,7 @@ const ContentForm = ({ content, onError, onNotify }) => {
         },
         contact: {
             intro: content?.contact?.intro || '',
+            quickOverview: content?.contact?.quickOverview || '',
             email: content?.contact?.email || '',
             phone: content?.contact?.phone || '',
             location: content?.contact?.location || '',
@@ -392,6 +393,16 @@ const ContentForm = ({ content, onError, onNotify }) => {
                         <textarea
                             value={draft.contact.intro}
                             onChange={(e) => patchSection('contact', { intro: e.target.value })}
+                        ></textarea>
+                    </label>
+
+                    <label className="st-admin__field">
+                        <span>Quick Overview / Quick About Me (Popup Modal)</span>
+                        <textarea
+                            value={draft.contact.quickOverview}
+                            onChange={(e) => patchSection('contact', { quickOverview: e.target.value })}
+                            placeholder="Short overview about yourself for the Quick Contact Popup Modal..."
+                            rows={3}
                         ></textarea>
                     </label>
 

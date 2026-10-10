@@ -46,6 +46,7 @@ const site_content_schema = new mongoose.Schema(
         },
         contact: {
             intro: { type: String, default: '', trim: true },
+            quickOverview: { type: String, default: '', trim: true },
             email: { type: String, default: '', trim: true },
             phone: { type: String, default: '', trim: true },
             location: { type: String, default: '', trim: true },
