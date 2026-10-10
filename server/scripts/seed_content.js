@@ -120,9 +120,9 @@ const POSTS = [
 const SITE_CONTENT = {
     hero: {
         status: 'Available for work · Jhenaidah, Bangladesh',
-        headline: 'Shahariar builds web products for the AI era.',
-        highlight: 'AI era',
-        bio: 'React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop. Human judgment, machine speed.',
+        headline: 'I build web applications with a focus on Engineering Fundamentals.',
+        highlight: 'Engineering Fundamentals.',
+        bio: 'WordPress developer transitioning into full stack software development. I build modern web applications using React, Node.js, Express, and MongoDB. My focus is on creating fast, scalable, and user-friendly web applications using clean architecture and software engineering principles.',
         roles: ['Founder @ Novakrift', 'Creator of Hisabox', 'MERN Stack Engineer', 'AI-Driven Developer'],
         stats: [
             { value: '10+', label: 'Core skills' },
@@ -132,7 +132,7 @@ const SITE_CONTENT = {
         ],
     },
     about: {
-        bio: "I build scalable, high-performance web solutions with clean architecture. As a MERN specialist and WordPress expert, I lead a development team — and I've rebuilt my whole workflow around AI: Claude for planning and review, Cursor for pair-coding, Codex for agentic edits.",
+        bio: "I'm a software developer whose professional journey began in 2018 with digital work, office productivity tools, content writing, and marketing. Around 2021–2022, I transitioned into software development and began expanding my skills across different programming languages, frameworks, and platforms. I worked as a web application developer specializing in WordPress customization and plugin development, and modern JavaScript-based technologies. I work with technologies including PHP, Laravel, C#, JavaScript, TypeScript, React, Next.js, and Node.js, depending on the project and its requirements. I'm interested in building practical web solutions, extending existing platforms through custom development, and creating digital products that solve real problems. I also continue to explore platforms like Shopify and AI-assisted development tools to expand my engineering skill set. My approach is grounded in understanding requirements, choosing appropriate technologies, writing maintainable code, and strengthening my engineering fundamentals behind the applications I build.",
         experience: [
             {
                 title: 'React Developer',
@@ -245,10 +245,10 @@ const seed = async () => {
         let updated = false;
 
         siteContent.hero = siteContent.hero || {};
+        if (siteContent.hero.headline !== SITE_CONTENT.hero.headline) { siteContent.hero.headline = SITE_CONTENT.hero.headline; updated = true; }
+        if (siteContent.hero.highlight !== SITE_CONTENT.hero.highlight) { siteContent.hero.highlight = SITE_CONTENT.hero.highlight; updated = true; }
+        if (siteContent.hero.bio !== SITE_CONTENT.hero.bio) { siteContent.hero.bio = SITE_CONTENT.hero.bio; updated = true; }
         if (!siteContent.hero.status) { siteContent.hero.status = SITE_CONTENT.hero.status; updated = true; }
-        if (!siteContent.hero.headline) { siteContent.hero.headline = SITE_CONTENT.hero.headline; updated = true; }
-        if (!siteContent.hero.highlight) { siteContent.hero.highlight = SITE_CONTENT.hero.highlight; updated = true; }
-        if (!siteContent.hero.bio) { siteContent.hero.bio = SITE_CONTENT.hero.bio; updated = true; }
         if (!siteContent.hero.roles || siteContent.hero.roles.length === 0) {
             siteContent.hero.roles = SITE_CONTENT.hero.roles;
             updated = true;
@@ -259,7 +259,7 @@ const seed = async () => {
         }
 
         siteContent.about = siteContent.about || {};
-        if (!siteContent.about.bio) { siteContent.about.bio = SITE_CONTENT.about.bio; updated = true; }
+        if (siteContent.about.bio !== SITE_CONTENT.about.bio) { siteContent.about.bio = SITE_CONTENT.about.bio; updated = true; }
 
         const currentExpTitles = new Set((siteContent.about.experience || []).map(e => e.title ? e.title.trim().toLowerCase() : ''));
         const defaultExps = SITE_CONTENT.about.experience || [];
