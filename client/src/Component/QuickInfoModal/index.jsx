@@ -175,10 +175,6 @@ export const QuickInfoModal = ({ isOpen, onClose, quickDataCustom }) => {
               <span className="st-info-label">Response Time:</span>
               <span className="st-info-val">{data.responseTime}</span>
             </div>
-            <div className="st-info-item">
-              <span className="st-info-label">Specialties:</span>
-              <span className="st-info-val">{data.skills}</span>
-            </div>
           </div>
         </div>
 
