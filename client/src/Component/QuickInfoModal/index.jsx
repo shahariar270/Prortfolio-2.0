@@ -15,7 +15,7 @@ export const QuickInfoModal = ({ isOpen, onClose, quickDataCustom }) => {
     github: 'https://github.com/shahariar270',
     location: 'Dhaka, Bangladesh (GMT+6)',
     responseTime: 'Within a few hours',
-    skills: 'React, MERN, Node.js, Next.js, SCSS',
+    skills: 'React, MERN, Next.js, AI Automation, Competitive Programming, CMS',
     resumeUrl: resumeDownloadUrl
   };
 
