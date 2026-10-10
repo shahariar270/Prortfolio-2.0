@@ -29,6 +29,17 @@ export const createTaxonomy = createAsyncThunk(
     }
 )
 
+export const updateTaxonomy = createAsyncThunk(
+    'taxonomies/update',
+    async ({ id, label }, { rejectWithValue }) => {
+        try {
+            return await api.updateTaxonomy(id, label)
+        } catch (err) {
+            return rejectWithValue(toErrorPayload(err))
+        }
+    }
+)
+
 export const deleteTaxonomy = createAsyncThunk(
     'taxonomies/delete',
     async (id, { rejectWithValue }) => {
@@ -54,6 +65,10 @@ export const selectSkillGroupLabels = createSelector(selectTaxonomyItems, (items
     items.filter((tax) => tax.kind === 'skill_group').map((tax) => tax.label)
 )
 
+export const selectProjectCategoryLabels = createSelector(selectTaxonomyItems, (items) =>
+    items.filter((tax) => tax.kind === 'project_category').map((tax) => tax.label)
+)
+
 const taxonomiesSlice = createSlice({
     name: 'taxonomies',
     initialState: { items: [], loaded: false },
@@ -66,6 +81,12 @@ const taxonomiesSlice = createSlice({
             })
             .addCase(createTaxonomy.fulfilled, (state, action) => {
                 state.items.push(action.payload)
+            })
+            .addCase(updateTaxonomy.fulfilled, (state, action) => {
+                const index = state.items.findIndex((tax) => tax._id === action.payload._id)
+                if (index !== -1) {
+                    state.items[index] = action.payload
+                }
             })
             .addCase(deleteTaxonomy.fulfilled, (state, action) => {
                 state.items = state.items.filter((tax) => tax._id !== action.payload)

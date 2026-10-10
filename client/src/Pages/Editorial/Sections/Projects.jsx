@@ -18,8 +18,31 @@ export const Projects = () => {
         dispatch(fetchProjects())
     }, [dispatch])
 
+    const dynamicTabs = React.useMemo(() => {
+        const unique = Array.from(new Set(projects.map((p) => p.category).filter(Boolean)))
+        if (unique.length === 0) return projectTabs
+
+        const tabs = [{ label: 'All', value: 'all' }]
+        unique.forEach((cat) => {
+            const label = cat === 'design' ? 'Web Design' : cat === 'development' ? 'Web Development' : cat
+            if (!tabs.some((t) => t.label === label)) {
+                tabs.push({ label, value: cat })
+            }
+        })
+        return tabs
+    }, [projects])
+
     const filteredProjects =
-        tab === 'all' ? projects : projects.filter((project) => project.category === tab)
+        tab === 'all'
+            ? projects
+            : projects.filter((project) => {
+                  if (project.category === tab) return true
+                  if (tab === 'design' && project.category === 'Web Design') return true
+                  if (tab === 'Web Design' && project.category === 'design') return true
+                  if (tab === 'development' && project.category === 'Web Development') return true
+                  if (tab === 'Web Development' && project.category === 'development') return true
+                  return false
+              })
 
     if (!loaded && status !== 'failed') {
         return (
@@ -41,7 +64,7 @@ export const Projects = () => {
             <div className="st-editorial__projects-head">
                 <h2 className="st-editorial__heading">Projects</h2>
                 <div className="st-editorial__projects-tabs">
-                    {projectTabs.map((item) => (
+                    {dynamicTabs.map((item) => (
                         <button
                             key={item.value}
                             type="button"
@@ -80,7 +103,7 @@ export const Projects = () => {
                                 See more →
                             </Link>
                             <div className="st-editorial__project-tech">
-                                {project.technologies.map((tech) => (
+                                {(project.technologies || []).map((tech) => (
                                     <span key={tech}>{tech}</span>
                                 ))}
                             </div>

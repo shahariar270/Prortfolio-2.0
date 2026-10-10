@@ -91,6 +91,8 @@ export const api = {
     taxonomies: () => request('/api/taxonomies'),
     createTaxonomy: (label, kind) =>
         request('/api/taxonomy', { method: 'POST', body: { label, kind }, auth: true }),
+    updateTaxonomy: (id, label) =>
+        request(`/api/taxonomy/${id}`, { method: 'PUT', body: { label }, auth: true }),
     deleteTaxonomy: (id) => request(`/api/taxonomy/${id}`, { method: 'DELETE', auth: true }),
 
     analyticsSummary: (range) =>

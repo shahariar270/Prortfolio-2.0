@@ -13,6 +13,7 @@ import { Projects } from './Sections/Projects'
 import { Blog } from './Sections/Blog'
 import { Contact } from './Sections/Contact'
 import { fetchContent } from '../../store/slices/contentSlice'
+import { QuickInfoModal } from '../../Component/QuickInfoModal'
 
 const scrollToSection = (id, behavior = 'smooth') => {
     const el = document.getElementById(id)
@@ -23,15 +24,11 @@ export const Editorial = ({ section = 'sec-home' }) => {
     const dispatch = useDispatch()
     const location = useLocation()
     const hashId = location.hash.slice(1)
-    // a URL hash (deep link, refresh, shared link) should win over the
-    // route's default section so both the scroll target and the highlighted
-    // rail item are correct on the very first render, not just after a click
     const initialSection = sections.some((s) => s.id === hashId) ? hashId : section
 
     const [activeSection, setActiveSection] = useState(initialSection)
     const [isDark, toggleTheme] = useTheme()
-    // tracks what the URL currently reflects, so we only touch history when
-    // the scrolled-to section actually changes, not on every scroll tick
+    const [isQuickModalOpen, setIsQuickModalOpen] = useState(false)
     const lastSyncedSection = useRef(initialSection)
 
     useEffect(() => {
@@ -46,9 +43,6 @@ export const Editorial = ({ section = 'sec-home' }) => {
 
         scrollToSection(initialSection, 'auto')
 
-        // Skills/Projects/Blog fetch their data on mount and can grow the
-        // page after this jump, leaving the scroll position stale — keep
-        // correcting while the page is still settling from those fetches
         const observer = new ResizeObserver(() => scrollToSection(initialSection, 'auto'))
         observer.observe(document.body)
         const settleTimer = setTimeout(() => observer.disconnect(), 2000)
@@ -60,8 +54,6 @@ export const Editorial = ({ section = 'sec-home' }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section])
 
-    // page-view beacon: fires once per mounted path, flushed with a duration
-    // on tab-hide or page unload (whichever comes first)
     useEffect(() => {
         const path = location.pathname
         const referrer = document.referrer
@@ -98,11 +90,6 @@ export const Editorial = ({ section = 'sec-home' }) => {
             }
             setActiveSection(active)
 
-            // keep the address bar honest as you scroll — it otherwise stays
-            // stuck on whatever path/hash you arrived with (e.g. /project)
-            // even once you've scrolled well past that section. Plain
-            // history.replaceState, not react-router's navigate: this must
-            // never trigger a route match/remount, just update the URL text.
             if (active !== lastSyncedSection.current) {
                 lastSyncedSection.current = active
                 const url = active === 'sec-home' ? '/' : `/#${active}`
@@ -123,15 +110,41 @@ export const Editorial = ({ section = 'sec-home' }) => {
                 activeSection={activeSection}
                 isDark={isDark}
                 onToggleTheme={toggleTheme}
+                onOpenQuickModal={() => setIsQuickModalOpen(true)}
             />
             <main className="st-editorial__main">
-                <Hero onSeeWork={() => scrollToSection('sec-project')} />
+                <Hero
+                    onSeeWork={() => scrollToSection('sec-project')}
+                    onOpenQuickModal={() => setIsQuickModalOpen(true)}
+                />
                 <About />
                 <Skills />
                 <Projects />
                 <Blog />
                 <Contact />
             </main>
+
+            {/* Floating Quick Action Button */}
+            <button
+                type="button"
+                className="st-quick-fab"
+                onClick={() => setIsQuickModalOpen(true)}
+                aria-label="Quick Contact & Info"
+                title="Quick Contact & Info"
+            >
+                <span className="st-fab-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </span>
+                <span>Quick Contact</span>
+            </button>
+
+            {/* Quick Contact & Info Popup Modal */}
+            <QuickInfoModal
+                isOpen={isQuickModalOpen}
+                onClose={() => setIsQuickModalOpen(false)}
+            />
         </div>
     )
 }

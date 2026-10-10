@@ -5,7 +5,7 @@ import { resumeDownloadFilename, resumeDownloadUrl } from '../../config/resume'
 
 const MOBILE_MEDIA = '(max-width: 768px)'
 
-export const LeftContentBox = () => {
+export const LeftContentBox = ({ onOpenQuickModal }) => {
   const hero = useSelector((state) => state.content?.hero)
   const content = useSelector((state) => state.content?.data || state.bootstrap?.content)
   const activeResumeUrl = hero?.resumeUrl || content?.resumeUrl || resumeDownloadUrl
@@ -210,18 +210,34 @@ export const LeftContentBox = () => {
         </div>
       </div>
 
-      <a
-        className="st-portfolio--resume-link"
-        href={activeResumeUrl}
-        {...(isExternalResume
-          ? { target: '_blank', rel: 'noopener noreferrer' }
-          : { download: resumeDownloadFilename })}
-      >
-        <span className="st-portfolio--resume-link__icon" aria-hidden>
-          ↓
-        </span>
-        Download resume
-      </a>
+      <div className="st-portfolio--left-actions" style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+        <button
+          type="button"
+          className="st-portfolio--resume-link"
+          style={{ cursor: 'pointer', background: 'var(--color-primary)', color: '#fff', border: 'none' }}
+          onClick={onOpenQuickModal}
+        >
+          <span className="st-portfolio--resume-link__icon" aria-hidden style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </span>
+          Quick Contact & Info
+        </button>
+
+        <a
+          className="st-portfolio--resume-link"
+          href={activeResumeUrl}
+          {...(isExternalResume
+            ? { target: '_blank', rel: 'noopener noreferrer' }
+            : { download: resumeDownloadFilename })}
+        >
+          <span className="st-portfolio--resume-link__icon" aria-hidden>
+            ↓
+          </span>
+          Download resume
+        </a>
+      </div>
     </div>
   )
 }

@@ -21,9 +21,9 @@ const parse_field = (value) => {
 const DEFAULTS = {
     hero: {
         status: 'Available for work · Jhenaidah, Bangladesh',
-        headline: 'Hey there, I\'m Shahariar',
-        highlight: '',
-        bio: 'Founder of Novakrift & creator of Hisabox. React & MERN engineer shipping production apps with AI copilots — Claude, Cursor, Codex — in the loop.',
+        headline: 'I build web applications with a focus on Engineering Fundamentals.',
+        highlight: 'Engineering Fundamentals.',
+        bio: 'WordPress developer transitioning into full stack software development. I build modern web applications using React, Node.js, Express, and MongoDB. My focus is on creating fast, scalable, and user-friendly web applications using clean architecture and software engineering principles.',
         roles: ['Founder @ Novakrift', 'Creator of Hisabox', 'MERN Stack Engineer', 'AI-Driven Developer'],
         stats: [
             { value: '10+', label: 'Core skills' },
@@ -33,7 +33,7 @@ const DEFAULTS = {
         ],
     },
     about: {
-        bio: "I build scalable, high-performance web solutions with clean architecture. As a MERN specialist and WordPress expert, I lead a development team — and I've rebuilt my whole workflow around AI: Claude for planning and review, Cursor for pair-coding, Codex for agentic edits.",
+        bio: "I'm a software developer whose professional journey began in 2018 with digital work, office productivity tools, content writing, and marketing. Around 2021–2022, I transitioned into software development and began expanding my skills across different programming languages, frameworks, and platforms. I worked as a web application developer specializing in WordPress customization and plugin development, and modern JavaScript-based technologies. I work with technologies including PHP, Laravel, C#, JavaScript, TypeScript, React, Next.js, and Node.js, depending on the project and its requirements. I'm interested in building practical web solutions, extending existing platforms through custom development, and creating digital products that solve real problems. I also continue to explore platforms like Shopify and AI-assisted development tools to expand my engineering skill set. My approach is grounded in understanding requirements, choosing appropriate technologies, writing maintainable code, and strengthening my engineering fundamentals behind the applications I build.",
         experience: [
             {
                 title: 'React Developer',
@@ -77,9 +77,10 @@ const DEFAULTS = {
     },
     contact: {
         intro: "Have a product to ship — or a codebase that needs AI-era velocity? Send a message; I reply within 24 hours.",
+        quickOverview: "Full-Stack Engineer & Competitive Programmer building high-performance web products with MERN, Next.js, AI automation, and custom CMS workflows.",
         email: 'dev.shahariar.official@gmail.com',
-        phone: '+880 1410-270766',
-        location: 'Jhenaidah, Bangladesh',
+        phone: '+880 1915-579467',
+        location: 'Dhaka, Bangladesh',
         social: [
             { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shahariar270/', icon: 'st-icon--linkedin' },
             { label: 'GitHub', href: 'https://github.com/shahariar270', icon: 'st-icon--github' },

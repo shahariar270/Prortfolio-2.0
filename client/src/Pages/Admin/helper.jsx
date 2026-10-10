@@ -15,7 +15,7 @@ export const pageTitles = {
     skills: ['Skills', 'Update your skills and proficiency levels'],
     projects: ['Projects', 'Showcase the work on your portfolio'],
     content: ['Content', 'Edit the hero, about, and contact copy on your site'],
-    taxonomy: ['Taxonomy', 'Manage post categories and skill groups'],
+    taxonomy: ['Taxonomy', 'Manage project categories, post categories, and skill groups'],
 }
 
 export const adminProfile = {

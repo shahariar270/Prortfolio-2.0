@@ -20,7 +20,7 @@ const project_schema = new mongoose.Schema(
         category: {
             type: String,
             required: true,
-            enum: ['design', 'development'],
+            trim: true,
         },
         type: {
             type: String,

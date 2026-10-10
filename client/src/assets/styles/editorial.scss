@@ -279,17 +279,21 @@ a {
 
         h1 {
             @include display-font;
-            font-size: 44px;
-            line-height: 0.98;
-            letter-spacing: -0.035em;
-            margin: 0;
+            font-size: clamp(16px, 1.8vw, 24px);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin: 0 0 12px 0;
             color: var(--text-primary);
-            max-width: 1100px;
-            text-wrap: balance;
+            max-width: 100%;
+            white-space: nowrap;
 
             em {
                 font-style: normal;
                 color: var(--color-primary);
+            }
+
+            @media (max-width: 640px) {
+                white-space: normal;
             }
         }
     }
@@ -328,9 +332,9 @@ a {
         display: inline-flex;
         align-items: center;
         gap: 9px;
-        margin: 0 0 26px 0;
+        margin: 0 0 16px 0;
         color: var(--text-secondary);
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
@@ -348,17 +352,15 @@ a {
     &__hero-roles {
         display: flex;
         align-items: center;
-        // height: 1.4em;
-        margin: 4px 0 0;
+        margin: 6px 0 12px 0;
         overflow: hidden;
-        text-align: center;
     }
 
     &__hero-role {
         display: inline-block;
         color: var(--color-primary);
-        font-size: 30px;
-        font-weight: 700;
+        font-size: clamp(16px, 1.5vw, 18px);
+        font-weight: 600;
         letter-spacing: -0.01em;
         animation: st-hero-role-in 0.4s ease;
     }
@@ -371,10 +373,10 @@ a {
         flex-direction: column;
 
         > p {
-            max-width: 520px;
+            max-width: 100%;
             margin: 0;
             color: var(--text-secondary);
-            font-size: clamp(16px, 2vw, 20px);
+            font-size: clamp(15px, 1.2vw, 17px);
             line-height: 1.7;
         }
     }
@@ -439,10 +441,11 @@ a {
 
     &__about-lede {
         margin: 0;
-        color: var(--text-primary);
-        font-size: clamp(19px, 2.4vw, 26px);
-        line-height: 1.55;
-        font-weight: 500;
+        color: var(--text-secondary);
+        font-size: clamp(15px, 1.2vw, 17px);
+        line-height: 1.7;
+        font-weight: 400;
+        max-width: 100%;
         text-wrap: pretty;
     }
 
@@ -1495,3 +1498,6 @@ a {
     border-radius: 16px;
     flex: 1 1 260px;
 }
+
+@import "./Component/quick_info_modal";
+

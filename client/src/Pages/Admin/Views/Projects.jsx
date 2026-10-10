@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import { fetchProjects, saveProject as saveProjectThunk, deleteProject as deleteProjectThunk } from '../../../store/slices/projectsSlice'
+import { fetchTaxonomies, selectProjectCategoryLabels } from '../../../store/slices/taxonomiesSlice'
 import { ProjectEditor } from './ProjectEditor'
 
 const CATEGORY_LABELS = {
@@ -18,11 +19,15 @@ export const Projects = ({ onError, onNotify }) => {
     const dispatch = useDispatch()
     const projects = useSelector((state) => state.projects.items)
     const projectsLoaded = useSelector((state) => state.projects.loaded)
+    const projectCats = useSelector(selectProjectCategoryLabels)
     const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect(() => {
         dispatch(fetchProjects()).then((action) => {
             if (fetchProjects.rejected.match(action) && !action.meta.condition) onError(action.payload)
+        })
+        dispatch(fetchTaxonomies()).then((action) => {
+            if (fetchTaxonomies.rejected.match(action) && !action.meta.condition) onError(action.payload)
         })
         // onError intentionally omitted — it's a fresh function every render
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,6 +108,7 @@ export const Projects = ({ onError, onNotify }) => {
             <ProjectEditor
                 key="new"
                 mode="new"
+                categories={projectCats}
                 onSave={saveProject}
                 onCancel={closeEditor}
             />
@@ -135,6 +141,7 @@ export const Projects = ({ onError, onNotify }) => {
                 key={editingProject._id}
                 mode="edit"
                 project={editingProject}
+                categories={projectCats}
                 onSave={saveProject}
                 onCancel={closeEditor}
             />

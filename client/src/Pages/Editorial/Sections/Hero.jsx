@@ -12,7 +12,7 @@ const RotatingRoles = ({ roles }) => {
         if (roles.length < 2) return
         const timer = setInterval(() => {
             setIndex((i) => (i + 1) % roles.length)
-        }, 1000)
+        }, 3000)
         return () => clearInterval(timer)
     }, [roles])
 
@@ -39,13 +39,13 @@ const renderHeadline = (headline, highlight) => {
     return (
         <>
             {before}
-            <em>{highlight.replace(/ /g, ' ')}</em>
+            <em>{highlight}</em>
             {after}
         </>
     )
 }
 
-export const Hero = ({ onSeeWork }) => {
+export const Hero = ({ onSeeWork, onOpenQuickModal }) => {
     const dispatch = useDispatch()
     const hero = useSelector((state) => state.content.hero)
     const content = useSelector((state) => state.content.data)
