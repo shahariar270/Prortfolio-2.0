@@ -7,12 +7,11 @@ export const QuickInfoModal = ({ isOpen, onClose, quickDataCustom }) => {
 
   const defaultData = {
     name: 'Shahariar',
-    title: 'Founder @ Novakrift · React & MERN Specialist',
-    status: 'Available for freelance & full-time projects',
-    email: 'shahariar@example.com',
-    whatsapp: 'https://wa.me/8801700000000',
-    facebook: 'https://facebook.com/shahariar.novakrift',
-    linkedin: 'https://linkedin.com/in/shahariar',
+    title: 'Full-Stack Engineer | Competitive Programmer | AI Automation | CMS Expert',
+    email: 'dev.shahariar.official@gmail.com',
+    whatsapp: 'https://wa.me/8801915579467',
+    facebook: 'https://www.facebook.com/shahariar270/',
+    linkedin: 'https://www.linkedin.com/in/shahariar270/',
     github: 'https://github.com/shahariar270',
     location: 'Dhaka, Bangladesh (GMT+6)',
     responseTime: 'Within a few hours',
@@ -66,10 +65,6 @@ export const QuickInfoModal = ({ isOpen, onClose, quickDataCustom }) => {
           <div className="st-quick-modal-user">
             <h3>{data.name}</h3>
             <p className="st-quick-modal-title">{data.title}</p>
-            <div className="st-quick-modal-badge">
-              <span className="st-badge-dot"></span>
-              {data.status}
-            </div>
           </div>
         </div>
 
