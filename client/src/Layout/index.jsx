@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LeftContentBox } from './Sections/LeftContentBox'
 import { RightContentBox } from './Sections/RightContentBox'
+import { QuickInfoModal } from '../Component/QuickInfoModal'
 
 export const Layout = () => {
+  const [isQuickModalOpen, setIsQuickModalOpen] = useState(false)
 
   useEffect(() => {
     const cursor = document.querySelector(".cursor");
@@ -23,8 +25,26 @@ export const Layout = () => {
     <div className='st-portfolio--layout'>
       <div className="cursor"></div>
 
-      <LeftContentBox />
+      <LeftContentBox onOpenQuickModal={() => setIsQuickModalOpen(true)} />
       <RightContentBox />
+
+      {/* Floating Quick Action Button */}
+      <button
+        type="button"
+        className="st-quick-fab"
+        onClick={() => setIsQuickModalOpen(true)}
+        aria-label="Quick Contact & Info"
+        title="Quick Contact & Info"
+      >
+        <span className="st-fab-icon">⚡</span>
+        <span>Quick Contact</span>
+      </button>
+
+      {/* Quick Contact & Info Popup Modal */}
+      <QuickInfoModal
+        isOpen={isQuickModalOpen}
+        onClose={() => setIsQuickModalOpen(false)}
+      />
     </div>
   )
 }

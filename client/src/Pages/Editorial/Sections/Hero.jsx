@@ -45,7 +45,7 @@ const renderHeadline = (headline, highlight) => {
     )
 }
 
-export const Hero = ({ onSeeWork }) => {
+export const Hero = ({ onSeeWork, onOpenQuickModal }) => {
     const dispatch = useDispatch()
     const hero = useSelector((state) => state.content.hero)
     const content = useSelector((state) => state.content.data)
@@ -94,6 +94,13 @@ export const Hero = ({ onSeeWork }) => {
                         <div className="st-editorial__hero-actions">
                             <button type="button" className="st-editorial__btn st-editorial__btn--primary" onClick={onSeeWork}>
                                 See the work ↓
+                            </button>
+                            <button
+                                type="button"
+                                className="st-editorial__btn st-editorial__btn--ghost"
+                                onClick={onOpenQuickModal}
+                            >
+                                ⚡ Quick Info
                             </button>
                             <a
                                 href={resumeUrl}

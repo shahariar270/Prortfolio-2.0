@@ -1,0 +1,310 @@
+.st-quick-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.st-quick-modal-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  padding: 24px;
+  animation: scaleUp 0.25s ease-out forwards;
+}
+
+.st-quick-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--surface-strong);
+    color: var(--text-primary);
+  }
+}
+
+.st-quick-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+
+  .st-quick-modal-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-primary);
+  }
+
+  .st-quick-modal-user {
+    h3 {
+      margin: 0 0 4px 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .st-quick-modal-title {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .st-quick-modal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 3px 10px;
+      border-radius: 20px;
+
+      .st-badge-dot {
+        width: 7px;
+        height: 7px;
+        background-color: #10b981;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #10b981;
+      }
+    }
+  }
+}
+
+.st-quick-modal-body {
+  padding: 20px 0 10px 0;
+
+  .st-quick-modal-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+  }
+}
+
+.st-quick-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.st-quick-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    background: var(--surface-strong);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+
+  .st-card-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .st-card-text {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    strong {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    span {
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .st-copy-btn {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 4px;
+    border-radius: 4px;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+}
+
+.st-quick-modal-info-list {
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .st-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+
+    .st-info-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .st-info-val {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+.st-quick-modal-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+
+  .st-quick-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+
+    &.primary {
+      background: var(--color-primary);
+      color: #ffffff;
+
+      &:hover {
+        background: var(--color-primary-hover);
+      }
+    }
+
+    &.secondary {
+      background: var(--surface-muted);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+
+      &:hover {
+        background: var(--surface-strong);
+      }
+    }
+  }
+}
+
+/* Floating Action Button */
+.st-quick-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(15, 118, 110, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &:hover {
+    background: var(--color-primary-hover);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 14px 30px rgba(15, 118, 110, 0.45);
+  }
+
+  .st-fab-icon {
+    font-size: 16px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+  .st-quick-modal-card {
+    padding: 18px;
+  }
+  .st-quick-modal-grid {
+    grid-template-columns: 1fr;
+  }
+  .st-quick-fab {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
