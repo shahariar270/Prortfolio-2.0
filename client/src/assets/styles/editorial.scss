@@ -285,15 +285,11 @@ a {
             margin: 0 0 12px 0;
             color: var(--text-primary);
             max-width: 100%;
-            white-space: nowrap;
+            text-wrap: balance;
 
             em {
                 font-style: normal;
                 color: var(--color-primary);
-            }
-
-            @media (max-width: 640px) {
-                white-space: normal;
             }
         }
     }
