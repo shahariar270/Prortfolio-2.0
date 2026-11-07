@@ -378,6 +378,7 @@ a {
             color: var(--text-secondary);
             font-size: clamp(15px, 1.2vw, 17px);
             line-height: 1.7;
+            white-space: pre-line;
         }
     }
 
@@ -447,6 +448,7 @@ a {
         font-weight: 400;
         max-width: 100%;
         text-wrap: pretty;
+        white-space: pre-line;
     }
 
     &__about-list {
@@ -1118,6 +1120,7 @@ a {
             font-size: clamp(17px, 2vw, 21px);
             line-height: 1.65;
             max-width: 460px;
+            white-space: pre-line;
         }
     }
 
