@@ -53,7 +53,7 @@ const DEFAULT_PROJECTS = [
         category: 'development',
         type: 'MERN Desktop & Web App',
         description:
-            'A streamlined MERN financial management and expense tracker platform built by Shahariar at Novakrift for monitoring personal and business accounting.',
+            'A streamlined MERN financial management and expense tracker platform built by Shahariar for monitoring personal and business accounting.',
         technologies: ['MERN', 'React', 'Node.js', 'MongoDB'],
         liveDemo: 'https://expense-tracker-le1b.vercel.app/',
         image: '/projects/expense.jpg',

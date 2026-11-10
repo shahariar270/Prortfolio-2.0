@@ -95,7 +95,7 @@ export const ProjectDetails = () => {
 
     const defaultDescription = project.description
         ? project.description.replace(/<[^>]*>?/gm, '').trim().slice(0, 160)
-        : `${project.label} — ${project.type} developed by Shahariar (shahariar270) at Novakrift.`
+        : `${project.label} — ${project.type} developed by Shahariar (shahariar270).`
 
     const seoTitle = project.seoTitle?.trim() || `${project.label} | ${project.type}`
     const seoDescription = project.seoDescription?.trim() || defaultDescription
@@ -113,7 +113,6 @@ export const ProjectDetails = () => {
                     project.label,
                     project.type,
                     ...(Array.isArray(project.technologies) ? project.technologies : []),
-                    'Novakrift',
                     'shahariar',
                     'shahariar270',
                     'Hisabox',

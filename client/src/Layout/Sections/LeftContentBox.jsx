@@ -75,7 +75,7 @@ export const LeftContentBox = ({ onOpenQuickModal }) => {
         <img src={profile} alt="" />
         <div className="st-portfolio--content">
           <h1>Shahariar</h1>
-          <p>Founder @ Novakrift · Creator of Hisabox · React & MERN Specialist</p>
+          <p>React & MERN Specialist</p>
         </div>
       </div>
 

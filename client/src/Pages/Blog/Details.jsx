@@ -116,7 +116,6 @@ export const BlogDetails = () => {
                     post.title,
                     'Shahariar',
                     'shahariar270',
-                    'Novakrift',
                     'Web Development',
                     'React',
                     'MERN',

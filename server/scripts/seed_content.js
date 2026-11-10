@@ -123,7 +123,7 @@ const SITE_CONTENT = {
         headline: 'I build web applications with a focus on Engineering Fundamentals.',
         highlight: 'Engineering Fundamentals.',
         bio: 'WordPress developer transitioning into full stack software development. I build modern web applications using React, Node.js, Express, and MongoDB. My focus is on creating fast, scalable, and user-friendly web applications using clean architecture and software engineering principles.',
-        roles: ['Founder @ Novakrift', 'Creator of Hisabox', 'MERN Stack Engineer', 'AI-Driven Developer'],
+        roles: ['Full-Stack Engineer', 'MERN Stack Engineer', 'AI-Driven Developer', 'WordPress Expert'],
         stats: [
             { value: '10+', label: 'Core skills' },
             { value: '4', label: 'Shipped projects' },
@@ -249,7 +249,7 @@ const seed = async () => {
         if (siteContent.hero.highlight !== SITE_CONTENT.hero.highlight) { siteContent.hero.highlight = SITE_CONTENT.hero.highlight; updated = true; }
         if (siteContent.hero.bio !== SITE_CONTENT.hero.bio) { siteContent.hero.bio = SITE_CONTENT.hero.bio; updated = true; }
         if (!siteContent.hero.status) { siteContent.hero.status = SITE_CONTENT.hero.status; updated = true; }
-        if (!siteContent.hero.roles || siteContent.hero.roles.length === 0) {
+        if (!siteContent.hero.roles || siteContent.hero.roles.length === 0 || siteContent.hero.roles.some(r => r.includes('Novakrift'))) {
             siteContent.hero.roles = SITE_CONTENT.hero.roles;
             updated = true;
         }

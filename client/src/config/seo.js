@@ -14,7 +14,7 @@ export const siteAuthor = 'Shahariar'
 export const siteAlternateName = 'shahariar270'
 
 /** Brand / organization name. */
-export const siteBrand = 'Novakrift'
+export const siteBrand = 'Shahariar'
 
 /** Flagship product / application name. */
 export const siteProduct = 'Hisabox'
@@ -22,12 +22,10 @@ export const siteProduct = 'Hisabox'
 import logoPath from '../assets/images/logo.svg'
 
 export const defaultDescription =
-  'Official portfolio of Shahariar (shahariar270) — Founder of Novakrift and creator of Hisabox. Full-stack React & MERN developer building scalable web applications.'
+  'Official portfolio of Shahariar (shahariar270) — Full-stack React & MERN developer building scalable web applications.'
 
 /**
- * Core keywords surfaced on every page. The name, handle, brand, and product lead so
- * search engines associate the site with all target terms; page-level keywords are
- * merged in ahead of these via SeoHead.
+ * Core keywords surfaced on every page.
  */
 export const defaultKeywords = [
   'shahariar',

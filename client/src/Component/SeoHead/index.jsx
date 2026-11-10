@@ -34,7 +34,7 @@ export default function SeoHead({
     '@type': 'Person',
     name: siteAuthor,
     alternateName: [siteAlternateName, 'shahariar', 'shahariar270'],
-    jobTitle: 'Founder of Novakrift & Full-Stack MERN Developer',
+    jobTitle: 'Full Stack Developer',
     description: defaultDescription,
     ...(siteUrl ? { url: siteUrl } : {}),
     image: resolvedImage || logoUrl,

@@ -17,12 +17,12 @@ export const sectionSeo = {
     'sec-home': {
         title: null,
         description:
-            'Official portfolio of Shahariar (shahariar270) — Founder of Novakrift and creator of Hisabox. Full-stack React & MERN developer building scalable web applications.',
+            'Official portfolio of Shahariar (shahariar270) — Full-stack React & MERN developer building scalable web applications.',
     },
     'sec-about': {
         title: 'About',
         description:
-            'Shahariar (shahariar270), founder of Novakrift. Full-stack developer specializing in MERN stack, high-performance architecture, and modern web solutions.',
+            'Shahariar (shahariar270). Full-stack developer specializing in MERN stack, high-performance architecture, and modern web solutions.',
     },
     'sec-skill': {
         title: 'Skills',
@@ -32,7 +32,7 @@ export const sectionSeo = {
     'sec-project': {
         title: 'Projects',
         description:
-            'Shipped projects by Shahariar / Novakrift — including Hisabox, component libraries, and MERN applications.',
+            'Shipped projects by Shahariar — including Hisabox, component libraries, and MERN applications.',
     },
     'sec-blog': {
         title: 'Blog',

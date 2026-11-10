@@ -87,7 +87,7 @@ const DEFAULT_HERO = {
     headline: 'I build web applications with a focus on Engineering Fundamentals.',
     highlight: 'Engineering Fundamentals.',
     bio: 'WordPress developer transitioning into full stack software development. I build modern web applications using React, Node.js, Express, and MongoDB. My focus is on creating fast, scalable, and user-friendly web applications using clean architecture and software engineering principles.',
-    roles: ['Founder @ Novakrift', 'Creator of Hisabox', 'MERN Stack Engineer', 'AI-Driven Developer'],
+    roles: ['Full-Stack Engineer', 'MERN Stack Engineer', 'AI-Driven Developer', 'WordPress Expert'],
     stats: [
         { value: '10+', label: 'Core skills' },
         { value: '4', label: 'Shipped projects' },
@@ -100,10 +100,38 @@ const DEFAULT_ABOUT = {
     bio: "I'm a software developer whose professional journey began in 2018 with digital work, office productivity tools, content writing, and marketing. Around 2021–2022, I transitioned into software development and began expanding my skills across different programming languages, frameworks, and platforms. I worked as a web application developer specializing in WordPress customization and plugin development, and modern JavaScript-based technologies. I work with technologies including PHP, Laravel, C#, JavaScript, TypeScript, React, Next.js, and Node.js, depending on the project and its requirements. I'm interested in building practical web solutions, extending existing platforms through custom development, and creating digital products that solve real problems. I also continue to explore platforms like Shopify and AI-assisted development tools to expand my engineering skill set. My approach is grounded in understanding requirements, choosing appropriate technologies, writing maintainable code, and strengthening my engineering fundamentals behind the applications I build.",
     experience: [
         {
-            title: 'Founder & Full-Stack Engineer',
-            company: 'Novakrift',
-            period: 'Present',
-            points: ['Building high-performance MERN web platforms and scalable web products like Hisabox.'],
+            title: 'React Developer',
+            company: 'Kodezen',
+            period: 'Dec 2024 — Present',
+            points: [
+                'Led development on a CRM plugin, coordinating implementation decisions and keeping the team focused on practical, maintainable delivery.',
+                'Architected React-driven interfaces and optimized frontend workflows for cleaner state and better long-term scalability.',
+                'Managed task breakdowns, reviewed code quality, and supported developers through technical blockers.',
+            ],
+        },
+        {
+            title: 'MERN Expense Tracker',
+            company: 'Full-Stack Project',
+            period: 'Project',
+            points: [
+                'Built a MERN application for tracking expenses with structured data handling, reusable UI components, and practical dashboard flows.',
+            ],
+        },
+        {
+            title: 'E-commerce system',
+            company: 'Full-Stack Project',
+            period: 'Project',
+            points: [
+                'Developed a full-featured MERN e-commerce platform with secure JWT auth, cart, order processing, and an admin dashboard.',
+            ],
+        },
+        {
+            title: 'YouTube Video Downloader',
+            company: 'Utility Project',
+            period: 'Project',
+            points: [
+                'Developed a focused download utility with attention to usability, real-time API handling, and efficient frontend feedback states.',
+            ],
         },
     ],
     education: [
@@ -136,7 +164,7 @@ const contentSlice = createSlice({
         aboutLoaded: false,
         aboutStatus: 'idle',
         contact: DEFAULT_CONTACT,
-        footer: '© 2026 Shahariar — Founder of Novakrift.',
+        footer: '© 2026 Shahariar — built with React, MERN & AI copilots.',
         contactLoaded: false,
         contactStatus: 'idle',
     },
